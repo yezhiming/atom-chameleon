@@ -15,13 +15,12 @@ module.exports =
 
     events = new EventEmitter()
 
-    DOWNLOAD_PROGRESS_FACTOR = 1
-
     mkdirp destPath, =>
       @installFramework destPath
       .on 'message', (message) -> events.emit 'message', message
-      .on 'progress', (progress) -> events.emit 'progress', progress * DOWNLOAD_PROGRESS_FACTOR
+      .on 'progress', (progress) -> events.emit 'progress', progress
       .on 'finish', ->
+        #TODO: create main package(module)
         events.emit 'finish'
 
     return events
@@ -37,8 +36,10 @@ module.exports =
 
       events.emit 'message', "Download butterfly.js..."
       Downloader.download(butterflyURL, targetZipFile)
-      .on 'progress', (progress)->
+      .on 'progress', (progress) ->
         events.emit 'progress', progress
+      .on 'indeterminate', (received) ->
+        events.emit 'message', "Download butterfly.js...(#{received / 1000}k)"
       .on 'finish', ->
         rimraf targetFolder, ->
 
