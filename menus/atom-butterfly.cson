@@ -1,0 +1,34 @@
+# See https://atom.io/docs/latest/creating-a-package#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Toggle atom-butterfly'
+      'command': 'atom-butterfly:toggle'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Butterfly.js'
+      'submenu': [
+        {
+          'label': 'Create Project',
+          'command': 'atom-butterfly:create-project'
+        }
+        {
+          'label': 'Framework Install/Upgrade'
+          'command': 'atom-butterfly:install'
+        }
+        {
+          'label': 'Start Debug Server'
+          'command': 'atom-butterfly:run-on-server'
+        }
+        {
+          'label': 'Debug this'
+          'command': 'atom-butterfly:debug'
+        }
+      ]
+    ]
+  }
+]

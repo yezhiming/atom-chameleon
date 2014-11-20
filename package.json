@@ -1,0 +1,22 @@
+{
+  "name": "atom-butterfly",
+  "main": "./lib/atom-butterfly",
+  "version": "0.0.0",
+  "description": "A short description of your package",
+  "repository": "https://github.com/atom/atom-butterfly",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+    "rimraf": "*",
+    "fs-plus": "^2.0.4",
+    "request": "*",
+    "underscore": "*",
+    "mkdirp": "*",
+    "unzip": "*",
+    "loophole": "*",
+    "express": "*",
+    "bootstrap": "*"
+  }
+}
