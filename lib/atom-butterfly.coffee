@@ -1,8 +1,3 @@
-rimraf = require 'rimraf'
-fs = require 'fs-plus'
-path = require 'path'
-mkdirp = require 'mkdirp'
-
 remote = require 'remote'
 dialog = remote.require 'dialog'
 
@@ -62,12 +57,6 @@ module.exports =
         pv.destroy()
         atom.open {pathsToOpen: [destPath]}
 
-  cmdRunOnServer: ->
-    @runOnServerView = new RunOnServerView()
-    @runOnServerView.attach()
-    @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState)=>
-      @debugServer.start(rootPath, destPath, httpPort, pushState)
-
   cmdInstall: ->
 
     pv = new ProgressView(this)
@@ -80,3 +69,9 @@ module.exports =
       pv.setProgress(progress)
     .on 'finish', ->
       pv.destroy()
+
+  cmdRunOnServer: ->
+    @runOnServerView = new RunOnServerView()
+    @runOnServerView.attach()
+    @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState)=>
+      @debugServer.start(rootPath, destPath, httpPort, pushState)
