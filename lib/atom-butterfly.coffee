@@ -7,15 +7,13 @@ remote = require 'remote'
 dialog = remote.require 'dialog'
 
 DebugServer = require './debug-server'
-scaffolder = require './scaffold'
+Scaffolder = require './scaffold'
 Downloader = require './utils/download'
 Unzip = require './utils/unzip'
 
 ProgressView = require './progress-view'
 RunOnServerView = require './run-on-server-view'
 ServerStatusView = require './server-status-view'
-
-butterflyURL = "https://github.com/yezhiming/butterfly/archive/master.zip"
 
 module.exports =
 
@@ -52,9 +50,17 @@ module.exports =
       return unless destPath
       console.log 'save to : %s', destPath
 
-      mkdirp destPath, =>
-        @cmdInstall destPath, ->
-          atom.open {pathsToOpen: [destPath]}
+      pv = new ProgressView(this)
+      pv.attach()
+
+      Scaffolder.createProject(destPath)
+      .on 'message', (message) ->
+        pv.setTitle(message)
+      .on 'progress', (progress) ->
+        pv.setProgress(progress)
+      .on 'finish', ->
+        pv.destroy()
+        atom.open {pathsToOpen: [destPath]}
 
   cmdRunOnServer: ->
     @runOnServerView = new RunOnServerView()
@@ -62,27 +68,15 @@ module.exports =
     @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState)=>
       @debugServer.start(rootPath, destPath, httpPort, pushState)
 
-  cmdInstall: (installToPath = atom.project.path, onFinish)->
+  cmdInstall: ->
 
     pv = new ProgressView(this)
     pv.attach()
-    pv.setTitle("Download butterfly.js...")
 
-    targetFolder = path.resolve(installToPath, 'butterfly')
-    targetZipFile = path.resolve(installToPath, 'butterfly.zip')
-
-    rimraf targetZipFile, =>
-
-      Downloader.download(butterflyURL, targetZipFile)
-      .on 'progress', (progress)->
-        pv.setProgress(progress)
-      .on 'finish', ->
-        rimraf targetFolder, ->
-
-          pv.setTitle("Unzip...")
-          Unzip.unzip(targetZipFile, installToPath)
-          .on 'finish', ->
-
-            fs.unlink targetZipFile, ->
-              pv.destroy()
-              onFinish()
+    Scaffolder.installFramework()
+    .on 'message', (message) ->
+      pv.setTitle(message)
+    .on 'progress', (progress) ->
+      pv.setProgress(progress)
+    .on 'finish', ->
+      pv.destroy()
