@@ -30,4 +30,4 @@ module.exports =
 
     console.log "#{queue.tasks.length} entries in zip file."
 
-    return queue
+    return queue.execute()

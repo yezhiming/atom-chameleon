@@ -14,8 +14,11 @@ class SequenceTaskQueue extends EventEmitter
     @total = @tasks.length unless @total
 
     if @tasks.length > 0
-      @emit 'progress', (@total - tasks.length) * 100 / @total
+      @emit 'progress', (@total - @tasks.length) * 100 / @total
       task = @tasks.shift()
-      task => @execute(finish)
+      #TODO: task result pass to the next task as parameters
+      task => @execute()
     else
       @emit 'finish'
+
+    return this
