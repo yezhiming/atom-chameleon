@@ -74,13 +74,14 @@ module.exports =
     rimraf targetZipFile, =>
 
       Downloader.download(butterflyURL, targetZipFile)
-      .on 'progress', ->
+      .on 'progress', (progress)->
         pv.setProgress(progress)
-      .on 'finish', =>
-        rimraf targetFolder, =>
+      .on 'finish', ->
+        rimraf targetFolder, ->
 
           pv.setTitle("Unzip...")
-          Unzip.unzip targetZipFile, installToPath, =>
+          Unzip.unzip(targetZipFile, installToPath)
+          .on 'finish', ->
 
             fs.unlink targetZipFile, ->
               pv.destroy()
