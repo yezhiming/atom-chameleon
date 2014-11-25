@@ -10,6 +10,10 @@ ProgressView = require './progress-view'
 RunOnServerView = require './run-on-server-view'
 ServerStatusView = require './server-status-view'
 
+ProjectWizardView = require './scaffold/project-wizard-view'
+
+BowerView = require './scaffold/bower-view'
+
 module.exports =
 
   activate: (state) ->
@@ -35,9 +39,18 @@ module.exports =
 
     @debugServer.stop()
 
-  serialize: ->
-
   cmdDebug: ->
+    # new BowerView().attach()
+    new ProjectWizardView().attach().on 'finish', (result) =>
+      dialog.showOpenDialog {
+        title: 'Select Root Path'
+        defaultPath: atom.project.path
+        properties: ['openDirectory']
+      }, (destPath) =>
+        console.log "ok: #{JSON.stringify(result)}"
+
+  createProject: ->
+
 
   cmdCreateProject: ->
     dialog.showSaveDialog title: 'Create Project', defaultPath: atom.project.path, (destPath) =>
