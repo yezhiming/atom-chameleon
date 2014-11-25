@@ -4,7 +4,11 @@
 // for a full listing of what's available.
 @import "ui-variables";
 
-.chameleon {
+//
+// bootstrap.less最先加载
+// 而且Atom里的static/buttons.less影响了bootstrap .btn的样式
+// 以下样式恢复.btn到bootstrap的设置
+.butterfly {
   .btn.reset-to-bootstrap-default {
     color: #333333;
     background-color: #ffffff;
@@ -21,11 +25,46 @@
     line-height: 20px;
   }
 
-  .c-close {
+  .close-view {
     position: absolute;
     top: 10px; right: 10px;
     font-size: 20px;
   }
+}
+
+.overlay.width-700 {
+  width: 700px; margin-left: -350px;
+}
+
+.template-list {
+  list-style: none;
+  padding-left: 0px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+
+  li {
+    width: 25%;
+    height: 115px;
+    float: left;
+    padding: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border: 10px solid #fff;
+
+    &.selected {
+      background-color: blue;
+    }
+
+    .glyphicon {
+      font-size: 24px;
+      margin-top: 5px; margin-bottom: 10px;
+    }
+    .name {
+      display: block;
+      word-wrap: break-word;
+    }
+  }
+
 }
 
 @-webkit-keyframes rotate {
@@ -33,7 +72,7 @@
   to {-webkit-transform:rotate(360deg);}
 }
 
-#chameleon-server-status {
+#butterfly-server-status {
   span:first-child {
     margin-right: 5px;
   }

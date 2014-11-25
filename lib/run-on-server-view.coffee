@@ -7,10 +7,10 @@ dialog = remote.require 'dialog'
 module.exports =
 class RunOnServerView extends View
   @content: ->
-    @div class: 'chameleon overlay from-top', =>
+    @div class: 'butterfly overlay from-top', =>
       @div =>
         @h1 'Run on Server'
-        @span click: 'destroy', class: 'glyphicon glyphicon-remove c-close'
+        @span click: 'destroy', class: 'glyphicon glyphicon-remove close-view'
 
         @div class: "form-group", =>
           @label 'Select Root Path'
@@ -89,8 +89,4 @@ class RunOnServerView extends View
     @detach()
 
   toggle: ->
-    console.log "RunOnServerView was toggled!"
-    if @hasParent()
-      @detach()
-    else
-      @attach()
+    if @hasParent() then @detach() else @attach()

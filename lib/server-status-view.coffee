@@ -7,7 +7,7 @@ module.exports =
 class ServerStatusView extends View
 
   @content: ->
-    @div click: 'onClick', id: 'chameleon-server-status', class: 'inline-block', =>
+    @div click: 'onClick', id: 'butterfly-server-status', class: 'inline-block', =>
       @span 'HTTP Server'
       @span class: 'glyphicon glyphicon-refresh running', outlet: 'status'
 
