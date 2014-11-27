@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chameleon Exhibition</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta http-equiv="Access-Control-Allow-Origin" content="*"/>
+
+  <meta http-equiv="X-Frame-Options" content="ALLOW-FROM">
+  <meta http-equiv="pragma" content="no-cache" />
+
+  <!-- 3rd part UI ratchet -->
+  <link href="../ratchet/css/ratchet.min.css" rel="stylesheet"/>
+  <!-- butterfly.js UI -->
+  <link href="../butterfly/css/butterfly.css" rel="stylesheet"/>
+  <!-- theme -->
+  <link href="theme.css" rel="stylesheet"/>
+
+  <script type="text/javascript" src="../butterfly/js/require.js" data-main="../butterfly/js/butterfly-amd"></script>
+</head>
+<body>
+
+    <div id="main" data-window="$StackView">
+
+      <div id="main-page" data-view="exhibition/index">
+        <header class="bar bar-nav">
+          <h1 class="title">Welcome</h1>
+        </header>
+        <div class="content">
+          <ul class="table-view">
+            <li class="table-view-cell table-view-divider">组件展示</li>
+            <li class="table-view-cell">
+              <a href="#butterfly-framework/index.html">前端组件</a>
+              <span class="badge">5</span>
+            </li>
+            <li class="table-view-cell">
+              <a href="#cordova/index.html">原生插件</a>
+              <span class="badge">4</span>
+            </li>
+
+            <li class="table-view-cell table-view-divider">实施案例</li>
+            <li class="table-view-cell">
+              <a href="#oa/index.html">移动办公（制造）</a>
+            </li>
+            <li class="table-view-cell">
+              <a href="#cordova/index.html">运行控制（航空）</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+</body>
+</html>

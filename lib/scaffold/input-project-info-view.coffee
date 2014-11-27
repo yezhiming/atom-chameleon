@@ -1,4 +1,4 @@
-{$, EditorView, View} = require 'atom'
+{View} = require 'atom'
 
 module.exports =
 class CreateProjectView extends View
@@ -26,6 +26,6 @@ class CreateProjectView extends View
     @detach()
 
   getResult: ->
-    name: @projectName.text()
+    name: @projectName.val()
     bootstrap: @find('#withBootstrap').is(":checked")
     ratchet: @find('#withRatchet').is(":checked")

@@ -1,0 +1,21 @@
+{
+  "name": "chameleon-exhibition",
+  "dependencies": {
+    "butterfly": "*",
+    "bootstrap": "*",
+    "ratchet": "*"
+  },
+  "exportsOverride": {
+    "butterfly": {
+      "js": "dist/js",
+      "css": "dist/css",
+      "fonts": "dist/fonts",
+      "vendor": "dist/vendor"
+    },
+    "ratchet": {
+      "js": "dist/js",
+      "css": "dist/css",
+      "fonts": "dist/fonts"
+    }
+  }
+}

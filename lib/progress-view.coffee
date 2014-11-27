@@ -1,9 +1,10 @@
-{$, EditorView, View} = require 'atom'
+{View} = require 'atom'
 
 module.exports =
 class ProgressView extends View
   @content: ->
-    @div class: 'overlay from-top', =>
+    @div class: 'butterfly overlay from-top', =>
+      @span click: 'destroy', class: 'glyphicon glyphicon-remove close-view'
       @div class: 'block', style: 'text-align:center', =>
         @h2 outlet: 'title', class: 'block'
         @progress outlet: 'progress', class: '', style: 'width: 90%'

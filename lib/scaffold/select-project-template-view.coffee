@@ -1,4 +1,4 @@
-{$, EditorView, View} = require 'atom'
+{$, View} = require 'atom'
 
 class TemplateTreeView extends View
   @content: ->
@@ -13,7 +13,7 @@ class TemplateTreeView extends View
 class GridView extends View
   @content: ->
     @ul class: 'template-list', =>
-      @li 'data-name': 'butterfly', =>
+      @li 'data-name': 'butterfly', class: 'selected', =>
         @span class: 'glyphicon glyphicon-bold'
         @span class: 'name', 'Butterfly.js'
       @li 'data-name': 'butterfly', =>
@@ -37,7 +37,7 @@ class GridView extends View
     @find('li.selected').data('name')
 
 module.exports =
-class CreateProjectView extends View
+class SelectTemplateView extends View
   @content: ->
     @div =>
       @h1 'Choose a template for your new project:'

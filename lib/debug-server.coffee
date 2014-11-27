@@ -50,5 +50,5 @@ class DebugServer extends EventEmitter
       console.log "socket #{k} destroyed."
       v.destroy()
 
-    @server.close -> console.log "server closed."
+    @server?.close -> console.log "server closed."
     @emit 'stop'

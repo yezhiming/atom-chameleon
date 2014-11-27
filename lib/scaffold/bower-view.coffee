@@ -1,4 +1,4 @@
-{$, View, SelectListView} = require 'atom'
+{View, SelectListView} = require 'atom'
 bower = require 'bower'
 _ = require 'underscore'
 
