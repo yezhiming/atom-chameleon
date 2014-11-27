@@ -10,13 +10,18 @@
   },
   "dependencies": {
     "rimraf": "*",
-    "fs-plus": "^2.0.4",
+    "fs-plus": "*",
+    "ncp": "*",
     "request": "*",
     "underscore": "*",
+    "backbone": "*",
     "mkdirp": "*",
-    "unzip": "*",
     "loophole": "*",
     "express": "*",
-    "bootstrap": "*"
+    "bootstrap": "*",
+    "bower": "*",
+    "adm-zip": "*",
+    "decompress-zip": "*",
+    "q": "*"
   }
 }
