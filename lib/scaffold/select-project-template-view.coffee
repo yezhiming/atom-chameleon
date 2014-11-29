@@ -39,10 +39,11 @@ class GridView extends View
 module.exports =
 class SelectTemplateView extends View
   @content: ->
-    @div =>
-      @h1 'Choose a template for your new project:'
+    @div id: 'project-template-chooser', =>
+      @h2 'Choose a template for your new project:'
       @div =>
         @subview 'gridView', new GridView()
+      @div 'Web Framework from best practice, MVC based on Backbone.js, structure code using Require.js', class: 'description'
 
   attachTo: (parentView)->
     parentView.append(this)
