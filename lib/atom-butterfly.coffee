@@ -19,6 +19,8 @@ module.exports =
     atom.workspaceView.command "atom-butterfly:create-project", => @cmdCreateProject()
     atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
 
+    atom.workspaceView.command "atom-butterfly:emulator", =>@cmdLaunchEmulator()
+
   deactivate: ->
     @runOnServerView?.destroy()
     @serverStatusView?.destroy()
@@ -119,3 +121,14 @@ module.exports =
     @debugServer = new DebugServer()
     @debugServer.on 'start', => @serverStatusView.attach()
     @debugServer.on 'stop', => @serverStatusView.detach()
+
+  cmdLaunchEmulator: ->
+
+    createEmulatorView = =>
+      if @emulatorView
+        return @emulatorView
+      else
+        EmulatorView = require './emulator/emulator-view'
+        @emulatorView = new EmulatorView()
+
+    createEmulatorView().toggle()

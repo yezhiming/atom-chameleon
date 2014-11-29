@@ -28,6 +28,10 @@
           'label': 'Debug this'
           'command': 'atom-butterfly:debug'
         }
+        {
+          'label': 'Launch Emulator'
+          'command': 'atom-butterfly:emulator'
+        }
       ]
     ]
   }

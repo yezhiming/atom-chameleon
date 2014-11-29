@@ -1,0 +1,49 @@
+@import "ui-variables";
+
+.emulator-view {
+
+  .device {
+    width: 390px; height: 813px;
+    background-image: url('atom://atom-butterfly/images/device.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    position: relative;
+
+    top: 36px;
+  }
+
+  .content {
+    position: absolute;
+    border: none;
+    top: 116px;
+    left: 36px;
+    width: 320px;
+    height: 569px;
+    overflow: hidden;
+    background-color: #fff;
+  }
+
+  .control {
+    position: relative;
+    top: 36px;
+  }
+
+  .resize-handle{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    cursor: col-resize;
+    z-index: 3;
+  }
+
+  &[data-show-on-left-side='true'] .resize-handle {
+    right: -5px;
+  }
+
+  &[data-show-on-left-side='false'] .resize-handle {
+    left: -5px;
+  }
+
+
+}
