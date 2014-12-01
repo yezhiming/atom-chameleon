@@ -1,9 +1,9 @@
 {
   "name": "atom-butterfly",
   "main": "./lib/atom-butterfly",
-  "version": "0.0.0",
-  "description": "A short description of your package",
-  "repository": "https://github.com/atom/atom-butterfly",
+  "version": "0.1.0",
+  "description": "Atom package for Butterfly.js Development",
+  "repository": "https://github.com/yezhiming/atom-butterfly",
   "license": "MIT",
   "engines": {
     "atom": ">0.50.0"
