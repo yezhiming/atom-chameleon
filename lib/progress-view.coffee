@@ -9,11 +9,14 @@ class ProgressView extends View
         @h2 outlet: 'title', class: 'block'
         @progress outlet: 'progress', class: '', style: 'width: 90%'
 
+  initialize: (title)->
+    @setTitle(title)
+
   attach: ->
     atom.workspaceView.append(this)
 
   destroy: ->
-    console.log 'loading view destroy.'
+    console.log 'progress view destroy.'
     @detach()
 
   setIndeterminate: ->

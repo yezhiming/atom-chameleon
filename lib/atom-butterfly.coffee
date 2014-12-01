@@ -1,14 +1,9 @@
-remote = require 'remote'
-dialog = remote.require 'dialog'
-
-Scaffolder = require './scaffold'
-
 ProgressView = require './progress-view'
-
 _ = require 'underscore'
 
-Q = require 'q'
-Q.longStackSupport = true
+# for debug properse only, it will add many ms to startup time.
+# Q = require 'q'
+# Q.longStackSupport = true
 
 module.exports =
 
@@ -38,6 +33,7 @@ module.exports =
 
     projectWizardView.on 'finish', (options) =>
 
+      dialog = require('remote').require 'dialog'
       dialog.showOpenDialog
         title: 'Select Root Path'
         defaultPath: atom.project.path
@@ -51,9 +47,8 @@ module.exports =
 
         projectWizardView.destroy()
 
-        pv = new ProgressView(this)
+        pv = new ProgressView("Create Project...")
         pv.attach()
-        pv.setTitle "Create Project..."
 
         {createProjectPromise} = require './scaffold'
 
@@ -79,11 +74,10 @@ module.exports =
 
   cmdInstall: ->
 
-    pv = new ProgressView(this)
+    pv = new ProgressView("Install Butterfly.js...")
     pv.attach()
 
-    pv.setTitle("Install Butterfly.js...")
-
+    Scaffolder = require './scaffold'
     Scaffolder.installFrameworkPromise()
     .progress (progress)->
       pv.setTitle(progress.message) if progress.message
@@ -130,11 +124,8 @@ module.exports =
 
   cmdLaunchEmulator: ->
 
-    createEmulatorView = =>
-      if @emulatorView
-        return @emulatorView
-      else
-        EmulatorView = require './emulator/emulator-view'
-        @emulatorView = new EmulatorView()
+    unless @emulatorView?
+      EmulatorView = require './emulator/emulator-view'
+      @emulatorView = new EmulatorView()
 
-    createEmulatorView().toggle()
+    @emulatorView.toggle()

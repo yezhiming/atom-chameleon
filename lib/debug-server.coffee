@@ -1,4 +1,5 @@
 {EventEmitter} = require 'events'
+path = require 'path'
 _ = require 'underscore'
 
 {allowUnsafeEval} = require 'loophole'
@@ -22,10 +23,10 @@ class DebugServer extends EventEmitter
             res.send 404
 
     # NOTE: redirect to index.html, but express just works without it, -_-
-    # else
-    #   app.get '/', (req, res) =>
-    #     console.log "http server get '/', without pushState"
-    #     res.redirect @selectedIndexFile.text()
+    else
+      app.get '/', (req, res) =>
+        console.log "http server get '/', without pushState"
+        res.sendFile path.resolve(options.defaultPage)
 
     if options.api
       api = allowUnsafeEval -> require options.api
