@@ -1,5 +1,9 @@
 {View} = require 'atom'
 
+#
+# using webview tag:
+# https://github.com/atom/atom-shell/blob/master/docs/api/web-view-tag.md
+#
 module.exports =
 class EmulatorView extends View
   @content: ->
