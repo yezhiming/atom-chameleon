@@ -1,4 +1,4 @@
-{View} = require 'atom'
+{View, EditorView} = require 'atom'
 
 module.exports =
 class CreateProjectView extends View
@@ -7,7 +7,7 @@ class CreateProjectView extends View
       @h1 'Choose options for your new project:'
       @div class: "form-group", =>
         @label 'Project Name:'
-        @input outlet: 'projectName', class: 'form-control'
+        @subview 'editor', new EditorView(mini: true)
 
       @div class: "checkbox", =>
         @label =>
@@ -21,11 +21,12 @@ class CreateProjectView extends View
 
   attachTo: (parentView)->
     parentView.append(this)
+    @editor.focus()
 
   destroy: ->
     @detach()
 
   getResult: ->
-    name: @projectName.val()
+    name: @editor.getText()
     bootstrap: @find('#withBootstrap').is(":checked")
     ratchet: @find('#withRatchet').is(":checked")

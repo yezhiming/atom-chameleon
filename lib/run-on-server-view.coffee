@@ -1,6 +1,6 @@
 path = require 'path'
 fs = require 'fs-plus'
-{View} = require 'atom'
+{View, EditorView} = require 'atom'
 remote = require 'remote'
 dialog = remote.require 'dialog'
 
@@ -36,7 +36,7 @@ class RunOnServerView extends View
 
         @div class: "form-group", =>
           @label 'http port'
-          @input outlet: 'httpPort', class: 'form-control'
+          @subview 'httpPort', new EditorView(mini: true)
 
         @div class: "checkbox", =>
           @label =>
@@ -52,7 +52,7 @@ class RunOnServerView extends View
     fs.exists path.resolve(atom.project.path, 'index.html'), (exists)=>
       @selectedIndexFile.text 'index.html' if exists
 
-    @httpPort.val 3000
+    @httpPort.setText "3000"
 
   onSelectRootPath: ->
 
@@ -92,7 +92,7 @@ class RunOnServerView extends View
   onClickRun: ->
     rootPath = path.resolve(atom.project.path, @selectedRootPath.text())
     destPath = path.resolve(atom.project.path, @selectedIndexFile.text())
-    httpPort = parseInt @httpPort.val()
+    httpPort = parseInt @httpPort.getText()
     pushState = @find('#usingPushState').is(":checked")
     apiScript = if @customAPIFile.text() then path.resolve(atom.project.path, @customAPIFile.text()) else null
 
