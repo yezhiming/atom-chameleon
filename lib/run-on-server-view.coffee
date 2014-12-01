@@ -26,6 +26,14 @@ class RunOnServerView extends View
             @span class: 'input-group-btn', =>
               @button 'Select', class: 'btn btn-default reset-to-bootstrap-default', type: 'button', click: 'onSelectIndex'
 
+        #TODO: proxy api
+        @div class: "form-group", =>
+          @label 'Select Custom API'
+          @div class: "input-group", =>
+            @div outlet: 'customAPIFile', class: 'form-control'
+            @span class: 'input-group-btn', =>
+              @button 'Select', class: 'btn btn-default reset-to-bootstrap-default', type: 'button', click: 'onSelectAPI'
+
         @div class: "form-group", =>
           @label 'http port'
           @input outlet: 'httpPort', class: 'form-control'
@@ -70,15 +78,27 @@ class RunOnServerView extends View
       #note: use val method for input tag
       @selectedIndexFile.text path.relative(atom.project.path, destPath[0]) if destPath
 
+  onSelectAPI: ->
+
+    dialog.showOpenDialog {
+      title: 'Custom API Script'
+      defaultPath: atom.project.path
+      filters: [{name: "js_coffee", extensions: ['js', 'coffee']}]
+      properties: ['openFile']
+    }, (destPath) =>
+
+      @customAPIFile.text path.relative(atom.project.path, destPath[0]) if destPath
+
   onClickRun: ->
     rootPath = path.resolve(atom.project.path, @selectedRootPath.text())
     destPath = path.resolve(atom.project.path, @selectedIndexFile.text())
     httpPort = parseInt @httpPort.val()
     pushState = @find('#usingPushState').is(":checked")
+    apiScript = if @customAPIFile.text() then path.resolve(atom.project.path, @customAPIFile.text()) else null
 
     #TODO: validation
 
-    @trigger 'createServer', [rootPath, destPath, httpPort, pushState]
+    @trigger 'createServer', [rootPath, destPath, httpPort, pushState, apiScript]
 
     @destroy()
 

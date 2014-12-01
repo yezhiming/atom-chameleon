@@ -10,7 +10,7 @@ class EmulatorView extends View
         @span click: 'destroy', class: 'glyphicon glyphicon-remove'
 
       @div class: 'device', =>
-        @iframe class: 'content'
+        @tag 'webview', outlet: 'webview', class: 'device-content'
 
       @div class: 'control', =>
         @form class: 'form-inline', role: 'form', =>
@@ -18,6 +18,7 @@ class EmulatorView extends View
           @div class: 'block', =>
             @button 'Open with Chrome', class: 'btn btn-primary inline-block-tight', click: 'onClickChrome'
             @button 'Open with iOS Emulator', class: 'btn btn-primary inline-block-tight', click: 'onClickIOSSimulator'
+            @button 'Debug', class: 'btn btn-primary inline-block-tight', click: 'onClickDebug'
 
   initialize: (serializeState) ->
     #换另外一边时用到 添加一个观察者
@@ -34,7 +35,7 @@ class EmulatorView extends View
     else
       atom.workspaceView.appendToRight(this)
 
-    @onClickRefresh()
+    @setTargetUrl()
 
   destroy: ->
     @detach()
@@ -45,15 +46,19 @@ class EmulatorView extends View
   getTargetUrl: ->
     @url.text()
 
-  setTargetUrl: (url = 'http://localhost:3000')->
-    @find('iframe').attr('src', url)
+  setTargetUrl: (url)->
+    @find('webview').attr('src', url)
 
   onClickAddressBar: ->
     #TODO: launch mini editor
 
   onClickRefresh: ->
+    console.log "refresh"
     @setTargetUrl(@url.text())
-    # @find('iframe').reload()
+    # @webview[0].reload()
+
+  onClickDebug: ->
+    @webview[0].openDevTools() unless @webview[0].isDevToolsOpened()
 
   onClickChrome: ->
     {exec} = require 'child_process'

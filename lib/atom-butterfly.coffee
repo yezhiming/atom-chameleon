@@ -106,8 +106,14 @@ module.exports =
     RunOnServerView = require './run-on-server-view'
     @runOnServerView = new RunOnServerView()
     @runOnServerView.attach()
-    @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState)=>
-      @debugServer.start(rootPath, destPath, httpPort, pushState)
+    @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState, api)=>
+      @debugServer.start {
+        rootPath: rootPath
+        defaultPage: destPath
+        httpPort: httpPort
+        pushState: pushState
+        api: api
+      }
 
   _setupDebugServer: ->
 

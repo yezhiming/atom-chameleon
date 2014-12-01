@@ -10,3 +10,4 @@
 '.workspace':
   'ctrl-alt-o': 'atom-butterfly:toggle'
   'ctrl-alt-e': 'atom-butterfly:emulator'
+  'ctrl-alt-r': 'atom-butterfly:run-on-server'
