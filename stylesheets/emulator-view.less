@@ -1,15 +1,48 @@
 @import "ui-variables";
 
+@emulator-view-width: 390px;
+@nav-height: 36px;
+
 .emulator-view {
+  overflow: scroll;
+
+  .nav {
+    position: absolute;
+    z-index: 2;
+    width: @emulator-view-width;
+    line-height: @nav-height;
+    color: gray;
+    background-color: rgb(51, 51, 51);
+
+    font-size: 16px;
+
+    .glyphicon-refresh {
+      position: absolute;
+      left: 0px;
+      line-height: @nav-height;
+      margin: 0px 5px;
+    }
+
+    .address {
+      margin-left: 30px;
+    }
+
+    .glyphicon-remove {
+      position: absolute;
+      right: 0px;
+      line-height: @nav-height;
+      margin: 0px 5px;
+    }
+  }
 
   .device {
-    width: 390px; height: 813px;
+    width: @emulator-view-width; height: 813px;
     background-image: url('atom://atom-butterfly/images/device.png');
     background-size: 100%;
     background-repeat: no-repeat;
     position: relative;
 
-    top: 36px;
+    top: @nav-height;
   }
 
   .content {

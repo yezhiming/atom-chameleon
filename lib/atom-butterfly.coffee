@@ -111,16 +111,16 @@ module.exports =
 
   _setupDebugServer: ->
 
-    return unless @serverStatusView and @debugServer
+    unless @serverStatusView and @debugServer
 
-    ServerStatusView = require './server-status-view'
-    @serverStatusView = new ServerStatusView()
-    @serverStatusView.on 'stopServer', => @debugServer.stop()
+      ServerStatusView = require './server-status-view'
+      @serverStatusView = new ServerStatusView()
+      @serverStatusView.on 'stopServer', => @debugServer.stop()
 
-    DebugServer = require './debug-server'
-    @debugServer = new DebugServer()
-    @debugServer.on 'start', => @serverStatusView.attach()
-    @debugServer.on 'stop', => @serverStatusView.detach()
+      DebugServer = require './debug-server'
+      @debugServer = new DebugServer()
+      @debugServer.on 'start', => @serverStatusView.attach()
+      @debugServer.on 'stop', => @serverStatusView.detach()
 
   cmdLaunchEmulator: ->
 
