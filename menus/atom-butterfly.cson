@@ -3,6 +3,7 @@
   'atom-text-editor': [
 
   ]
+
 'menu': [
   {
     'label': 'Packages'
@@ -24,6 +25,10 @@
         {
           'label': 'Launch Emulator'
           'command': 'atom-butterfly:emulator'
+        }
+        {
+          'label': 'Package'
+          'command': 'atom-butterfly:list-package'
         }
       ]
     ]
