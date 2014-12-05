@@ -1,3 +1,7 @@
+fs = require 'fs-plus'
+path = require 'path'
+Q = require 'q'
+
 module.exports =
 class PackageManager
 
@@ -12,13 +16,29 @@ class PackageManager
     @packageListView?.destroy?()
 
   cmdCreatePackage: ->
-    unless @packageWizardView?
-      PWV = require('./package-wizard-view')
-      @packageWizardView = new PWV()
+    @packageWizardView = new (require('./package-wizard-view'))() unless @packageWizardView?
     @packageWizardView.attach()
+    @packageWizardView.on 'finish', (options) =>
+      @packageWizardView.destroy()
+
+      package_path = path.resolve atom.project.path, options.name
+      Q.nfcall fs.mkdir, package_path
+      .then -> Q.nfcall(fs.copy, options.icon_path, "#{package_path}/icon.png") if options.icon_path
+      .then ->
+        Q.promise (resolve, reject, notify)->
+          ws = fs.createWriteStream "#{package_path}/package.json"
+          ws.write """
+          {
+            "name": "#{options.title}",
+            "identifier": "#{options.identifier}",
+            "version": "#{options.version}",
+            "description": "#{options.description}"
+          }
+          """, (err)->
+            if err then resolve() else reject(err)
+      .catch (err)->
+        alert(JSON.stringfiy err)
 
   listPackage: ->
-    unless @packageListView?
-      PLV = require('./package-list-view')
-      @packageListView = new PLV()
+    @packageListView = new (require('./package-list-view'))() unless @packageListView?
     @packageListView.attach()
