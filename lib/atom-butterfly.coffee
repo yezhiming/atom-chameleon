@@ -7,14 +7,27 @@ _ = require 'underscore'
 
 module.exports =
 
+  configDefaults:
+    chameleonServerAddress: 'http://localhost'
+    tanant: ""
+    username: ""
+
   activate: (state) ->
-    atom.workspaceView.command "atom-butterfly:install", => @cmdInstall()
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
 
+    #New
     atom.workspaceView.command "atom-butterfly:create-project", => @cmdCreateProject()
-    atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
+    atom.workspaceView.command "atom-butterfly:create-package", => @cmdCreatePackage()
+    atom.workspaceView.command "atom-butterfly:create-file", => @cmdCreateFile()
 
-    atom.workspaceView.command "atom-butterfly:emulator", =>@cmdLaunchEmulator()
+    #Product
+    atom.workspaceView.command "atom-butterfly:install", => @cmdInstall()
+    atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
+    atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
+
+    #publish
+    atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
+    atom.workspaceView.command "atom-chameleon:publish-package", => @cmdPublishPackage()
 
   deactivate: ->
     @runOnServerView?.destroy()
@@ -23,8 +36,10 @@ module.exports =
     @debugServer?.stop()
 
   cmdDebug: ->
-    BowerView = require './scaffold/bower-view'
-    new BowerView().attach()
+    # BowerView = require './scaffold/bower-view'
+    # new BowerView().attach()
+    webview = document.querySelector('webview')
+    webview.openDevTools() unless webview.isDevToolsOpened()
 
   cmdCreateProject: ->
 
@@ -63,15 +78,6 @@ module.exports =
         .finally ->
           pv.destroy()
 
-        # Scaffolder.createProject(options)
-        # .on 'message', (message) ->
-        #   pv.setTitle(message)
-        # .on 'progress', (progress) ->
-        #   pv.setProgress(progress)
-        # .on 'finish', ->
-        #   pv.destroy()
-        #   atom.open {pathsToOpen: [destPath]}
-
   cmdInstall: ->
 
     pv = new ProgressView("Install Butterfly.js...")
@@ -84,14 +90,6 @@ module.exports =
       pv.setProgress(progress.progress) if progress.progress
     .then ->
       pv.destroy()
-
-    # Scaffolder.installFramework()
-    # .on 'message', (message) ->
-    #   pv.setTitle(message)
-    # .on 'progress', (progress) ->
-    #   pv.setProgress(progress)
-    # .on 'finish', ->
-    #   pv.destroy()
 
   cmdRunOnServer: ->
 
@@ -129,3 +127,7 @@ module.exports =
       @emulatorView = new EmulatorView()
 
     @emulatorView.toggle()
+
+  cmdPublishApplication: ->
+
+    
