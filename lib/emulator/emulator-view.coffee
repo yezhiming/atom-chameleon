@@ -25,7 +25,7 @@ class EmulatorView extends View
             @button 'Debug', class: 'btn btn-primary inline-block-tight', click: 'onClickDebug'
 
   initialize: (serializeState) ->
-    #换另外一边时用到 添加一个观察者
+    #observe tree-view side toggle event
     @subscribe atom.config.observe 'tree-view.showOnRightSide', callNow: false, (newValue) =>
       @detach()
       @attach()
@@ -62,7 +62,8 @@ class EmulatorView extends View
     # @webview[0].reload()
 
   onClickDebug: ->
-    @webview[0].openDevTools() unless @webview[0].isDevToolsOpened()
+    webview = document.querySelector('webview')
+    webview.openDevTools() unless webview.isDevToolsOpened()
 
   onClickChrome: ->
     {exec} = require 'child_process'
