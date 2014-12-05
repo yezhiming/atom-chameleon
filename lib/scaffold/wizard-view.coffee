@@ -34,16 +34,19 @@ class WizardView extends View
     @order = 0 #current flow order
     @result = {} #result collector
 
-  _refresh: ->
+  _refresh: (previous_result)->
     # disable 'Previous' Button on the first flow
     @previous.prop 'disabled', @order == 0
     # disable 'Next' Button on the last flow + 1
     @next.prop 'disabled', @order == @constructor.flow.length
 
     @currentView.destroy() if @currentView
-    View = @constructor.flow[@order]
+
+    nextFlow = @constructor.flow[@order]
+    View = nextFlow(previous_result)
+
     @currentView = new View(this)
-    @currentView.attachTo(@contentView)
+    if @currentView.attachTo? @currentView.attachTo(@contentView) else @contentView.append(@currentView)
 
   onClickPrevious: ->
     @order--

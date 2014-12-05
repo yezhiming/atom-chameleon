@@ -7,6 +7,6 @@ module.exports =
 class CreateProjectWizardView extends WizardView
 
   @flow: [
-    SelectProjectTemplateView
-    InputProjectInfoView
+    -> SelectProjectTemplateView
+    -> InputProjectInfoView
   ]
