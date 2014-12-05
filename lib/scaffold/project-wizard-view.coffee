@@ -1,4 +1,4 @@
-WizardView = require './wizard-view'
+WizardView = require '../utils/wizard-view'
 
 SelectProjectTemplateView = require './select-project-template-view'
 InputProjectInfoView = require './input-project-info-view'

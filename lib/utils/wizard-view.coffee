@@ -46,7 +46,7 @@ class WizardView extends View
     View = nextFlow(previous_result)
 
     @currentView = new View(this)
-    if @currentView.attachTo? @currentView.attachTo(@contentView) else @contentView.append(@currentView)
+    if @currentView.attachTo then @currentView.attachTo(@contentView) else @contentView.append(@currentView)
 
   onClickPrevious: ->
     @order--
