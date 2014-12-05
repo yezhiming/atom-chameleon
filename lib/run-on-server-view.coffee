@@ -106,7 +106,7 @@ class RunOnServerView extends View
     atom.workspaceView.append(this)
 
   destroy: ->
-    @detach()
+    @remove()
 
   toggle: ->
     if @hasParent() then @detach() else @attach()

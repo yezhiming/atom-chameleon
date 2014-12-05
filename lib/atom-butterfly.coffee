@@ -130,4 +130,5 @@ module.exports =
 
   cmdPublishApplication: ->
 
-    
+    PublishAppView = require './build/publish-wizard-view'
+    new PublishAppView().attach()

@@ -1,10 +1,7 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
   'atom-text-editor': [
-    {
-      'label': 'Toggle atom-butterfly'
-      'command': 'atom-butterfly:toggle'
-    }
+
   ]
 'menu': [
   {
@@ -25,14 +22,66 @@
           'command': 'atom-butterfly:run-on-server'
         }
         {
-          'label': 'Debug this'
-          'command': 'atom-butterfly:debug'
-        }
-        {
           'label': 'Launch Emulator'
           'command': 'atom-butterfly:emulator'
         }
       ]
+    ]
+  }
+  {
+    'label': 'Chameleon'
+    'submenu': [
+      {
+        'label': 'New'
+        'submenu': [
+          {
+            'label': 'Porject...'
+            'command': 'atom-butterfly:create-project'
+          }
+          {
+            'label': 'Package...'
+            'command': 'atom-butterfly:create-package'
+          }
+          {
+            'label': 'File...'
+            'command': 'atom-butterfly:create-file'
+          }
+        ]
+      }
+      {
+        'label': 'Product'
+        'submenu': [
+          {
+            'label': 'Run on debug server'
+            'command': 'atom-butterfly:run-on-server'
+          }
+          {
+            'label': 'Launch Emulator'
+            'command': 'atom-butterfly:emulator'
+          }
+          {
+            'label': 'Install/Upgrade Butterfly.js'
+            'command': 'atom-butterfly:install'
+          }
+        ]
+      }
+      {
+        'label': 'Publish'
+        'submenu': [
+          {
+            'label': 'Mobile Application'
+            'command': 'atom-chameleon:publish-application'
+          }
+          {
+            'label': 'Package'
+            'command': 'atom-chameleon:publish-package'
+          }
+        ]
+      }
+      {
+        'label': 'Settings'
+        'command': 'atom-chameleon:settings'
+      }
     ]
   }
 ]

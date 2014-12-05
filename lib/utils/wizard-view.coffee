@@ -40,7 +40,7 @@ class WizardView extends View
     # disable 'Next' Button on the last flow + 1
     @next.prop 'disabled', @order == @constructor.flow.length
 
-    @currentView.destroy() if @currentView
+    @currentView?.destroy?()
 
     nextFlow = @constructor.flow[@order]
     View = nextFlow(previous_result)
@@ -58,7 +58,7 @@ class WizardView extends View
 
     if @order < @constructor.flow.length - 1
       @order++
-      @_refresh()
+      @_refresh(@currentView.getResult())
     else
       @emit 'finish', @result
 
@@ -68,4 +68,4 @@ class WizardView extends View
     return this
 
   destroy: ->
-    @detach()
+    @remove()
