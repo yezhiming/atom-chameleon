@@ -16,6 +16,21 @@ module.exports =
 
     atom.workspaceView.command "atom-butterfly:emulator", =>@cmdLaunchEmulator()
 
+    atom.workspaceView.command "atom-butterfly:createModule", =>@createModule()
+
+    atom.workspaceView.command "atom-butterfly:list-package", => @listPackage()
+
+    atom.contextMenu.add {
+      '.tree-view-scroller .directory .header.list-item': [
+        {
+          'label': 'Create New Module'
+          'command': 'atom-butterfly:createModule'
+          'created': ->
+            console.log(event)
+        }
+      ]
+    }
+
   deactivate: ->
     @runOnServerView?.destroy()
     @serverStatusView?.destroy()
@@ -71,6 +86,11 @@ module.exports =
         # .on 'finish', ->
         #   pv.destroy()
         #   atom.open {pathsToOpen: [destPath]}
+
+
+  createModule: ->
+    CreateModuleView = require "./scaffold/module-wizard-view"
+    view = new CreateModuleView().attach()
 
   cmdInstall: ->
 
@@ -129,3 +149,9 @@ module.exports =
       @emulatorView = new EmulatorView()
 
     @emulatorView.toggle()
+
+  listPackage: ->
+    unless @packageListView?
+      PackageListView = require './package-list-view'
+      @packageListView = new PackageListView()
+    @packageListView.attach()
