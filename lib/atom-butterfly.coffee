@@ -13,11 +13,15 @@ module.exports =
     username: ""
 
   activate: (state) ->
+    PM = new require('./package/manager')
+    @packageManager = new PM()
+    @packageManager.activate()
+
+
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
 
     #New
     atom.workspaceView.command "atom-butterfly:create-project", => @cmdCreateProject()
-    atom.workspaceView.command "atom-butterfly:create-package", => @cmdCreatePackage()
     atom.workspaceView.command "atom-butterfly:create-file", => @cmdCreateFile()
 
     #Product
@@ -27,11 +31,8 @@ module.exports =
 
     #publish
     atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
-    atom.workspaceView.command "atom-chameleon:publish-package", => @cmdPublishPackage()
 
     atom.workspaceView.command "atom-butterfly:createModule", =>@createModule()
-
-    atom.workspaceView.command "atom-butterfly:list-package", => @listPackage()
 
     atom.contextMenu.add {
       '.tree-view-scroller .directory .header.list-item': [
@@ -150,9 +151,3 @@ module.exports =
 
     PublishAppView = require './build/publish-wizard-view'
     new PublishAppView().attach()
-
-  listPackage: ->
-    unless @packageListView?
-      PackageListView = require './package-list-view'
-      @packageListView = new PackageListView()
-    @packageListView.attach()

@@ -68,4 +68,4 @@ class WizardView extends View
     return this
 
   destroy: ->
-    @remove()
+    @detach()
