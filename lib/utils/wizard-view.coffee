@@ -14,6 +14,7 @@ class WizardView extends View
   @content: ->
     @div class: 'butterfly overlay from-top', =>
 
+      # content view of each step, insert here
       @div outlet: 'contentView', class: 'content'
 
       @div class: 'actions', =>
@@ -28,7 +29,7 @@ class WizardView extends View
   initialize: ->
     throw new Error('@flow must be specified.') unless @constructor.flow
 
-    #multi inheritance...
+    # mixin
     _.extend this, EventEmitter.prototype
 
     @order = 0 #current flow order
@@ -54,7 +55,7 @@ class WizardView extends View
 
   onClickNext: ->
     #collect result into @result object
-    _.extend @result, @currentView.getResult()
+    _.extend @result, @currentView.getResult() if @currentView.getResult
 
     if @order < @constructor.flow.length - 1
       @order++
@@ -69,3 +70,9 @@ class WizardView extends View
 
   destroy: ->
     @detach()
+
+  enableNext: ->
+    @next.prop 'disabled', false
+
+  disableNext: ->
+    @next.prop 'disabled', true
