@@ -1,8 +1,9 @@
 ProgressView = require './progress-view'
 _ = require 'underscore'
+{openDirectory} = require('./utils/dialog')
 
 # for debug properse only, it will add many ms to startup time.
-# Q = require 'q'
+Q = require 'q'
 # Q.longStackSupport = true
 
 module.exports =
@@ -60,38 +61,39 @@ module.exports =
 
     ProjectWizardView = require './project/project-wizard-view'
     projectWizardView = new ProjectWizardView().attach()
+    pv = new ProgressView("Create Project...")
 
-    projectWizardView.on 'finish', (options) =>
+    projectWizardView.finishPromise()
+    # select dest path
+    .then (options) ->
+      # composite promise combine result with previous result
+      openDirectory(title: 'Select Path')
+      .then (destPath) -> Q(_.extend(options, path: destPath[0]))
 
-      dialog = require('remote').require 'dialog'
-      dialog.showOpenDialog
-        title: 'Select Root Path'
-        defaultPath: atom.project.path
-        properties: ['openDirectory']
-      , (destPath) =>
+    # do UI stuffs
+    .then (options)->
+      projectWizardView.destroy()
+      pv.attach()
 
-        return unless destPath
+      Q(options)
 
-        #merge destPath to options
-        _.extend(options, path: destPath[0])
+    # create project with options
+    .then (options) ->
+      {createProjectPromise} = require './project/scaffold'
+      createProjectPromise(options)
 
-        projectWizardView.destroy()
+    # open new project
+    .then (projectPath)->
+      atom.open {pathsToOpen: [projectPath]}
 
-        pv = new ProgressView("Create Project...")
-        pv.attach()
-
-        {createProjectPromise} = require './project/scaffold'
-
-        createProjectPromise(options)
-        .progress (progress)->
-          pv.setTitle(progress.message) if progress.message
-          pv.setProgress(progress.progress) if progress.progress
-        .then (projectPath)->
-          atom.open {pathsToOpen: [projectPath]}
-        .catch (error) ->
-          console.trace error.stack
-        .finally ->
-          pv.destroy()
+    .progress (progress)->
+      pv.setTitle(progress.message) if progress.message
+      pv.setProgress(progress.progress) if progress.progress
+    .catch (error) ->
+      console.trace error.stack
+      alert('error occur!')
+    .finally ->
+      pv.destroy()
 
   createModule: ->
     CreateModuleView = require "./scaffold/module-wizard-view"

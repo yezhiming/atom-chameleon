@@ -4,6 +4,8 @@ _ = require 'underscore'
 {View} = require 'atom'
 {EventEmitter} = require 'events'
 
+Q = require 'q'
+
 # Extending classes must implement a `@flow` method.
 # class MyWizardView extends WizardView
 #   @flow: ->
@@ -76,3 +78,7 @@ class WizardView extends View
 
   disableNext: ->
     @next.prop 'disabled', true
+
+  finishPromise: ->
+    Q.Promise (resolve, reject, notify) =>
+      @on 'finish', (result) -> resolve(result)
