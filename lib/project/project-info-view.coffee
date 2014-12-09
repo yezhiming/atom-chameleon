@@ -1,7 +1,7 @@
 {View, EditorView} = require 'atom'
 
 module.exports =
-class CreateProjectView extends View
+class ProjectInfoView extends View
   @content: ->
     @div =>
       @h1 'Choose options for your new project:'

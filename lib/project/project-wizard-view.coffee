@@ -5,7 +5,7 @@ class ProjectWizardView extends WizardView
 
   @flow: [
     -> require './project-template-chooser-view'
-    -> require './input-project-info-view'
+    -> require './project-info-view'
   ]
 
   initialize: ->
