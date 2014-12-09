@@ -37,7 +37,7 @@ class GridView extends View
     @find('li.selected').data('name')
 
 module.exports =
-class SelectTemplateView extends View
+class TemplateChooserView extends View
   @content: ->
     @div id: 'project-template-chooser', =>
       @h2 'Choose a template for your new project:'

@@ -1,12 +1,12 @@
 WizardView = require '../utils/wizard-view'
 
-SelectProjectTemplateView = require './select-project-template-view'
-InputProjectInfoView = require './input-project-info-view'
-
 module.exports =
-class CreateProjectWizardView extends WizardView
+class ProjectWizardView extends WizardView
 
   @flow: [
-    -> SelectProjectTemplateView
-    -> InputProjectInfoView
+    -> require './project-template-chooser-view'
+    -> require './input-project-info-view'
   ]
+
+  initialize: ->
+    super
