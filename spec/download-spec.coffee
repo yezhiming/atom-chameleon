@@ -1,5 +1,5 @@
 {WorkspaceView} = require 'atom'
-fs = require 'fs-plus'
+fs = require 'fs'
 
 {downloadPromise} = require '../lib/utils/download'
 

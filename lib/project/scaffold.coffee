@@ -1,10 +1,7 @@
 {EventEmitter} = require 'events'
 
 path = require 'path'
-fs = require 'fs-plus'
-mkdirp = require 'mkdirp'
-rimraf = require 'rimraf'
-ncp = require 'ncp'
+fs = require 'fs-extra'
 
 Q = require 'q'
 
@@ -21,9 +18,9 @@ module.exports =
     scaffoldPath = "#{packagePath}/scaffold"
 
     #promises
-    copyProject = -> Q.nfcall(ncp, "#{scaffoldPath}/butterfly-project", destPath)
-    copyRatchet = -> Q.nfcall(ncp, "#{scaffoldPath}/ratchet", "#{destPath}/ratchet") if options.ratchet
-    copyBootstrap = -> Q.nfcall(ncp, "#{scaffoldPath}/bootstrap", "#{destPath}/bootstrap") if options.bootstrap
+    copyProject = -> Q.nfcall(fs.copy, "#{scaffoldPath}/butterfly-project", destPath)
+    copyRatchet = -> Q.nfcall(fs.copy, "#{scaffoldPath}/ratchet", "#{destPath}/ratchet") if options.ratchet
+    copyBootstrap = -> Q.nfcall(fs.copy, "#{scaffoldPath}/bootstrap", "#{destPath}/bootstrap") if options.bootstrap
     installFramework = -> module.exports.installFrameworkPromise(destPath)
 
     #flow
@@ -39,8 +36,8 @@ module.exports =
     targetZipFile = path.resolve(installToPath, 'butterfly.zip')
 
     #promises
-    deleteZip = -> Q.nfcall(rimraf, targetZipFile)
-    deleteFramework = -> Q.nfcall(rimraf, targetFolder)
+    deleteZip = -> Q.nfcall(fs.remove, targetZipFile)
+    deleteFramework = -> Q.nfcall(fs.remove, targetFolder)
     unzipFramework = -> unzip(targetZipFile, installToPath)
     downloadZip = ->
       #proxy the downloadPromise, transfer the indeterminate progress into message progress

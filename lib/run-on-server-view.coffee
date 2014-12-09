@@ -1,5 +1,5 @@
 path = require 'path'
-fs = require 'fs-plus'
+fs = require 'fs'
 {View, EditorView} = require 'atom'
 remote = require 'remote'
 dialog = remote.require 'dialog'

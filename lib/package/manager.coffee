@@ -1,4 +1,4 @@
-fs = require 'fs-plus'
+fs = require 'fs-extra'
 path = require 'path'
 Q = require 'q'
 
@@ -22,7 +22,7 @@ class PackageManager
       @packageWizardView.destroy()
 
       package_path = path.resolve atom.project.path, options.name
-      Q.nfcall fs.mkdir, package_path
+      Q.nfcall fs.mkdirs, package_path
       .then -> Q.nfcall(fs.copy, options.icon_path, "#{package_path}/icon.png") if options.icon_path
       .then ->
         Q.promise (resolve, reject, notify)->

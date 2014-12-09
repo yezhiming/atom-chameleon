@@ -1,7 +1,6 @@
 {WorkspaceView} = require 'atom'
 unzip = require '../lib/utils/unzip'
 path = require 'path'
-fs = require 'fs-plus'
 rimraf = require 'rimraf'
 
 describe "utils.unzip", ->
