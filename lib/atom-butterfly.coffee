@@ -58,7 +58,7 @@ module.exports =
 
   cmdCreateProject: ->
 
-    ProjectWizardView = require './scaffold/project-wizard-view'
+    ProjectWizardView = require './project/project-wizard-view'
     projectWizardView = new ProjectWizardView().attach()
 
     projectWizardView.on 'finish', (options) =>
@@ -80,7 +80,7 @@ module.exports =
         pv = new ProgressView("Create Project...")
         pv.attach()
 
-        {createProjectPromise} = require './scaffold'
+        {createProjectPromise} = require './project/scaffold'
 
         createProjectPromise(options)
         .progress (progress)->
@@ -102,7 +102,7 @@ module.exports =
     pv = new ProgressView("Install Butterfly.js...")
     pv.attach()
 
-    Scaffolder = require './scaffold'
+    Scaffolder = require './project/scaffold'
     Scaffolder.installFrameworkPromise()
     .progress (progress)->
       pv.setTitle(progress.message) if progress.message
