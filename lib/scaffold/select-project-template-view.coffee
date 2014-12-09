@@ -13,15 +13,15 @@ class TemplateTreeView extends View
 class GridView extends View
   @content: ->
     @ul class: 'grid-view', =>
-      @li 'data-name': 'butterfly', class: 'selected', =>
+      @li 'data-name': 'simple', class: 'selected', =>
         @span class: 'glyphicon glyphicon-bold'
-        @span class: 'name', 'Butterfly.js'
-      @li 'data-name': 'butterfly', =>
+        @span class: 'name', 'Simple'
+      @li 'data-name': 'modular', =>
         @span class: 'glyphicon glyphicon-align-center'
-        @span class: 'name', 'Piece.js'
-      @li 'data-name': 'butterfly', =>
+        @span class: 'name', 'Modular'
+      @li 'data-name': 'empty', =>
         @span class: 'glyphicon glyphicon-align-center'
-        @span class: 'name', 'Angular.js'
+        @span class: 'name', 'Empty'
 
   initialize: ->
     @on 'mousedown', 'li', (e) =>
