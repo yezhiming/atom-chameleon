@@ -45,6 +45,7 @@ class V extends View
 
     # observe identifier change
     @name.getEditor().onDidChange =>
+      return unless @name.getText()? # reject null only
       # check for available
       fs.exists path.resolve(atom.project.path, @name.getText()), (exists)=>
         if exists
