@@ -1,16 +1,23 @@
 WizardView = require '../utils/wizard-view'
 
+#
+# 1. 构建方式
+# 2. ios or android
+# 3. 输入构建信息
+# 4. 确定弹出构建状态页
+#
 module.exports =
 class CreateProjectWizardView extends WizardView
 
   @flow: [
 
-    -> require './build-approach-view'
+    -> require './platform-chooser-view'
 
     (previous) ->
-      console.log "#{previous.approach}, #{previous.approach == 'puzzle'}"
-      if previous.approach == 'puzzle'
-        require './build-with-puzzle-view'
+      if previous.platform == 'ios'
+        require './ios-build-view'
+      else if previous.platform == 'android'
+        require './android-build-view'
       else
-        require './build-with-local-view'
+        null
   ]

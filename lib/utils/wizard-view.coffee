@@ -41,7 +41,8 @@ class WizardView extends View
     # disable 'Next' Button on the last flow + 1
     @next.prop 'disabled', @order == @constructor.flow.length
 
-    @currentView?.destroy?()
+    #invoke destroy if provided, invoke remove othervise
+    @currentView.destroy?() or @currentView.remove?() if @currentView
 
     nextFlow = @constructor.flow[@order]
     View = nextFlow(previous_result)
