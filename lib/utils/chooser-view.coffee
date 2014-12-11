@@ -10,14 +10,14 @@ class Chooser extends View
         #grid view
         @ul class: 'grid-view', =>
           for item in options.items
-            @li 'data-name': item.id, =>
+            @li 'data-id': item.id, =>
               @span class: 'glyphicon ' + item.glyphicon or ''
               @span class: 'name', item.name
       @div outlet: 'description', class: 'description'
 
   initialize: (options) ->
     @items = options.items
-    
+
     @on 'mousedown', 'li', (e) =>
       li = $(e.target).closest('li')
       e.preventDefault()
@@ -29,14 +29,12 @@ class Chooser extends View
 
   selectItemView: (view) ->
     return unless view.length
-    @find('.selected').removeClass('selected')
+    @find('.grid-view .selected').removeClass('selected')
     view.addClass('selected')
 
   selectFirstItemView: ->
-    @gridView.selectItemView @gridView.find('li:first')
+    @selectItemView @find('.grid-view li:first')
 
   getSelectedItem: ->
-    selected = @find('li.selected')
-    item_id = selected.data('name')
-
-    tpl = _.find(@items, (t)-> t.id == item_id)
+    selected = @find('.grid-view li.selected')
+    tpl = _.find @items, (t)-> t.id == selected.data('id')
