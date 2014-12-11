@@ -23,11 +23,11 @@ class BuildManager
       @sendBuildRequest(result)
 
     .then (response, body) ->
-      buildStatusView = new (require './build-status-view')
+      buildStatusView = new (require './build-status-view')('25')
       buildStatusView.attach()
     .catch (err) ->
       console.trace err.stack
-      alert 'err occur!'
+      alert "err occur! #{err}"
 
   sendBuildRequest: (options) ->
     Q.nfcall request.post, 'http://localhost:3000/api/tasks',
