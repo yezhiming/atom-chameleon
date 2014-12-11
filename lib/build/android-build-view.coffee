@@ -14,6 +14,7 @@ class V extends View
           @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
           @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
           @subview 'version', new EditorView(mini: true, placeholderText: 'Version'), class: 'version'
+          @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
           
         @div class: 'col-xs-9', =>
 
@@ -61,6 +62,7 @@ class V extends View
 
     @title.setText _.last(atom.project.path.split(path.sep))
     @version.setText "1.0.0"
+    @build.setText "1"
 
   onClickIcon: ->
     openFile
@@ -72,6 +74,7 @@ class V extends View
   getResult: ->
     title: @title.getText()
     version: @version.getText()
+    build:@build.getText()
     keystore: @keystore.getText()
     alias: @alias.getText()
     keypass:@keypass.getText()
