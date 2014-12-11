@@ -18,6 +18,8 @@ module.exports =
     @packageManager = new PM()
     @packageManager.activate()
 
+    @buildManager = new (require './build/build-manager')()
+    @buildManager.activate()
 
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
 
@@ -29,9 +31,6 @@ module.exports =
     atom.workspaceView.command "atom-butterfly:install", => @cmdInstall()
     atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
     atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
-
-    #publish
-    atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
 
     atom.workspaceView.command "atom-butterfly:createModule", =>@createModule()
 
@@ -148,8 +147,3 @@ module.exports =
       @emulatorView = new EmulatorView()
 
     @emulatorView.toggle()
-
-  cmdPublishApplication: ->
-
-    PublishAppView = require './build/publish-wizard-view'
-    new PublishAppView().attach()
