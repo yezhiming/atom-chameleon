@@ -20,3 +20,9 @@ class CreateProjectWizardView extends WizardView
       else
         null
   ]
+
+  initialize: ->
+    super
+    @finishPromise()
+    .then (result)->
+      console.log "#{JSON.stringify result}"

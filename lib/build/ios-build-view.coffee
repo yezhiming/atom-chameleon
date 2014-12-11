@@ -1,5 +1,7 @@
 {$, View, EditorView} = require 'atom'
-{openFile} = require('../utils/dialog')
+{openFile} = require '../utils/dialog'
+path = require 'path'
+_ = require 'underscore'
 
 module.exports =
 class V extends View
@@ -11,6 +13,8 @@ class V extends View
         @div class: 'col-xs-3', =>
           @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
           @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
+          @subview 'version', new EditorView(mini: true, placeholderText: 'Version'), class: 'version'
+          @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
 
         @div class: 'col-xs-9', =>
 
@@ -22,13 +26,13 @@ class V extends View
             @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
           @div class: 'form-group', =>
             @label 'p12 password:'
-            @subview 'editor', new EditorView(mini: true)
+            @subview 'password', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Application URL:'
-            @subview 'editor', new EditorView(mini: true)
+            @subview 'url', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Scheme:'
-            @subview 'editor', new EditorView(mini: true)
+            @subview 'scheme', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'src', new EditorView(mini: true, placeholderText: 'click here to content-src')
@@ -50,9 +54,24 @@ class V extends View
         .then (destPath) ->
           each.view.setText destPath[0]
 
+    @title.setText _.last(atom.project.path.split(path.sep))
+    @version.setText "1.0.0"
+    @build.setText "1"
+
   onClickIcon: ->
     openFile
       title: 'Select Icon Image'
       filters: [{name: "png image", extensions: ['png']}]
     .then (destPath) =>
       @icon.attr('src', destPath[0]) if destPath.length > 0
+
+  getResult: ->
+    title: @title.getText()
+    version: @version.getText()
+    build: @build.getText()
+    Mobileprovision: @mobileprovision.getText()
+    p12: @p12.getText()
+    p12_password: @password.getText()
+    scheme: @scheme.getText()
+    content_src: @src.getText()
+    app_url: @url.getText()
