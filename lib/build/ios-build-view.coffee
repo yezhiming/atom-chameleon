@@ -34,6 +34,9 @@ class V extends View
             @label 'Scheme:'
             @subview 'scheme', new EditorView(mini: true)
           @div class: 'form-group', =>
+            @label 'Bundle Identifier:'
+            @subview 'BundleIdentifier', new EditorView(mini: true)
+          @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
@@ -73,6 +76,7 @@ class V extends View
     title: @title.getText()
     version: @version.getText()
     build: @build.getText()
+    BundleIdentifier:@BundleIdentifier.getText()
     Mobileprovision: @mobileprovision.getText()
     p12: @p12.getText()
     p12_password: @password.getText()

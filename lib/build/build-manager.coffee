@@ -43,3 +43,4 @@ class BuildManager
         version: options.version
         build: options.build
         content_src: options.content_src
+        bundleIdentifier:options.BundleIdentifier
