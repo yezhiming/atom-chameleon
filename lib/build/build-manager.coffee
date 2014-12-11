@@ -38,7 +38,7 @@ class BuildManager
         p12_password: options.p12_password
         scheme: options.scheme
         download_url: options.app_url
-        icon:options.icon
+        icon:fs.createReadStream options.icon
         title: options.title
         version: options.version
         build: options.build
