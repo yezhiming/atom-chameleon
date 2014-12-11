@@ -31,10 +31,6 @@ module.exports =
     atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
     atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
 
-    atom.workspaceView.command "atom-butterfly:createModule", =>@createModule()
-
-    atom.workspaceView.command "atom-butterfly:list-package", => @listPackage()
-
     atom.contextMenu.add {
       '.tree-view-scroller .directory .header.list-item': [
         {
@@ -99,10 +95,6 @@ module.exports =
     .finally ->
       pv.destroy()
 
-  createModule: ->
-    CreateModuleView = require "./scaffold/module-wizard-view"
-    view = new CreateModuleView().attach()
-
   cmdInstall: ->
 
     pv = new ProgressView("Install Butterfly.js...")
@@ -152,9 +144,3 @@ module.exports =
       @emulatorView = new EmulatorView()
 
     @emulatorView.toggle()
-    
-  listPackage: ->
-    unless @packageListView?
-      PackageListView = require './package-list-view'
-      @packageListView = new PackageListView()
-    @packageListView.attach()
