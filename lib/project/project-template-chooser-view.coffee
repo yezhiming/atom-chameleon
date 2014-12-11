@@ -50,7 +50,7 @@ class TemplateChooserView extends View
         @subview 'gridView', new GridView(templates)
       @div outlet: 'description', class: 'description'
 
-  attachTo: (parentView)->
+  attachTo: (parentView) ->
     @gridView.on 'selected', (event, id) =>
       tpl = _.find(templates, (t)-> t.id == id)
       @description.text(tpl.description)
