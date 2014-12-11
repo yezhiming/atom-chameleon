@@ -14,5 +14,9 @@ class V extends View
     @div =>
       @subview 'cv', new ChooserView(title: 'Choose a Platform:', items: items)
 
+  attachTo: (parentView) ->
+    parentView.append(this)
+    @chooser.selectFirstItemView()
+
   getResult: ->
     platform: @cv.getSelectedItem().id

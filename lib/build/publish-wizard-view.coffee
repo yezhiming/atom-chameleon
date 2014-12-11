@@ -1,10 +1,9 @@
 WizardView = require '../utils/wizard-view'
 
 #
-# 1. 构建方式
-# 2. ios or android
-# 3. 输入构建信息
-# 4. 确定弹出构建状态页
+# 1. ios or android
+# 2. 输入构建信息
+# 3. 确定弹出构建状态页
 #
 module.exports =
 class CreateProjectWizardView extends WizardView
