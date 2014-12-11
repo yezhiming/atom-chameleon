@@ -41,7 +41,7 @@ class V extends View
     [
       {view: @mobileprovision, suffix: 'mobileprovision'}
       {view: @p12, suffix: 'p12'}
-      {view: @src, suffix: 'html'}
+      {view: @src, suffix: 'html', relative: true}
     ]
     .forEach (each) ->
       #disable input
@@ -52,7 +52,10 @@ class V extends View
           title: "Select .#{each.suffix} File"
           filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
         .then (destPath) ->
-          each.view.setText destPath[0]
+          if each.relative?
+            each.view.setText path.relative(atom.project.path, destPath[0])
+          else
+            each.view.setText destPath[0]
 
     @title.setText _.last(atom.project.path.split(path.sep))
     @version.setText "1.0.0"
