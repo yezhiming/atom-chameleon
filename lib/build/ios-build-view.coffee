@@ -16,10 +16,10 @@ class V extends View
 
           @div class: 'form-group', =>
             @label 'Mobileprovision:'
-            @subview 'mobileprovision', new EditorView(mini: true)
+            @subview 'mobileprovision', new EditorView(mini: true, placeholderText: 'click here to select mobileprovision file')
           @div class: 'form-group', =>
             @label 'p12:'
-            @subview 'p12', new EditorView(mini: true)
+            @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
           @div class: 'form-group', =>
             @label 'p12 password:'
             @subview 'editor', new EditorView(mini: true)
@@ -31,7 +31,7 @@ class V extends View
             @subview 'editor', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Content Src:'
-            @subview 'src', new EditorView(mini: true)
+            @subview 'src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
   initialize: ->
     [
