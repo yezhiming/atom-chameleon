@@ -6,5 +6,11 @@
 module.exports =
 class V extends View
   @content: ->
-    @div class: 'build-status-view', =>
-      
+    @div class: 'build-status-view overlay from-top', =>
+      @tag 'webview'
+
+  attach: ->
+    atom.workspaceView.append(this)
+
+  destroy: ->
+    @detach()
