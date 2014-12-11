@@ -69,6 +69,7 @@ class V extends View
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
   getResult: ->
+    icon:@icon[0].src
     title: @title.getText()
     version: @version.getText()
     build: @build.getText()

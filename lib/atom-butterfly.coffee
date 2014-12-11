@@ -4,7 +4,7 @@ _ = require 'underscore'
 
 # for debug properse only, it will add many ms to startup time.
 Q = require 'q'
-# Q.longStackSupport = true
+Q.longStackSupport = true
 
 module.exports =
 
