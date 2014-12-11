@@ -33,6 +33,8 @@ module.exports =
 
     atom.workspaceView.command "atom-butterfly:createModule", =>@createModule()
 
+    atom.workspaceView.command "atom-butterfly:list-package", => @listPackage()
+
     atom.contextMenu.add {
       '.tree-view-scroller .directory .header.list-item': [
         {
@@ -150,3 +152,9 @@ module.exports =
       @emulatorView = new EmulatorView()
 
     @emulatorView.toggle()
+    
+  listPackage: ->
+    unless @packageListView?
+      PackageListView = require './package-list-view'
+      @packageListView = new PackageListView()
+    @packageListView.attach()
