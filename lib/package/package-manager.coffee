@@ -11,7 +11,7 @@ class PackageManager
     atom.workspaceView.command "atom-butterfly:list-package", => @listPackage()
     atom.workspaceView.command "atom-chameleon:publish-package", => @cmdPublishPackage()
 
-  destroy: ->
+  deactivate: ->
     @packageListView?.destroy?()
     @packageListView?.destroy?()
 

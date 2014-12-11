@@ -14,8 +14,7 @@ module.exports =
     username: ""
 
   activate: (state) ->
-    PM = new require('./package/manager')
-    @packageManager = new PM()
+    @packageManager = new (require './package/package-manager')()
     @packageManager.activate()
 
     @buildManager = new (require './build/build-manager')()
@@ -44,7 +43,11 @@ module.exports =
         }
       ]
     }
+
   deactivate: ->
+    @packageManager.deactivate?()
+    @buildManager.deactivate?()
+
     @runOnServerView?.destroy()
     @serverStatusView?.destroy()
 

@@ -5,6 +5,8 @@ class BuildManager
     console.log "build manager launch..."
     atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
 
+  deactivate: ->
+
   cmdPublishApplication: ->
 
     PublishAppView = require './publish-wizard-view'
