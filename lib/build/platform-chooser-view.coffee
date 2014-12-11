@@ -12,11 +12,11 @@ module.exports =
 class V extends View
   @content: ->
     @div =>
-      @subview 'cv', new ChooserView(title: 'Choose a Platform:', items: items)
+      @subview 'chooser', new ChooserView(title: 'Choose a Platform:', items: items)
 
   attachTo: (parentView) ->
     parentView.append(this)
     @chooser.selectFirstItemView()
 
   getResult: ->
-    platform: @cv.getSelectedItem().id
+    platform: @chooser.getSelectedItem().id
