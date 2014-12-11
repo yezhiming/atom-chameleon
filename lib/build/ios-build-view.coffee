@@ -41,21 +41,18 @@ class V extends View
     ]
     .forEach (each) ->
       #disable input
-      # each.view.setInputEnabled false
+      each.view.setInputEnabled false
       #select file
       each.view.on 'click', ->
-        openFile({
+        openFile
           title: "Select .#{each.suffix} File"
           filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
-        })
         .then (destPath) ->
-          console.log "!!! #{each.view.setText}"
-          each.view.setText(destPath)
+          each.view.setText destPath[0]
 
   onClickIcon: ->
-    openFile({
+    openFile
       title: 'Select Icon Image'
       filters: [{name: "png image", extensions: ['png']}]
-    })
     .then (destPath) =>
-      @icon.attr('src', destPath) if destPath
+      @icon.attr('src', destPath[0]) if destPath.length > 0
