@@ -16,10 +16,10 @@ class V extends View
 
           @div class: 'form-group', =>
             @label 'Mobileprovision:'
-            @subview 'editor', new EditorView(mini: true)
+            @subview 'mobileprovision', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'p12:'
-            @subview 'editor', new EditorView(mini: true)
+            @subview 'p12', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'p12 password:'
             @subview 'editor', new EditorView(mini: true)
@@ -31,12 +31,31 @@ class V extends View
             @subview 'editor', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Content Src:'
-            @subview 'editor', new EditorView(mini: true)
+            @subview 'src', new EditorView(mini: true)
+
+  initialize: ->
+    [
+      {view: @mobileprovision, suffix: 'mobileprovision'}
+      {view: @p12, suffix: 'p12'}
+      {view: @src, suffix: 'html'}
+    ]
+    .forEach (each) ->
+      #disable input
+      # each.view.setInputEnabled false
+      #select file
+      each.view.on 'click', ->
+        openFile({
+          title: "Select .#{each.suffix} File"
+          filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
+        })
+        .then (destPath) ->
+          console.log "!!! #{each.view.setText}"
+          each.view.setText(destPath)
 
   onClickIcon: ->
-    openFile {
+    openFile({
       title: 'Select Icon Image'
       filters: [{name: "png image", extensions: ['png']}]
-    }
-    .then (destPath) ->
+    })
+    .then (destPath) =>
       @icon.attr('src', destPath) if destPath
