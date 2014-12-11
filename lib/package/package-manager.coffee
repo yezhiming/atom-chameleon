@@ -8,7 +8,7 @@ class PackageManager
   activate: ->
     console.log "package manager launch..."
     atom.workspaceView.command "atom-butterfly:create-package", => @cmdCreatePackage()
-    atom.workspaceView.command "atom-butterfly:list-package", => @listPackage()
+    atom.workspaceView.command "atom-butterfly:list-package", => @cmdPublishPackage()
     atom.workspaceView.command "atom-chameleon:publish-package", => @cmdPublishPackage()
 
   deactivate: ->
@@ -39,6 +39,6 @@ class PackageManager
       .catch (err)->
         alert(JSON.stringfiy err)
 
-  listPackage: ->
-    @packageListView = new (require('./package-list-view'))() unless @packageListView?
+  cmdPublishPackage: ->
+    @packageListView = new (require './package-list-view')() unless @packageListView?
     @packageListView.attach()

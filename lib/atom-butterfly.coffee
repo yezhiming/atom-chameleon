@@ -31,8 +31,6 @@ module.exports =
     atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
     atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
 
-    atom.workspaceView.command "atom-butterfly:createModule", =>@createModule()
-
     atom.contextMenu.add {
       '.tree-view-scroller .directory .header.list-item': [
         {
@@ -96,10 +94,6 @@ module.exports =
       alert('error occur!')
     .finally ->
       pv.destroy()
-
-  createModule: ->
-    CreateModuleView = require "./scaffold/module-wizard-view"
-    view = new CreateModuleView().attach()
 
   cmdInstall: ->
 
