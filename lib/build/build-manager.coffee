@@ -23,7 +23,7 @@ class BuildManager
       @sendBuildRequest(result)
 
     .then (result) ->
-      result = result[1]
+      result = JSON.parse result[1]
       buildStatusView = new (require './build-status-view')(result.id)
       buildStatusView.attach()
     .catch (err) ->
