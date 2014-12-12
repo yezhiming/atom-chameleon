@@ -19,12 +19,10 @@ class BuildManager
 
     buildWizard.finishPromise()
     .then (result) =>
-      console.log "wizard params: #{JSON.stringify result}"
       buildWizard.destroy()
       @sendBuildRequest(result)
 
     .then (result) ->
-      console.log "show build state"
       result = JSON.parse result[1]
       buildStatusView = new (require './build-status-view')(result.id)
       buildStatusView.attach()

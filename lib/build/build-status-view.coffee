@@ -33,10 +33,11 @@ class BuildStatusView extends View
 
   initialize: (@id) ->
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
+    @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
 
   updateQRCode: ->
     qr = qrcode(4, 'M')
-    qr.addData("#{@server}/archives/#{@id}/install/ios")
+    qr.addData("#{@serverSecured}/archives/#{@id}/install/ios")
     qr.make()
     imgTag = qr.createImgTag(8)
     @find('#qrcode').empty().append(imgTag)
@@ -45,6 +46,23 @@ class BuildStatusView extends View
     atom.workspaceView.append(this)
 
     @onClickRefresh()
+
+    socket = io(@server)
+
+    socket.on 'connect', ->
+      console.log "bind socket"
+      socket.emit 'bind', atom.config.get('atom-butterfly.puzzleAPIToken')
+
+    socket.on 'error', (err) ->
+      console.log "socket error: #{err}"
+
+    socket.on 'timeout', ->
+      console.log "socket timeout"
+
+    socket.on 'state', (state) ->
+      console.log "update state via socket"
+      @find('.task-state').text body.state
+      @updateQRCode() if body.state == 'complete'
 
   destroy: ->
     @detach()
@@ -58,5 +76,4 @@ class BuildStatusView extends View
       @find('.task-id').text body.id
       @find('.task-uuid').text body.data.uuid
       @find('.task-state').text body.state
-
       @updateQRCode() if body.state == 'complete'
