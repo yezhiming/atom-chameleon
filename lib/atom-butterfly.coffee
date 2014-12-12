@@ -13,7 +13,7 @@ module.exports =
     chameleonServerAddress: 'http://localhost'
     tanant: ''
     username: ''
-    puzzleServerAddress: 'https://localhost:8080'
+    puzzleServerAddress: 'http://localhost:8080'
     puzzleServerAddressSecured: 'https://localhost:8443'
     puzzleAPIToken: ''
 
