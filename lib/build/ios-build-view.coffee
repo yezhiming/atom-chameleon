@@ -57,7 +57,7 @@ class V extends View
           else
             each.view.setText destPath[0]
 
-    @title.setText _.last(atom.project.path.split(path.sep))
+    @title.setText _.last(atom.project.path.split(path.sep)) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
 
