@@ -56,10 +56,10 @@ class BuildStatusView extends View
     socket.on 'timeout', ->
       console.log "socket timeout"
 
-    socket.on 'state', (state) =>
-      console.log "update state via socket"
-      @find('.task-state').text state
-      @updateQRCode() if state == 'complete'
+    socket.on 'update', (job) =>
+      console.log "task updated"
+      @find('.task-state').text job.state
+      @updateQRCode(job.data.platform) if job.state == 'complete'
 
   onClickRefresh: ->
     Q.nfcall request.get,
@@ -73,18 +73,21 @@ class BuildStatusView extends View
 
       @updateQRCode(body.data.platform) if body.state == 'complete'
       @showError() if body.state == 'failed'
+    .catch (err) ->
+      alert "error: #{err}"
 
   showError: ->
 
 
   updateQRCode: (platform) ->
+    console.log "update qrcode for platform: #{platform}"
     qr = qrcode(4, 'M')
-    # if platform == 'ios'
-    qr.addData("#{@serverSecured}/archives/#{@id}/install/ios")
-    # else if platform == 'android'
-      # qr.addData("#{@serverSecured}/archives/#{@id}.apk")
-    # else
-    #   throw new Error('qrcode: unkown platform.')
+    if platform == 'ios'
+      qr.addData("#{@serverSecured}/archives/#{@id}/install/ios")
+    else if platform == 'android'
+      qr.addData("#{@serverSecured}/archives/#{@id}.apk")
+    else
+      throw new Error('qrcode: unkown platform.')
     qr.make()
     imgTag = qr.createImgTag(8)
     @find('#qrcode').empty().append(imgTag)
