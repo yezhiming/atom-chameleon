@@ -64,14 +64,14 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
 
-    # @icon.attr('src',"/Users/comeontom/Pictures/com.tencent.ScreenCapture/test.png")
-    # @keystore.setText "/Users/comeontom/Desktop/android/test_1.keystore"
-    # @alias.setText "test_1"
-    # @keypass.setText "test123"
-    # @aliaspass.setText "test123"
-    # @url.setText "http://localhost/androiddown/android.zip"
-    # @scheme.setText "bundle"
-    # @src.setText "./index.html"
+    @icon.attr('src',"/Users/comeontom/Pictures/com.tencent.ScreenCapture/test.png")
+    @keystore.setText "/Users/comeontom/Desktop/android/test_1.keystore"
+    @alias.setText "test_1"
+    @keypass.setText "test123"
+    @aliaspass.setText "test123"
+    @url.setText "http://localhost:800/androiddown/android.zip"
+    @scheme.setText "bundle"
+    @src.setText "exhibition/index.html"
 
   onClickIcon: ->
     openFile
