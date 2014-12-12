@@ -31,20 +31,17 @@ class BuildStatusView extends View
         @div class: 'pull-right', =>
           @button 'Refresh', click: 'onClickRefresh', class: 'inline-block-tight btn'
 
-  initialize: (@id) ->
+  initialize: ->
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
     @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
-
-  updateQRCode: ->
-    qr = qrcode(4, 'M')
-    qr.addData("#{@serverSecured}/archives/#{@id}/install/ios")
-    qr.make()
-    imgTag = qr.createImgTag(8)
-    @find('#qrcode').empty().append(imgTag)
 
   attach: ->
     atom.workspaceView.append(this)
 
+  destroy: ->
+    @detach()
+
+  setTaskId: (@id) ->
     @onClickRefresh()
 
     socket = io(@server)
@@ -64,9 +61,6 @@ class BuildStatusView extends View
       @find('.task-state').text body.state
       @updateQRCode() if body.state == 'complete'
 
-  destroy: ->
-    @detach()
-
   onClickRefresh: ->
     Q.nfcall request.get,
       url: "#{@server}/api/tasks/#{@id}"
@@ -76,4 +70,16 @@ class BuildStatusView extends View
       @find('.task-id').text body.id
       @find('.task-uuid').text body.data.uuid
       @find('.task-state').text body.state
+
       @updateQRCode() if body.state == 'complete'
+      @showError() if body.state == 'failed'
+
+  showError: ->
+
+
+  updateQRCode: ->
+    qr = qrcode(4, 'M')
+    qr.addData("#{@serverSecured}/archives/#{@id}/install/ios")
+    qr.make()
+    imgTag = qr.createImgTag(8)
+    @find('#qrcode').empty().append(imgTag)
