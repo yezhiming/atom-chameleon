@@ -63,11 +63,11 @@ class V extends View
     @title.setText _.last(atom.project.path.split(path.sep)) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
-    
-    @icon.attr('src',"/Users/comeontom/Pictures/com.tencent.ScreenCapture/test.png");
-    # @icon.setText "/Users/comeontom/Pictures/com.tencent.ScreenCapture/test.png"
-    @mobileprovision.setText "/Users/comeontom/Desktop/ios/certificate/comeontom_dis1210.mobileprovision"
-    @p12.setText "/Users/comeontom/Desktop/ios/certificate/Distribution.p12"
+      
+    path = atom.project.getPath()+"/resource/ios"
+    @icon.attr('src',"#{path}/test.png");
+    @mobileprovision.setText "#{path}/comeontom_dis1210.mobileprovision"
+    @p12.setText "#{path}/Distribution.p12"
     @password.setText "123456"
     @url.setText "http://localhost:800/iosdown/ios.zip"
     @scheme.setText "chameleon-bundled"
