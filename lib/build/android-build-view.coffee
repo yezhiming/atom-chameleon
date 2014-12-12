@@ -15,7 +15,7 @@ class V extends View
           @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
           @subview 'version', new EditorView(mini: true, placeholderText: 'Version'), class: 'version'
           @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
-          
+
         @div class: 'col-xs-9', =>
 
           @div class: 'form-group', =>
@@ -64,6 +64,15 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
 
+    # @icon.attr('src',"/Users/comeontom/Pictures/com.tencent.ScreenCapture/test.png")
+    # @keystore.setText "/Users/comeontom/Desktop/android/test_1.keystore"
+    # @alias.setText "test_1"
+    # @keypass.setText "test123"
+    # @aliaspass.setText "test123"
+    # @url.setText "http://localhost/androiddown/android.zip"
+    # @scheme.setText "bundle"
+    # @src.setText "./index.html"
+
   onClickIcon: ->
     openFile
       title: 'Select Icon Image'
@@ -72,6 +81,7 @@ class V extends View
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
   getResult: ->
+    icon:@icon[0].src.replace "file://", ""
     title: @title.getText()
     version: @version.getText()
     build:@build.getText()

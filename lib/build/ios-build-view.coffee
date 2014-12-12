@@ -34,6 +34,9 @@ class V extends View
             @label 'Scheme:'
             @subview 'scheme', new EditorView(mini: true)
           @div class: 'form-group', =>
+            @label 'Bundle Identifier:'
+            @subview 'BundleIdentifier', new EditorView(mini: true)
+          @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
@@ -60,7 +63,16 @@ class V extends View
     @title.setText _.last(atom.project.path.split(path.sep)) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
-
+    
+    @icon.attr('src',"/Users/comeontom/Pictures/com.tencent.ScreenCapture/test.png");
+    # @icon.setText "/Users/comeontom/Pictures/com.tencent.ScreenCapture/test.png"
+    @mobileprovision.setText "/Users/comeontom/Desktop/ios/certificate/comeontom_dis1210.mobileprovision"
+    @p12.setText "/Users/comeontom/Desktop/ios/certificate/Distribution.p12"
+    @password.setText "123456"
+    @url.setText "http://localhost/iosdown/ios.zip"
+    @scheme.setText "chameleon-bundled"
+    @BundleIdentifier.setText "com.foreveross.comeontom"
+    @src.setText "exhibition/index.html"
   onClickIcon: ->
     openFile
       title: 'Select Icon Image'
@@ -69,10 +81,11 @@ class V extends View
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
   getResult: ->
-    icon:@icon[0].src
+    icon:@icon[0].src.replace "file://", ""
     title: @title.getText()
     version: @version.getText()
     build: @build.getText()
+    BundleIdentifier:@BundleIdentifier.getText()
     Mobileprovision: @mobileprovision.getText()
     p12: @p12.getText()
     p12_password: @password.getText()
