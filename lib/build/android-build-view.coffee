@@ -71,7 +71,7 @@ class V extends View
     @aliaspass.setText "test123"
     @url.setText "http://localhost:800/androiddown/android.zip"
     @scheme.setText "bundle"
-    @src.setText "./index.html"
+    @src.setText "exhibition/index.html"
 
   onClickIcon: ->
     openFile
