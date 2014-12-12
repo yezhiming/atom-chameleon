@@ -19,12 +19,13 @@ class BuildManager
 
     buildWizard.finishPromise()
     .then (result) =>
-      console.log "#{JSON.stringify result}"
+      console.log "wizard params: #{JSON.stringify result}"
       buildWizard.destroy()
       @sendBuildRequest(result)
 
     .then (result) ->
-      result = result[1]
+      console.log "show build state"
+      result = JSON.parse result[1]
       buildStatusView = new (require './build-status-view')(result.id)
       buildStatusView.attach()
     .catch (err) ->
@@ -33,7 +34,9 @@ class BuildManager
 
   sendBuildRequest: (options) ->
     if options.platform == "android"
-      Q.nfcall request.post, "#{@server}/api/tasks",
+      Q.nfcall request.post,
+        url: "#{@server}/api/tasks"
+        rejectUnauthorized: false
         form:
           builder: 'cordova-android'
           platform: 'android'
@@ -49,7 +52,9 @@ class BuildManager
           content_src: options.content_src
           icon: fs.createReadStream options.icon
     else
-      Q.nfcall request.post, "#{@server}/api/tasks",
+      Q.nfcall request.post,
+        url: "#{@server}/api/tasks"
+        rejectUnauthorized: false
         form:
           builder: 'cordova-ios'
           platform: 'ios'

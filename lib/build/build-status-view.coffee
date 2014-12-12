@@ -50,7 +50,9 @@ class BuildStatusView extends View
     @detach()
 
   onClickRefresh: ->
-    Q.nfcall request, "#{@server}/api/tasks/#{@id}"
+    Q.nfcall request.get,
+      url: "#{@server}/api/tasks/#{@id}"
+      rejectUnauthorized: false
     .then (result) =>
       body = JSON.parse result[1]
       @find('.task-id').text body.id

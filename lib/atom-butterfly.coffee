@@ -12,7 +12,7 @@ module.exports =
     chameleonServerAddress: 'http://localhost'
     tanant: ""
     username: ""
-    puzzleServerAddress: 'https://localhost:3000'
+    puzzleServerAddress: 'https://localhost'
 
   activate: (state) ->
     @packageManager = new (require './package/package-manager')()
