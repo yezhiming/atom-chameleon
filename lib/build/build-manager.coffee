@@ -23,8 +23,8 @@ class BuildManager
       @sendBuildRequest(result)
 
     .then (result) ->
-      console.log "#{JSON.stringify result[1]}"
-      buildStatusView = new (require './build-status-view')('25')
+      result = result[1]
+      buildStatusView = new (require './build-status-view')(result.id)
       buildStatusView.attach()
     .catch (err) ->
       console.trace err.stack

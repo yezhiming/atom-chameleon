@@ -28,6 +28,8 @@ class BuildStatusView extends View
       @div class: 'actions', =>
         @div class: 'pull-left', =>
           @button 'Cancel', click: 'destroy', class: 'inline-block-tight btn'
+        @div class: 'pull-right', =>
+          @button 'Refresh', click: 'onClickRefresh', class: 'inline-block-tight btn'
 
   initialize: (@id) ->
 
@@ -41,6 +43,12 @@ class BuildStatusView extends View
   attach: ->
     atom.workspaceView.append(this)
 
+    @onClickRefresh()
+
+  destroy: ->
+    @detach()
+
+  onClickRefresh: ->
     Q.nfcall request, "http://localhost:3000/api/tasks/#{@id}"
     .then (result) =>
       body = JSON.parse result[1]
@@ -49,6 +57,3 @@ class BuildStatusView extends View
       @find('.task-state').text body.state
 
       @updateQRCode() if body.state == 'complete'
-
-  destroy: ->
-    @detach()
