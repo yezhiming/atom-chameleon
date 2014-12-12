@@ -1,6 +1,7 @@
 ProgressView = require './progress-view'
 _ = require 'underscore'
 {openDirectory} = require('./utils/dialog')
+UUID = require 'uuid'
 
 # for debug properse only, it will add many ms to startup time.
 Q = require 'q'
@@ -10,11 +11,17 @@ module.exports =
 
   configDefaults:
     chameleonServerAddress: 'http://localhost'
-    tanant: ""
-    username: ""
-    puzzleServerAddress: 'https://localhost'
+    tanant: ''
+    username: ''
+    puzzleServerAddress: 'https://localhost:8080'
+    puzzleServerAddressSecured: 'https://localhost:8443'
+    puzzleAPIToken: ''
 
   activate: (state) ->
+    # create uid if necessary
+    uid = atom.config.get('atom-butterfly.puzzleAPIToken')
+    atom.config.set('atom-butterfly.puzzleAPIToken', UUID.v4()) unless uid
+
     @packageManager = new (require './package/package-manager')()
     @packageManager.activate()
 
