@@ -69,7 +69,7 @@ class V extends View
     @mobileprovision.setText "/Users/comeontom/Desktop/ios/certificate/comeontom_dis1210.mobileprovision"
     @p12.setText "/Users/comeontom/Desktop/ios/certificate/Distribution.p12"
     @password.setText "123456"
-    @url.setText "http://localhost/iosdown/ios.zip"
+    @url.setText "http://localhost:800/iosdown/ios.zip"
     @scheme.setText "chameleon-bundled"
     @BundleIdentifier.setText "com.foreveross.comeontom"
     @src.setText "exhibition/index.html"
