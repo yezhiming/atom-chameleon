@@ -32,10 +32,11 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'onClickRefresh', class: 'inline-block-tight btn'
 
   initialize: (@id) ->
+    @server = atom.config.get('atom-butterfly.puzzleServerAddress')
 
   updateQRCode: ->
     qr = qrcode(4, 'M')
-    qr.addData("http://localhost:3000/archives/#{@id}")
+    qr.addData("#{@server}/archives/#{@id}/install/ios")
     qr.make()
     imgTag = qr.createImgTag(8)
     @find('#qrcode').empty().append(imgTag)
@@ -49,7 +50,7 @@ class BuildStatusView extends View
     @detach()
 
   onClickRefresh: ->
-    Q.nfcall request, "http://localhost:3000/api/tasks/#{@id}"
+    Q.nfcall request, "#{@server}/api/tasks/#{@id}"
     .then (result) =>
       body = JSON.parse result[1]
       @find('.task-id').text body.id

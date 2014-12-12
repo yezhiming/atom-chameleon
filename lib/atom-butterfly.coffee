@@ -12,6 +12,7 @@ module.exports =
     chameleonServerAddress: 'http://localhost'
     tanant: ""
     username: ""
+    puzzleServerAddress: 'http://localhost:3000'
 
   activate: (state) ->
     @packageManager = new (require './package/package-manager')()
@@ -54,8 +55,10 @@ module.exports =
   cmdDebug: ->
     # BowerView = require './scaffold/bower-view'
     # new BowerView().attach()
-    webview = document.querySelector('webview')
-    webview.openDevTools() unless webview.isDevToolsOpened()
+    # webview = document.querySelector('webview')
+    # webview.openDevTools() unless webview.isDevToolsOpened()
+
+    new (require './build/build-status-view')('25').attach()
 
   cmdCreateProject: ->
 

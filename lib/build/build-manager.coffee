@@ -8,6 +8,7 @@ class BuildManager
   activate: ->
     console.log "build manager launch..."
     atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
+    @server = atom.config.get('atom-butterfly.puzzleServerAddress')
 
   deactivate: ->
 
@@ -32,9 +33,10 @@ class BuildManager
 
   sendBuildRequest: (options) ->
     if options.platform == "android"
-      Q.nfcall request.post, 'http://localhost:3000/api/tasks',
+      Q.nfcall request.post, "#{@server}/api/tasks",
         form:
           builder: 'cordova-android'
+          platform: 'android'
           download_url: options.app_url
           buildtype: options.scheme
           keystore: fs.createReadStream options.keystore
@@ -47,9 +49,10 @@ class BuildManager
           content_src: options.content_src
           icon: fs.createReadStream options.icon
     else
-      Q.nfcall request.post, 'http://localhost:3000/api/tasks',
+      Q.nfcall request.post, "#{@server}/api/tasks",
         form:
           builder: 'cordova-ios'
+          platform: 'ios'
           mobileprovision: fs.createReadStream options.Mobileprovision
           p12: fs.createReadStream options.p12
           p12_password: options.p12_password
