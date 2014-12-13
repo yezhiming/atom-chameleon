@@ -11,3 +11,4 @@
   'ctrl-alt-o': 'atom-butterfly:toggle'
   'ctrl-alt-e': 'atom-butterfly:emulator'
   'ctrl-alt-r': 'atom-butterfly:run-on-server'
+  'ctrl-alt-p': 'atom-butterfly:list-package'
