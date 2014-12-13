@@ -29,6 +29,10 @@ class BuildStatusView extends View
 
         @div id: 'qrcode'
 
+        @div id: 'out'
+
+        @div id: 'error'
+
       @div class: 'actions', =>
         @div class: 'pull-left', =>
           @button 'Cancel', click: 'destroy', class: 'inline-block-tight btn'
@@ -63,6 +67,14 @@ class BuildStatusView extends View
       @find('.task-state').text job.state
       @updateQRCode(job.data.platform) if job.state == 'complete'
 
+    @socket.on 'stdout', (out) =>
+      console.log "out: #{out}"
+      @find('#out').append("<p>#{out}</p>")
+
+    @socket.on 'stderr', (out) =>
+      console.log "out: #{out}"
+      @find('#error').append("<p class='text-warning'>#{out}</p>")
+
   destroy: ->
     @socket?.disconnect()
     @detach()
@@ -78,6 +90,7 @@ class BuildStatusView extends View
     @loading.show()
 
     console.log task.state
+    @loading.hide() if task.state == 'failed'
     switch task.state
       when 'complete'
         @loading.hide()
