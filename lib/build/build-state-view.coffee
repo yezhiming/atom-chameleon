@@ -75,10 +75,14 @@ class BuildStatusView extends View
       @updateQRCode(job.data.platform) if job.state == 'complete'
 
     @socket.on 'stdout', (out) =>
-      @find('#out').append("<pre>#{out}</pre>")
+      out_element = @find('#out')
+      out_element.append("<pre>#{out}</pre>")
+      out_element.scrollTop = out_element.scrollHeight
 
     @socket.on 'stderr', (out) =>
-      @find('#out').append("<pre class='text-warning'>#{out}</pre>")
+      out_element = @find('#out')
+      out_element.append("<pre class='text-warning'>#{out}</pre>")
+      out_element.scrollTop = out_element.scrollHeight
 
   destroy: ->
     @socket?.disconnect()
