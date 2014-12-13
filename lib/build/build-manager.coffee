@@ -16,17 +16,18 @@ class BuildManager
 
     PublishAppView = require './publish-wizard-view'
     buildWizard = new PublishAppView().attach()
-    buildStatusView = new (require './build-status-view')()
+    buildStateView = new (require './build-state-view')()
 
     buildWizard.finishPromise()
     .then (result) =>
       buildWizard.destroy()
-      buildStatusView.attach()
+      buildStateView.attach()
 
       @sendBuildRequest(result)
-    .then (result) ->
-      result = JSON.parse result[1]
-      buildStatusView.setTaskId(result.id)
+    .then (result)->
+      JSON.parse result[1]
+    .then (task) ->
+      buildStateView.setTask(task)
 
     .catch (err) ->
       console.trace err.stack

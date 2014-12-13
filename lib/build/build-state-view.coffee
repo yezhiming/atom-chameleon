@@ -59,19 +59,22 @@ class BuildStatusView extends View
   attach: ->
     atom.workspaceView.append(this)
 
-    @socket = socket = io(@server)
+    @socket = io(@server)
 
-    socket.on 'connect', ->
-      console.log "bind socket"
-      socket.emit 'bind', @access_token
+    @socket.on 'connect', =>
+      console.log "socket connected."
+      @socket.emit 'bind', @access_token
 
-    socket.on 'error', (err) ->
+    @socket.on 'disconnect', ->
+      console.log "socket disconnected."
+
+    @socket.on 'error', (err) ->
       console.log "socket error: #{err}"
 
-    socket.on 'timeout', ->
+    @socket.on 'timeout', ->
       console.log "socket timeout"
 
-    socket.on 'update', (job) =>
+    @socket.on 'update', (job) =>
       console.log "task updated"
       @find('.task-state').text job.state
       @updateQRCode(job.data.platform) if job.state == 'complete'
@@ -91,42 +94,41 @@ class BuildStatusView extends View
       alert('fetch build tasks fail.' + err)
       trace err.stack
 
-  setTaskId: (@id) ->
-    @refreshTaskState()
+  setTask: (@task) ->
+    @find('.task-id').text @task.id
+    @find('.task-uuid').text @task.data.uuid
+    @find('.task-state').text @task.state
 
-  refreshTaskState: ->
-    # show loading
+    @showState(@task)
+
+  showState: (task) ->
     @loading.show()
 
+    console.log task.state
+    switch task.state
+      when 'complete'
+        @loading.hide()
+        @updateQRCode(task.data.platform)
+      when 'failed'
+        @loading.hide()
+        @find('.glyphicon-remove').removeClass('hidden')
+
+  refreshTaskState: ->
+
     Q.nfcall request.get,
-      url: "#{@server}/api/tasks/#{@id}"
+      url: "#{@server}/api/tasks/#{@task.id}"
       rejectUnauthorized: false
-    .then (result) ->
-      JSON.parse result[1]
-    .then (task) =>
-      @find('.task-id').text task.id
-      @find('.task-uuid').text task.data.uuid
-      @find('.task-state').text task.state
-
-      # hide loading
-      @loading.hide()
-
-      switch task.state
-        when 'complete' then @updateQRCode(body.data.platform)
-        when 'failed' then @showFailed()
-    .catch (err) ->
-      alert "error: #{err}"
-
-  showFailed: ->
-    @find('.glyphicon-remove').removeClass('hidden')
+    .then (result) -> JSON.parse result[1]
+    .then (task) => @setTask(task)
+    .catch (err) -> alert "error: #{err}"
 
   updateQRCode: (platform) ->
     console.log "update qrcode for platform: #{platform}"
     qr = qrcode(4, 'M')
     if platform == 'ios'
-      qr.addData("#{@serverSecured}/archives/#{@id}/install/ios")
+      qr.addData("#{@serverSecured}/archives/#{@task.id}/install/ios")
     else if platform == 'android'
-      qr.addData("#{@serverSecured}/archives/#{@id}.apk")
+      qr.addData("#{@serverSecured}/archives/#{@task.id}.apk")
     else
       throw new Error('qrcode: unkown platform.')
     qr.make()
