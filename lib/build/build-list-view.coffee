@@ -8,6 +8,8 @@ class BuildTaskListView extends SelectListView
     super
     @filterEditorView.off 'blur'
 
+  getFilterKey: -> 'id'
+
   # Here you specify the view for an item
   viewForItem: (item) ->
     $$ ->
