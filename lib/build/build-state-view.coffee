@@ -7,22 +7,6 @@ request = require 'request'
 io = require 'socket.io-client'
 Q = require 'q'
 
-class BuildTaskListView extends SelectListView
-
-  initialize: () ->
-    super
-    @filterEditorView.off 'blur'
-
-  # Here you specify the view for an item
-  viewForItem: (item) ->
-    $$ ->
-      @li =>
-        @p item.id
-        @p item.state
-
-  confirmed: (item) ->
-    console.log item
-
 module.exports =
 class BuildStatusView extends View
   @content: ->
@@ -82,17 +66,6 @@ class BuildStatusView extends View
   destroy: ->
     @socket?.disconnect()
     @detach()
-
-  updateTaskList: ->
-    Q.nfcall request.get, "#{@server}/api/tasks?access_token=#{@access_token}"
-    .then (result) ->
-      JSON.parse result[1]
-    .then (result) =>
-      console.log result
-      @taskList.setItems(result)
-    .catch (err) ->
-      alert('fetch build tasks fail.' + err)
-      trace err.stack
 
   setTask: (@task) ->
     @find('.task-id').text @task.id

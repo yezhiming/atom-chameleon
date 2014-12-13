@@ -84,6 +84,15 @@
         ]
       }
       {
+        'label': 'Organizer'
+        'submenu': [
+          {
+            'label': 'Build List'
+            'command': 'atom-chameleon:build-list'
+          }
+        ]
+      }
+      {
         'label': 'Settings'
         'command': 'atom-chameleon:settings'
       }

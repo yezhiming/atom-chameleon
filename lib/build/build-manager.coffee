@@ -10,7 +10,12 @@ class BuildManager
     atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
 
+    atom.workspaceView.command "atom-chameleon:build-list", => @cmdBuildList()
+
   deactivate: ->
+
+  cmdBuildList: ->
+    new (require './build-list-view')().attach()
 
   cmdPublishApplication: ->
 
