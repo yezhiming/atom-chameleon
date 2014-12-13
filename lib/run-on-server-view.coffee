@@ -49,8 +49,9 @@ class RunOnServerView extends View
 
     @selectedRootPath.text '.'
 
-    fs.exists path.resolve(atom.project.path, 'index.html'), (exists)=>
-      @selectedIndexFile.text 'index.html' if exists
+    if atom.project.path
+      fs.exists path.resolve(atom.project.path, 'index.html'), (exists)=>
+        @selectedIndexFile.text 'index.html' if exists
 
     @httpPort.setText "3000"
 
