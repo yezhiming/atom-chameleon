@@ -33,7 +33,7 @@ class BuildStatusView extends View
           @div id: 'toggle-out', =>
             @span class: 'glyphicon glyphicon-chevron-down'
             @span 'show output:'
-          @div id: 'out', style: 'height: 300px; overflow: scroll', =>
+          @div id: 'out', style: 'height: 300px; overflow: scroll; color: white;', =>
 
       @div class: 'actions', =>
         @div class: 'pull-left', =>
