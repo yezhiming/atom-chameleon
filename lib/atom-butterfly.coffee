@@ -1,4 +1,4 @@
-ProgressView = require './progress-view'
+ProgressView = require './utils/progress-view'
 _ = require 'underscore'
 {openDirectory} = require('./utils/dialog')
 UUID = require 'uuid'
@@ -38,17 +38,6 @@ module.exports =
     atom.workspaceView.command "atom-butterfly:install", => @cmdInstall()
     atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
     atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
-
-    atom.contextMenu.add {
-      '.tree-view-scroller .directory .header.list-item': [
-        {
-          'label': 'Create New Module'
-          'command': 'atom-butterfly:createModule'
-          'created': ->
-            console.log(event)
-        }
-      ]
-    }
 
   deactivate: ->
     @packageManager.deactivate?()
