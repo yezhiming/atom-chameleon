@@ -35,6 +35,7 @@ class BuildManager
       buildStateView.setTask(task)
 
     .catch (err) ->
+      buildStateView.destroy()
       console.trace err.stack
       alert "err occur! #{err}"
 
