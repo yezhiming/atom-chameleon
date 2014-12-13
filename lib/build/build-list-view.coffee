@@ -17,7 +17,6 @@ class BuildTaskListView extends SelectListView
         @p new Date(parseInt(item.created_at)).toString()
 
   confirmed: (item) ->
-    console.log item
     buildStateView = new (require './build-state-view')()
     buildStateView.attach()
     buildStateView.setTask(item)
@@ -52,7 +51,6 @@ class V extends View
     .then (result) ->
       JSON.parse result[1]
     .then (result) =>
-      console.log result
       @listView.setItems(result)
     .catch (err) ->
       alert('fetch build tasks fail.' + err)
