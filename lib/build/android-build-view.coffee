@@ -2,6 +2,7 @@
 {openFile} = require '../utils/dialog'
 path = require 'path'
 _ = require 'underscore'
+AppRepoListView = require './app-repo-list-view'
 
 module.exports =
 class V extends View
@@ -59,6 +60,12 @@ class V extends View
             each.view.setText path.relative(atom.project.path, destPath[0])
           else
             each.view.setText destPath[0]
+
+    @url.on 'click', =>
+      new AppRepoListView()
+      .on 'confirmed', (event, repo) => @url.setText repo.url
+      .attach()
+      .filterPlatform('android')
 
     @title.setText _.last(atom.project.path.split("/")) if atom.project.path
     @version.setText "1.0.0"

@@ -2,6 +2,7 @@
 {openFile} = require '../utils/dialog'
 path = require 'path'
 _ = require 'underscore'
+AppRepoListView = require './app-repo-list-view'
 
 module.exports =
 class V extends View
@@ -60,16 +61,21 @@ class V extends View
           else
             each.view.setText destPath[0]
 
+    @url.on 'click', =>
+      new AppRepoListView()
+      .on 'confirmed', (event, repo) => @url.setText repo.url
+      .attach()
+      .filterPlatform('ios')
+
     @title.setText _.last(atom.project.path.split("/")) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
-      
+
     path = atom.project.getPath()+"/resource/ios"
-    @icon.attr('src',"#{path}/test.png");
+    @icon.attr 'src',"#{path}/test.png"
     @mobileprovision.setText "#{path}/comeontom_dis1210.mobileprovision"
     @p12.setText "#{path}/Distribution.p12"
     @password.setText "123456"
-    @url.setText "http://localhost:800/iosdown/ios.zip"
     @scheme.setText "chameleon-bundled"
     @BundleIdentifier.setText "com.foreveross.comeontom"
     @src.setText "exhibition/index.html"
