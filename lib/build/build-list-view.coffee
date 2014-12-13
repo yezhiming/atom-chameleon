@@ -7,6 +7,7 @@ class BuildTaskListView extends SelectListView
   initialize: ->
     super
     @filterEditorView.off 'blur'
+    @off 'core:cancel'
 
   getFilterKey: -> 'id'
 
