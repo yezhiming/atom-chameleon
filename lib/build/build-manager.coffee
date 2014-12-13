@@ -38,7 +38,7 @@ class BuildManager
         url: "#{@server}/api/tasks"
         rejectUnauthorized: false
         form:
-          user: atom.config.get('atom-butterfly.puzzleAPIToken')
+          access_token: atom.config.get('atom-butterfly.puzzleAccessToken')
           builder: 'cordova-android'
           platform: 'android'
           download_url: options.app_url
@@ -57,7 +57,7 @@ class BuildManager
         url: "#{@server}/api/tasks"
         rejectUnauthorized: false
         form:
-          user: atom.config.get('atom-butterfly.puzzleAPIToken')
+          access_token: atom.config.get('atom-butterfly.puzzleAccessToken')
           builder: 'cordova-ios'
           platform: 'ios'
           mobileprovision: fs.createReadStream options.Mobileprovision
