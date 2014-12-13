@@ -29,9 +29,11 @@ class BuildStatusView extends View
 
         @div id: 'qrcode'
 
-        @div id: 'out'
-
-        @div id: 'error'
+        @div =>
+          @div id: 'toggle-out', =>
+            @span class: 'glyphicon glyphicon-chevron-down'
+            @span 'show output:'
+          @div id: 'out', style: 'height: 300px; overflow: scroll', =>
 
       @div class: 'actions', =>
         @div class: 'pull-left', =>
@@ -43,6 +45,8 @@ class BuildStatusView extends View
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
     @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
     @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
+
+    @find('#toggle-out').on 'click', => @find('#out').toggle()
 
   attach: ->
     atom.workspaceView.append(this)
@@ -68,12 +72,10 @@ class BuildStatusView extends View
       @updateQRCode(job.data.platform) if job.state == 'complete'
 
     @socket.on 'stdout', (out) =>
-      console.log "out: #{out}"
-      @find('#out').append("<p>#{out}</p>")
+      @find('#out').append("<pre>#{out}</pre>")
 
     @socket.on 'stderr', (out) =>
-      console.log "out: #{out}"
-      @find('#error').append("<p class='text-warning'>#{out}</p>")
+      @find('#out').append("<pre class='text-warning'>#{out}</pre>")
 
   destroy: ->
     @socket?.disconnect()

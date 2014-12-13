@@ -65,7 +65,7 @@ module.exports =
     # webview = document.querySelector('webview')
     # webview.openDevTools() unless webview.isDevToolsOpened()
 
-    bsv = new (require './build/build-status-view')()
+    bsv = new (require './build/build-state-view')()
     bsv.attach()
 
   cmdCreateProject: ->
