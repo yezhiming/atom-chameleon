@@ -4,7 +4,6 @@ AdmZip = require 'adm-zip'
 path = require 'path'
 fs = require 'fs'
 request = require 'request'
-async = require 'async'
 Q = require 'q'
 
 readdir = Q.denodeify fs.readdir
@@ -23,6 +22,8 @@ isButterflyPackage = (p) ->
       .then (content) ->  _.has JSON.parse(content), 'identifier'
     else
       false
+
+C_Server = atom.config.get 'atom-butterfly.chameleonServerAddress'
 
 module.exports =
   class PackageListView extends View
@@ -128,7 +129,7 @@ module.exports =
     #3.新增模块
 
     uploadAttachment: (file, success, error) ->
-      r = request.post 'http://bsl.foreveross.com/bsl-web/mam/attachment/upload', (err, res, body)=>
+      r = request.post "#{C_Server}/bsl-web/mam/attachment/upload", (err, res, body)=>
           return error err if err
           success JSON.parse(body) if success
 
@@ -138,12 +139,12 @@ module.exports =
         contentType: 'application/zip'
 
     validateAttachment: (id, success, error) ->
-      r = request.get "http://bsl.foreveross.com/bsl-web/mam/attachment/readfile/#{id}", (err, res, body)=>
+      r = request.get "#{C_Server}/bsl-web/mam/attachment/readfile/#{id}", (err, res, body)=>
         return error err if err
         success JSON.parse(body) if success
 
     newModule: (data, success, error) ->
-      r = request.post "http://bsl.foreveross.com/bsl-web/mam/widgetVersion/add", (err, res, body)=>
+      r = request.post "#{C_Server}/bsl-web/mam/widgetVersion/add", (err, res, body)=>
         return error err if err
         success JSON.parse(body) if success
 
@@ -157,7 +158,7 @@ module.exports =
       form.append 'widget_id', data.widget_id
 
     loginServer: (acc, username, password, success, error) ->
-      r = request.post 'http://bsl.foreveross.com/bsl-web/system/account/login', (err, res, body)=>
+      r = request.post "#{C_Server}/bsl-web/system/account/login", (err, res, body)=>
         return error err if err
         success JSON.parse(body) if success
       form = r.form()

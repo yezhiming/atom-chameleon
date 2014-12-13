@@ -10,9 +10,9 @@ Q.longStackSupport = true
 module.exports =
 
   configDefaults:
-    chameleonServerAddress: 'http://localhost'
-    tanant: ''
-    username: ''
+    chameleonServerAddress: 'http://bsl.foreveross.com'
+    chameleonTanant: 'cube'
+    chameleonUsername: 'cube'
     puzzleServerAddress: 'http://localhost:8080'
     puzzleServerAddressSecured: 'https://localhost:8443'
     puzzleAccessToken: ''
