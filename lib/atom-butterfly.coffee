@@ -13,14 +13,14 @@ module.exports =
     chameleonServerAddress: 'http://localhost'
     tanant: ''
     username: ''
-    puzzleServerAddress: 'https://localhost:8080'
+    puzzleServerAddress: 'http://localhost:8080'
     puzzleServerAddressSecured: 'https://localhost:8443'
-    puzzleAPIToken: ''
+    puzzleAccessToken: ''
 
   activate: (state) ->
-    # create uid if necessary
-    uid = atom.config.get('atom-butterfly.puzzleAPIToken')
-    atom.config.set('atom-butterfly.puzzleAPIToken', UUID.v4()) unless uid
+    # create access_token if necessary
+    token = atom.config.get('atom-butterfly.puzzleAccessToken')
+    atom.config.set('atom-butterfly.puzzleAccessToken', UUID.v4()) unless token
 
     @packageManager = new (require './package/package-manager')()
     @packageManager.activate()
@@ -65,7 +65,8 @@ module.exports =
     # webview = document.querySelector('webview')
     # webview.openDevTools() unless webview.isDevToolsOpened()
 
-    new (require './build/build-status-view')('25').attach()
+    bsv = new (require './build/build-status-view')()
+    bsv.attach()
 
   cmdCreateProject: ->
 

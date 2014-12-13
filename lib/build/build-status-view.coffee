@@ -1,29 +1,51 @@
 #
 # 显示任务状态，点击构建时弹出，作为一个tab
 #
-{$, View} = require 'atom'
+{$, View, SelectListView, $$} = require 'atom'
 qrcode = require '../qrcode'
 request = require 'request'
 io = require 'socket.io-client'
 Q = require 'q'
 
+class BuildTaskListView extends SelectListView
+
+  initialize: () ->
+    super
+    @filterEditorView.off 'blur'
+
+  # Here you specify the view for an item
+  viewForItem: (item) ->
+    $$ ->
+      @li =>
+        @p item.id
+        @p item.state
+
+  confirmed: (item) ->
+
 module.exports =
 class BuildStatusView extends View
   @content: ->
-    @div class: 'build-status-view butterfly overlay from-top', =>
+    @div class: 'build-status-view butterfly overlay width-700 from-top', =>
       @h1 'Build Status'
-      @div class: "form-group", =>
-        @label 'ID:'
-        @span class: 'task-id'
-      @div class: "form-group", =>
-        @label 'UUID:'
-        @span class: 'task-uuid'
-      @div class: "form-group", =>
-        @label 'State:'
-        @span class: 'task-state'
 
-      @div id: 'qrcode', =>
-        @span class: 'loading loading-spinner-large inline-block'
+      @div class: 'row', =>
+        @div class: 'col-xs-3', =>
+          @subview 'taskList', new BuildTaskListView()
+
+        @div class: 'col-xs-9', =>
+          @div class: "form-group", =>
+            @label 'ID:'
+            @span class: 'task-id'
+          @div class: "form-group", =>
+            @label 'UUID:'
+            @span class: 'task-uuid'
+          @div class: "form-group", =>
+            @label 'State:'
+            @span class: 'task-state'
+            @span class: 'glyphicon glyphicon-remove text-error hidden'
+
+          @div id: 'qrcode', =>
+            @span class: 'loading loading-spinner-large inline-block'
 
       @div class: 'actions', =>
         @div class: 'pull-left', =>
@@ -34,21 +56,35 @@ class BuildStatusView extends View
   initialize: ->
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
     @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
+    @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
 
   attach: ->
     atom.workspaceView.append(this)
 
+    Q.nfcall request.get, "#{@server}/api/tasks?access_token=#{@access_token}"
+    .then (result) ->
+      JSON.parse result[1]
+    .then (result) =>
+      console.log result
+      @taskList.setItems(result)
+    .catch (err) ->
+      alert('fetch build tasks fail.' + err)
+      trace err.stack
+
   destroy: ->
+    @socket?.disconnect()
     @detach()
 
   setTaskId: (@id) ->
+    @updateTaskList()
+
     @onClickRefresh()
 
-    socket = io(@server)
+    @socket = socket = io(@server)
 
     socket.on 'connect', ->
       console.log "bind socket"
-      socket.emit 'bind', atom.config.get('atom-butterfly.puzzleAPIToken')
+      socket.emit 'bind', atom.config.get('atom-butterfly.puzzleAccessToken')
 
     socket.on 'error', (err) ->
       console.log "socket error: #{err}"
@@ -75,7 +111,8 @@ class BuildStatusView extends View
       @showError() if body.state == 'failed'
 
   showError: ->
-
+    @find('#qrcode').empty()
+    @find('.glyphicon-remove').removeClass('hidden')
 
   updateQRCode: ->
     qr = qrcode(4, 'M')
