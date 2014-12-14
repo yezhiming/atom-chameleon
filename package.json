@@ -22,6 +22,8 @@
     "decompress": "~2.1.1",
     "adm-zip": "*",
     "socket.io-client": "*",
-    "uuid": "~2.0.1"
+    "uuid": "~2.0.1",
+    "download":"*",
+    "ios-deploy":"*"
   }
 }
