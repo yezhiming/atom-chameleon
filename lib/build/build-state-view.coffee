@@ -51,7 +51,10 @@ class BuildStatusView extends View
   attach: ->
     atom.workspaceView.append(this)
 
-    @socket = io(@server)
+    console.log "try to connect."
+    @socket = io @server,
+      reconnectionAttempts: Infinity
+      reconnectionDelay: 10
 
     @socket.on 'connect', =>
       console.log "socket connected. #{@access_token}"
@@ -59,7 +62,7 @@ class BuildStatusView extends View
 
     @socket.on 'disconnect', ->
       console.log "socket disconnected."
-    
+
     @socket.on 'reconnect', ->
       console.log "socket reconnect."
 
