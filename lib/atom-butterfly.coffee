@@ -22,14 +22,17 @@ module.exports =
     token = atom.config.get('atom-butterfly.puzzleAccessToken')
     atom.config.set('atom-butterfly.puzzleAccessToken', UUID.v4()) unless token
 
+    @projectManager = new (require './project/project-manager')()
+    @projectManager.activate()
+
     @packageManager = new (require './package/package-manager')()
     @packageManager.activate()
 
     @buildManager = new (require './build/build-manager')()
     @buildManager.activate()
 
-    @projectManager = new (require './project/project-manager')()
-    @projectManager.activate()
+    @emulatorManager = new (require './emulator/emulator-manager')()
+    @emulatorManager.activate()
 
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
 
@@ -37,18 +40,11 @@ module.exports =
     atom.workspaceView.command "atom-butterfly:create-project", => @cmdCreateProject()
     atom.workspaceView.command "atom-butterfly:create-file", => @cmdCreateFile()
 
-    #Product
-    atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
-    atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
-
   deactivate: ->
+    @projectManager.deactivate?()
     @packageManager.deactivate?()
     @buildManager.deactivate?()
-
-    @runOnServerView?.destroy()
-    @serverStatusView?.destroy()
-
-    @debugServer?.stop()
+    @emulatorManager.deactivate?()
 
   cmdDebug: ->
     # BowerView = require './scaffold/bower-view'
@@ -102,22 +98,6 @@ module.exports =
       alert('error occur!')
     .finally ->
       pv.destroy()
-
-  cmdRunOnServer: ->
-
-    @_setupDebugServer()
-
-    RunOnServerView = require './run-on-server-view'
-    @runOnServerView = new RunOnServerView()
-    @runOnServerView.attach()
-    @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState, api)=>
-      @debugServer.start {
-        rootPath: rootPath
-        defaultPage: destPath
-        httpPort: httpPort
-        pushState: pushState
-        api: api
-      }
 
   _setupDebugServer: ->
 

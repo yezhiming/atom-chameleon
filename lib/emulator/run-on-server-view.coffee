@@ -1,8 +1,11 @@
 path = require 'path'
-fs = require 'fs'
+fs = require 'fs-extra'
 {View, EditorView} = require 'atom'
 remote = require 'remote'
 dialog = remote.require 'dialog'
+Q = require 'q'
+
+fsmkdirs = Q.denodeify fs.mkdirs
 
 module.exports =
 class RunOnServerView extends View
@@ -38,10 +41,10 @@ class RunOnServerView extends View
           @label 'http port'
           @subview 'httpPort', new EditorView(mini: true)
 
-        @div class: "checkbox", =>
-          @label =>
-            @input type: "checkbox", id: 'usingPushState'
-            @text('Using pushState')
+        # @div class: "checkbox", =>
+        #   @label =>
+        #     @input type: "checkbox", id: 'usingPushState'
+        #     @text('Using pushState')
 
         @button 'Run', click: 'onClickRun', class: "btn btn-primary btn-lg btn-block"
 
