@@ -56,7 +56,7 @@ class V extends View
           title: "Select .#{each.suffix} File"
           filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
         .then (destPath) ->
-          if each.relative?
+          if each.relative
             each.view.setText path.relative(atom.project.path, destPath[0])
           else
             each.view.setText destPath[0]
@@ -71,10 +71,10 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
 
-    path = atom.project.getPath()+"/resource/ios"
-    @icon.attr 'src',"#{path}/test.png"
-    @mobileprovision.setText "#{path}/comeontom_dis1210.mobileprovision"
-    @p12.setText "#{path}/Distribution.p12"
+    test_path = atom.project.getPath()+"/resource/ios"
+    @icon.attr 'src',"#{test_path}/test.png"
+    @mobileprovision.setText "#{test_path}/comeontom_dis1210.mobileprovision"
+    @p12.setText "#{test_path}/Distribution.p12"
     @password.setText "123456"
     @scheme.setText "chameleon-bundled"
     @BundleIdentifier.setText "com.foreveross.comeontom"
