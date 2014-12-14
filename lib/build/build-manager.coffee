@@ -1,6 +1,7 @@
 fs = require 'fs'
 request = require 'request'
 Q = require 'q'
+_ = require 'underscore'
 
 module.exports =
 class BuildManager
@@ -27,8 +28,11 @@ class BuildManager
       buildWizard.destroy()
       buildStateView.attach()
 
+      require('../../utils/zip')(atom.project.path,"./","foreveross.zip").then (zip_path) -> _.extend(result, asset: zip_path)
+    .then (result) =>
       @sendBuildRequest(result)
     .then (result)->
+      console.log "comeotnom:#{result}"
       JSON.parse result[1]
     .then (task) ->
       buildStateView.setTask(task)
@@ -39,6 +43,7 @@ class BuildManager
       alert "err occur! #{err}"
 
   sendBuildRequest: (options) ->
+    console.log "options:#{options}"
     if options.platform == "android"
       Q.nfcall request.post,
         url: "#{@server}/api/tasks"
@@ -58,6 +63,7 @@ class BuildManager
           title: options.title
           content_src: options.content_src
           icon: fs.createReadStream options.icon
+          asset:fs.createReadStream options.asset
     else
       Q.nfcall request.post,
         url: "#{@server}/api/tasks"
@@ -77,4 +83,4 @@ class BuildManager
           build: options.build
           content_src: options.content_src
           bundleIdentifier:options.BundleIdentifier
-          asset:fs.createReadStream atom.project.path
+          asset:fs.createReadStream options.asset
