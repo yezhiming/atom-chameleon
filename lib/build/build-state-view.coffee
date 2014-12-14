@@ -131,7 +131,7 @@ class BuildStatusView extends View
     console.log "update qrcode for platform: #{platform}"
     qr = qrcode(4, 'M')
     if platform == 'ios'
-      @devicebtn.show()
+      # @devicebtn.show()
       qr.addData("#{@serverSecured}/archives/#{@task.id}/install/ios")
     else if platform == 'android'
       qr.addData("#{@serverSecured}/archives/#{@task.id}.apk")

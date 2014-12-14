@@ -1,6 +1,7 @@
 fs = require 'fs'
 request = require 'request'
 Q = require 'q'
+_ = require 'underscore'
 
 module.exports =
 class BuildManager
@@ -27,11 +28,17 @@ class BuildManager
       buildWizard.destroy()
       buildStateView.attach()
 
+      require('../../utils/zip')(atom.project.path,"./","foreveross.zip").then (zip_path) ->_.extend(result, asset: zip_path)
+    .then (result) =>
       @sendBuildRequest(result)
-    .then (result)->
-      JSON.parse result[1]
+    .then (result) =>
+      zip_path = "#{atom.project.path}/foreveross.zip"
+      if fs.existsSync zip_path
+        fs.unlinkSync(zip_path)
+      JSON.parse result
     .then (task) ->
       buildStateView.setTask(task)
+      
 
     .catch (err) ->
       buildStateView.destroy()
@@ -39,42 +46,48 @@ class BuildManager
       alert "err occur! #{err}"
 
   sendBuildRequest: (options) ->
+    console.log "options:#{options}"
     if options.platform == "android"
-      Q.nfcall request.post,
-        url: "#{@server}/api/tasks"
-        rejectUnauthorized: false
-        form:
-          access_token: atom.config.get('atom-butterfly.puzzleAccessToken')
-          builder: 'cordova-android'
-          platform: 'android'
-          repository_url: options.repository_url
-          buildtype: options.scheme
-          keystore: fs.createReadStream options.keystore
-          alias: options.alias
-          keypass: options.keypass
-          aliaspass: options.aliaspass
-          version: options.version
-          build: options.build
-          title: options.title
-          content_src: options.content_src
-          icon: fs.createReadStream options.icon
+      
+      Q.Promise (resolve, reject, notify) =>
+        r = request.post "#{@server}/api/tasks",(err, httpResponse, body)=>
+          if err then reject(err) else resolve(body)
+        
+        form = r.form()
+        form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+        form.append "builder","cordova-android"
+        form.append "platform","android"
+        form.append "repository_url","#{options.repository_url}"
+        form.append "buildtype","#{options.scheme}"
+        form.append "keystore",fs.createReadStream (options.keystore)
+        form.append "alias","#{options.alias}"
+        form.append "keypass","#{options.keypass}"
+        form.append "aliaspass","#{options.aliaspass}"
+        form.append "version","#{options.version}"
+        form.append "build","#{options.build}"
+        form.append "title","#{options.title}"
+        form.append "content_src","#{options.content_src}"
+        form.append "icon",fs.createReadStream(options.icon)
+        form.append "asset",fs.createReadStream(options.asset)
+
     else
-      Q.nfcall request.post,
-        url: "#{@server}/api/tasks"
-        rejectUnauthorized: false
-        form:
-          access_token: atom.config.get('atom-butterfly.puzzleAccessToken')
-          builder: 'cordova-ios'
-          platform: 'ios'
-          mobileprovision: fs.createReadStream options.Mobileprovision
-          p12: fs.createReadStream options.p12
-          p12_password: options.p12_password
-          scheme: options.scheme
-          repository_url: options.repository_url
-          icon: fs.createReadStream options.icon
-          title: options.title
-          version: options.version
-          build: options.build
-          content_src: options.content_src
-          bundleIdentifier:options.BundleIdentifier
-          asset:fs.createReadStream atom.project.path
+      Q.Promise (resolve, reject, notify) =>
+        r = request.post "#{@server}/api/tasks",(err, httpResponse, body)=>
+          if err then reject(err) else resolve(body)
+        
+        form = r.form()
+        form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+        form.append "builder","cordova-ios"
+        form.append "platform","ios"
+        form.append "mobileprovision",fs.createReadStream(options.Mobileprovision)
+        form.append "p12",fs.createReadStream(options.p12)
+        form.append "p12_password","#{options.p12_password}"
+        form.append "scheme","#{options.scheme}"
+        form.append "repository_url","#{options.repository_url}"
+        form.append "icon",fs.createReadStream(options.icon)
+        form.append "title","#{options.title}"
+        form.append "version","#{options.version}"
+        form.append "build","#{options.build}"
+        form.append "content_src","#{options.content_src}"
+        form.append "bundleIdentifier","#{options.BundleIdentifier}"
+        form.append "asset",fs.createReadStream(options.asset)
