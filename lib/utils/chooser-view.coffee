@@ -4,7 +4,7 @@ _ = require 'underscore'
 module.exports =
 class Chooser extends View
   @content: (options)->
-    @div id: 'chooser-view', =>
+    @div class: 'chooser-view', =>
       @h2 options.title or ''
       @div =>
         #grid view
@@ -31,6 +31,8 @@ class Chooser extends View
     return unless view.length
     @find('.grid-view .selected').removeClass('selected')
     view.addClass('selected')
+
+    @description.text @getSelectedItem().description
 
   selectFirstItemView: ->
     @selectItemView @find('.grid-view li:first')

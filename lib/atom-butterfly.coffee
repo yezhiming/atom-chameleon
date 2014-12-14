@@ -84,7 +84,7 @@ module.exports =
       # {createProjectPromise} = require './project/scaffold'
       # createProjectPromise(options)
       switch options.template
-        when 'simple' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
+        when 'simple' then options.repo = "https://github.com/yezhiming/butterfly-starter.git"
         when 'modular' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
         else options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
       (require "./project/scaffolder")(options)

@@ -13,7 +13,7 @@ class TemplateTreeView extends View
             @span class: 'icon icon-file-text', 'aaa'
 
 templates = [
-  {id: 'simple', name: 'Simple', glyphicon: 'glyphicon-bold', description: 'A Simple Project, with Butterfly.js framework, and Bootstrap, Ratchet framework, if selected.'}
+  {id: 'simple', name: 'Starter', glyphicon: 'glyphicon-bold', description: 'A Simple Project, with Butterfly.js framework, and Bootstrap, Ratchet framework, if selected.'}
   {id: 'modular', name: 'Modular', glyphicon: 'glyphicon-align-center', description: 'A Project with modular feature enabled, along with Butterfly.js framework, and a base main module'}
   {id: 'empty', name: 'Empty', glyphicon: 'glyphicon-align-center', description: 'An empty project'}
 ]
