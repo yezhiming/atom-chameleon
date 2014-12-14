@@ -2,7 +2,7 @@
 # 显示任务状态，点击构建时弹出，作为一个tab
 #
 {$, View, SelectListView, $$} = require 'atom'
-qrcode = require '../qrcode'
+qrcode = require '../utils/qrcode'
 request = require 'request'
 io = require 'socket.io-client'
 Q = require 'q'

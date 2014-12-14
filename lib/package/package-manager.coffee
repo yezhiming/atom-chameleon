@@ -6,7 +6,6 @@ module.exports =
 class PackageManager
 
   activate: ->
-    console.log "package manager launch..."
     atom.workspaceView.command "atom-butterfly:create-package", => @cmdCreatePackage()
     atom.workspaceView.command "atom-butterfly:list-package", => @cmdPublishPackage()
     atom.workspaceView.command "atom-chameleon:publish-package", => @cmdPublishPackage()

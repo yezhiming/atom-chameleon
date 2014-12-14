@@ -6,7 +6,6 @@ module.exports =
 class BuildManager
 
   activate: ->
-    console.log "build manager launch..."
     atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
 
