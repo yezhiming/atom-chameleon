@@ -32,14 +32,8 @@ repos = [
   }
   {
     name: 'Chameleon iOS with All Plugins'
-    url: 'https://git.oschina.net/chameleon/chameleon-ios/repository/archive?ref=master'
+    url: 'https://git.oschina.net/chameleon/chameleon-ios.git'
     description: 'Chameleon Application All'
-    platform: 'ios'
-  }
-  {
-    name: 'Chameleon iOS Test'
-    url: 'http://localhost:800/iosdown/ios.zip'
-    description: 'Chameleon iOS for testing'
     platform: 'ios'
   }
   {
