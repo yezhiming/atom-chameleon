@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+CORDOVA_PATH=$( cd "$( dirname "$0" )" && pwd -P)
+
+appPath=$1
+echo "coemotnm:$appPath"
+#参数获取
+# while [ $# -gt 0 ]; do
+#   echo "comeotnom:$1"
+#   if [ "$1"x = "-path"x ]; then
+#     appPath=$2
+#     shift
+#   fi
+#
+#   shift
+# done
+
+
+if [ -z "$appPath" ]; then
+  echo "请输入app地址"
+  exit
+fi
+
+ios-deploy --bundle $appPath
