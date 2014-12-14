@@ -26,7 +26,7 @@ class AppRepoListView extends SelectListView
 repos = [
   {
     name: 'Chameleon iOS'
-    url: 'https://git.oschina.net/chameleon/chameleon-ios/repository/archive?ref=master'
+    url: 'https://git.oschina.net/chameleon/chameleon-ios.git'
     description: 'Standard Chameleon Application'
     platform: 'ios'
   }

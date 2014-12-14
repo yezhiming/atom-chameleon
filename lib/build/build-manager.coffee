@@ -47,7 +47,7 @@ class BuildManager
           access_token: atom.config.get('atom-butterfly.puzzleAccessToken')
           builder: 'cordova-android'
           platform: 'android'
-          download_url: options.app_url
+          repository_url: options.repository_url
           buildtype: options.scheme
           keystore: fs.createReadStream options.keystore
           alias: options.alias
@@ -70,7 +70,7 @@ class BuildManager
           p12: fs.createReadStream options.p12
           p12_password: options.p12_password
           scheme: options.scheme
-          download_url: options.app_url
+          repository_url: options.repository_url
           icon: fs.createReadStream options.icon
           title: options.title
           version: options.version
