@@ -12,15 +12,19 @@ module.exports = (pathDir,source,decs,cb)->
   
   
     args = ["-r",decs,source];
-    comeontom = spawn("zip",args)
+    comeontom = spawn("zip", args, maxBuffer: 1024*1024*10)
+
+    comeontom.stdout.on('data',(data)->
+      console.log "stdout:"+data
+    )
+    
+    comeontom.stderr.on('data',(data)->
+      # errorcb && errorcb(data)
+      console.log data
+    )
     
     comeontom.on 'close',(status)->
-      # if status is 0
-      #   console.log "zip success"
-      # else
-      #   console.log "zip failed"
       zip_path = "#{pathDir}/#{decs}"
-      # cb(status,zip_path)
 
       if status is 0
         resolve(zip_path)

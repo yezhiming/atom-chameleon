@@ -50,7 +50,7 @@ class BuildManager
     if options.platform == "android"
       
       Q.Promise (resolve, reject, notify) =>
-        r = request.post "#{@server}/api/tasks",(err, httpResponse, body)=>
+        r = request.post {url:"#{@server}/api/tasks",timeout: 1000*60*10}, (err, httpResponse, body)=>
           if err then reject(err) else resolve(body)
         
         form = r.form()
@@ -72,7 +72,7 @@ class BuildManager
 
     else
       Q.Promise (resolve, reject, notify) =>
-        r = request.post "#{@server}/api/tasks",(err, httpResponse, body)=>
+        r = request.post {url:"#{@server}/api/tasks",timeout: 1000*60*10}, (err, httpResponse, body)=>
           if err then reject(err) else resolve(body)
         
         form = r.form()
