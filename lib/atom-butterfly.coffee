@@ -28,6 +28,9 @@ module.exports =
     @buildManager = new (require './build/build-manager')()
     @buildManager.activate()
 
+    @projectManager = new (require './project/project-manager')()
+    @projectManager.activate()
+
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
 
     #New
@@ -35,7 +38,6 @@ module.exports =
     atom.workspaceView.command "atom-butterfly:create-file", => @cmdCreateFile()
 
     #Product
-    atom.workspaceView.command "atom-butterfly:install", => @cmdInstall()
     atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
     atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
 
@@ -79,8 +81,13 @@ module.exports =
 
     # create project with options
     .then (options) ->
-      {createProjectPromise} = require './project/scaffold'
-      createProjectPromise(options)
+      # {createProjectPromise} = require './project/scaffold'
+      # createProjectPromise(options)
+      switch options.template
+        when 'simple' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
+        when 'modular' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
+        else options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
+      (require "./project/scaffold-modular")(options)
 
     # open new project
     .then (projectPath)->
@@ -89,23 +96,11 @@ module.exports =
     .progress (progress)->
       pv.setTitle(progress.message) if progress.message
       pv.setProgress(progress.progress) if progress.progress
+      console.log progress.out if progress.out
     .catch (error) ->
       console.trace error.stack
       alert('error occur!')
     .finally ->
-      pv.destroy()
-
-  cmdInstall: ->
-
-    pv = new ProgressView("Install Butterfly.js...")
-    pv.attach()
-
-    Scaffolder = require './project/scaffold'
-    Scaffolder.installFrameworkPromise()
-    .progress (progress)->
-      pv.setTitle(progress.message) if progress.message
-      pv.setProgress(progress.progress) if progress.progress
-    .then ->
       pv.destroy()
 
   cmdRunOnServer: ->
