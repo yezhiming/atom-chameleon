@@ -7,6 +7,11 @@ request = require 'request'
 io = require 'socket.io-client'
 Q = require 'q'
 
+{allowUnsafeNewFunction} = require('loophole')
+Download = allowUnsafeNewFunction -> require 'download'
+
+Device = require '../../script/runDevice'
+
 module.exports =
 class BuildStatusView extends View
   @content: ->
@@ -38,6 +43,8 @@ class BuildStatusView extends View
       @div class: 'actions', =>
         @div class: 'pull-left', =>
           @button 'Cancel', click: 'destroy', class: 'inline-block-tight btn'
+        @div class: 'pull-right',outlet:"devicebtn",style:"display:none", =>
+          @button 'Device', click: 'DeviceFun', class: 'inline-block-tight btn'
         @div class: 'pull-right', =>
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
@@ -47,6 +54,7 @@ class BuildStatusView extends View
     @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
 
     @find('#toggle-out').on 'click', => @find('#out').toggle()
+    # @devicebtn.show()
 
   attach: ->
     atom.workspaceView.append(this)
@@ -120,6 +128,7 @@ class BuildStatusView extends View
     console.log "update qrcode for platform: #{platform}"
     qr = qrcode(4, 'M')
     if platform == 'ios'
+      @devicebtn.show()
       qr.addData("#{@serverSecured}/archives/#{@task.id}/install/ios")
     else if platform == 'android'
       qr.addData("#{@serverSecured}/archives/#{@task.id}.apk")
@@ -128,3 +137,23 @@ class BuildStatusView extends View
     qr.make()
     imgTag = qr.createImgTag(8)
     @find('#qrcode').empty().append(imgTag)
+
+  DeviceFun:->
+    # https://172.16.1.95:8443/archives/device/4/ios
+    downLoadPath = "#{@server}/archives/device/#{@task.id}/ios"
+    # downLoadPath = "http://172.16.1.95:8080/archives/device/5/ios"
+    destPath = "#{atom.project.path}/#{@task.id}/comeontom.app"
+    # destPath = "#{atom.project.path}/5/comeontom.app"
+    console.log "downLoadPath#{downLoadPath}"
+    download = new Download({ extract: true, strip: 1, mode: '777' })
+    .get(downLoadPath)
+    .dest(destPath)
+    
+    download.run (err, files, stream)->
+      if err
+        throw err
+      Device(destPath,(status)->
+        console.log "status:#{status}"
+      )
+    
+    

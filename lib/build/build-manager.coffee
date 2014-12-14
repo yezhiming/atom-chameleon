@@ -78,3 +78,4 @@ class BuildManager
           build: options.build
           content_src: options.content_src
           bundleIdentifier:options.BundleIdentifier
+          asset:fs.createReadStream atom.project.path
