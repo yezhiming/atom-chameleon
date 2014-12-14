@@ -54,11 +54,14 @@ class BuildStatusView extends View
     @socket = io(@server)
 
     @socket.on 'connect', =>
-      console.log "socket connected."
+      console.log "socket connected. #{@access_token}"
       @socket.emit 'bind', @access_token
 
     @socket.on 'disconnect', ->
       console.log "socket disconnected."
+    
+    @socket.on 'reconnect', ->
+      console.log "socket reconnect."
 
     @socket.on 'error', (err) ->
       console.log "socket error: #{err}"
@@ -95,7 +98,6 @@ class BuildStatusView extends View
   showState: (task) ->
     @loading.show()
 
-    console.log task.state
     @loading.hide() if task.state == 'failed'
     switch task.state
       when 'complete'
