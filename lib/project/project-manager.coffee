@@ -38,20 +38,15 @@ class PackageManager
     targetFolder = path.resolve(installToPath, 'butterfly')
     targetZipFile = path.resolve(installToPath, 'butterfly.zip')
 
-    #promises
-    downloadZip = ->
-      #proxy the downloadPromise, transfer the indeterminate progress into message progress
-      Q.Promise (resolve, reject, notify) ->
-        download(butterflyURL, targetZipFile)
-        .then resolve, reject, (progress) ->
-          if progress.indeterminate
-            notify 'message': "Download butterfly.js...(#{progress.indeterminate / 1000}k)"
-          else
-            notify progress
-
     #flow
     fsremove(targetZipFile)
-    .then downloadZip
+    .then -> download(butterflyURL, targetZipFile)
     .then -> fsremove(targetFolder)
     .then -> unzip(targetZipFile, targetFolder)
     .then -> fsremove(targetZipFile)
+    #proxy the downloadPromise, transfer the indeterminate progress into message progress
+    .progress (progress) ->
+      if progress.indeterminate
+        'message': "Download butterfly.js...(#{progress.indeterminate / 1000}k)"
+      else
+        progress
