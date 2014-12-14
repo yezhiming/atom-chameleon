@@ -97,4 +97,4 @@ class V extends View
     p12_password: @password.getText()
     scheme: @scheme.getText()
     content_src: @src.getText()
-    app_url: @url.getText()
+    repository_url: @url.getText()
