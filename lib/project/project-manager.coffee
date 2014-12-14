@@ -13,7 +13,6 @@ module.exports =
 class PackageManager
 
   activate: ->
-    atom.workspaceView.command "atom-butterfly:create-package", => @cmdCreatePackage()
     atom.workspaceView.command "atom-butterfly:install", => @cmdInstall()
 
   deactivate: ->
