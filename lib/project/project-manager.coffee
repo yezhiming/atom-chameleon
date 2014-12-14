@@ -7,6 +7,8 @@ unzip = require '../utils/unzip'
 
 butterflyURL = "https://github.com/yezhiming/butterfly/archive/master.zip"
 
+fsremove = Q.denodeify fs.remove
+
 module.exports =
 class PackageManager
 
@@ -25,11 +27,11 @@ class PackageManager
     .progress (progress)->
       pv.setTitle(progress.message) if progress.message
       pv.setProgress(progress.progress) if progress.progress
-    .then ->
-      pv.destroy()
     .catch (err) ->
       alert "err: #{err}"
       console.trace err.stack
+    .finally ->
+      pv.destroy()
 
   installFramework: (installToPath = atom.project.path)->
 
@@ -37,22 +39,19 @@ class PackageManager
     targetZipFile = path.resolve(installToPath, 'butterfly.zip')
 
     #promises
-    deleteZip = -> Q.nfcall(fs.remove, targetZipFile)
-    deleteFramework = -> Q.nfcall(fs.remove, targetFolder)
-    unzipFramework = -> unzip(targetZipFile, installToPath)
     downloadZip = ->
       #proxy the downloadPromise, transfer the indeterminate progress into message progress
       Q.Promise (resolve, reject, notify) ->
         download(butterflyURL, targetZipFile)
         .then resolve, reject, (progress) ->
           if progress.indeterminate
-            notify 'message': "Download butterfly.js...(#{progress / 1000}k)"
+            notify 'message': "Download butterfly.js...(#{progress.indeterminate / 1000}k)"
           else
             notify progress
 
     #flow
-    deleteZip()
+    fsremove(targetZipFile)
     .then downloadZip
-    .then deleteFramework
-    .then unzipFramework
-    .then deleteZip
+    .then -> fsremove(targetFolder)
+    .then -> unzip(targetZipFile, targetFolder)
+    .then -> fsremove(targetZipFile)
