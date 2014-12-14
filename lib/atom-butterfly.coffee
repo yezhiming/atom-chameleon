@@ -87,7 +87,7 @@ module.exports =
         when 'simple' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
         when 'modular' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
         else options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
-      (require "./project/scaffold-modular")(options)
+      (require "./project/scaffolder")(options)
 
     # open new project
     .then (projectPath)->
