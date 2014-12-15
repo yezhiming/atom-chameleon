@@ -69,9 +69,8 @@ class BuildStatusView extends View
 
     @socket = io @server,
       reconnection: true
-      reconnectionDelay: 2000
+      reconnectionDelay: 50
       reconnectionDelayMax: 12000
-      timeout: 8000
 
     @socket.on 'connect', =>
       console.log "socket connected. #{@access_token}"
