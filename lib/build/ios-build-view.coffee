@@ -67,28 +67,19 @@ class V extends View
       .attach()
       .filterPlatform('ios')
 
+    # set defaults
     @title.setText _.last(atom.project.path.split("/")) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
 
-    test_path = atom.project.getPath()+"/resource/ios"
-    @icon.attr 'src',"#{test_path}/test.png"
-    @mobileprovision.setText "#{test_path}/comeontom_dis1210.mobileprovision"
-    @p12.setText "#{test_path}/Distribution.p12"
-    @password.setText "123456"
-    @scheme.setText "chameleon-bundled"
-    @BundleIdentifier.setText "com.foreveross.comeontom"
-    @src.setText "exhibition/index.html"
+    # restore last options
 
   destroy: ->
+
+    # save last options
+
     console.log  "ios-build-view destroy."
     @remove()
-
-  attached: ->
-    console.log  "ios-build-view attached."
-
-  detached: ->
-    console.log  "ios-build-view detached."
 
   onClickIcon: ->
     openFile

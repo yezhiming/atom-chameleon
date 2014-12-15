@@ -41,14 +41,17 @@ class WizardView extends View
     # disable 'Next' Button on the last flow + 1
     @next.prop 'disabled', @order == @constructor.flow.length
 
-    #invoke destroy if provided, invoke remove othervise
-    @currentView.destroy?() or @currentView.remove?() if @currentView
+    @_destroyCurrentStep()
 
     nextFlow = @constructor.flow[@order]
     View = nextFlow(previous_result)
 
     @currentView = new View(this)
     if @currentView.attachTo then @currentView.attachTo(@contentView) else @contentView.append(@currentView)
+
+  _destroyCurrentStep: ->
+    #invoke destroy if provided, invoke remove othervise
+    @currentView.destroy?() or @currentView.remove?() if @currentView
 
   onClickPrevious: ->
     @order--
@@ -70,7 +73,10 @@ class WizardView extends View
     return this
 
   destroy: ->
-    @detach()
+
+    @_destroyCurrentStep()
+
+    @remove()
 
   enableNext: ->
     @next.prop 'disabled', false

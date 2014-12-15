@@ -63,6 +63,8 @@ class BuildStatusView extends View
     @socket = io @server,
       reconnectionAttempts: Infinity
       reconnectionDelay: 10
+      reconnectionDelayMax: 100
+      timeout: 3000
 
     @socket.on 'connect', =>
       console.log "socket connected. #{@access_token}"
@@ -138,7 +140,7 @@ class BuildStatusView extends View
     else
       throw new Error('qrcode: unkown platform.')
     qr.make()
-    imgTag = qr.createImgTag(8)
+    imgTag = qr.createImgTag(4)
     @find('#qrcode').empty().append(imgTag)
 
   DeviceFun:->
@@ -151,12 +153,10 @@ class BuildStatusView extends View
     download = new Download({ extract: true, strip: 1, mode: '777' })
     .get(downLoadPath)
     .dest(destPath)
-    
+
     download.run (err, files, stream)->
       if err
         throw err
       Device(destPath,(status)->
         console.log "status:#{status}"
       )
-    
-    
