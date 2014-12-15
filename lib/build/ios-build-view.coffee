@@ -79,6 +79,17 @@ class V extends View
     @scheme.setText "chameleon-bundled"
     @BundleIdentifier.setText "com.foreveross.comeontom"
     @src.setText "exhibition/index.html"
+
+  destroy: ->
+    console.log  "ios-build-view destroy."
+    @remove()
+
+  attached: ->
+    console.log  "ios-build-view attached."
+
+  detached: ->
+    console.log  "ios-build-view detached."
+
   onClickIcon: ->
     openFile
       title: 'Select Icon Image'
