@@ -49,7 +49,9 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
   initialize: ->
+    # http url
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
+    # https url
     @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
     @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
 
@@ -60,9 +62,16 @@ class BuildStatusView extends View
     atom.workspaceView.append(this)
 
     console.log "try to connect."
+
+    # @socket = io @server,
+    #   reconnectionAttempts: Infinity
+    #   reconnectionDelay: 10
+
     @socket = io @server,
-      reconnectionAttempts: Infinity
-      reconnectionDelay: 10
+      reconnection: true
+      reconnectionDelay: 2000
+      reconnectionDelayMax: 12000
+      timeout: 8000
 
     @socket.on 'connect', =>
       console.log "socket connected. #{@access_token}"
@@ -71,8 +80,8 @@ class BuildStatusView extends View
     @socket.on 'disconnect', ->
       console.log "socket disconnected."
 
-    @socket.on 'reconnect', ->
-      console.log "socket reconnect."
+    @socket.on 'reconnect', (n)->
+      console.log "socket reconnect. #{n} counts"
 
     @socket.on 'error', (err) ->
       console.log "socket error: #{err}"
@@ -151,12 +160,10 @@ class BuildStatusView extends View
     download = new Download({ extract: true, strip: 1, mode: '777' })
     .get(downLoadPath)
     .dest(destPath)
-    
+
     download.run (err, files, stream)->
       if err
         throw err
       Device(destPath,(status)->
         console.log "status:#{status}"
       )
-    
-    
