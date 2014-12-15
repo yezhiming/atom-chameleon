@@ -79,15 +79,26 @@ class BuildManager
         form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
         form.append "builder","cordova-ios"
         form.append "platform","ios"
-        form.append "mobileprovision",fs.createReadStream(options.Mobileprovision)
-        form.append "p12",fs.createReadStream(options.p12)
-        form.append "p12_password","#{options.p12_password}"
-        form.append "scheme","#{options.scheme}"
-        form.append "repository_url","#{options.repository_url}"
-        form.append "icon",fs.createReadStream(options.icon)
+        
+        # 以下四个值需要同时不为空，否则不发送到服务器  如果不填写，那么使用服务器的默认证书
+        unless ( (options.Mobileprovision is "") || (options.p12 is "") || (options.p12_password is "") || (options.BundleIdentifier is ""))
+          form.append "mobileprovision",fs.createReadStream(options.Mobileprovision)
+          form.append "p12",fs.createReadStream(options.p12)
+          form.append "p12_password","#{options.p12_password}"
+          form.append "bundleIdentifier","#{options.BundleIdentifier}"
+        
+        # 若不填写，使用默认图标
+        unless options.icon is ""
+          form.append "icon",fs.createReadStream(options.icon)
+        
+        # # 下面是库连接，只要一下一个值为空，就是使用默认的github地址进行下载
+        unless ((options.repository_url is "") || (options.scheme is ""))
+          form.append "scheme","#{options.scheme}"
+          form.append "repository_url","#{options.repository_url}"
+
         form.append "title","#{options.title}"
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
         form.append "content_src","#{options.content_src}"
-        form.append "bundleIdentifier","#{options.BundleIdentifier}"
+        
         form.append "asset",fs.createReadStream(options.asset)

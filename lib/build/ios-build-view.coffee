@@ -70,15 +70,14 @@ class V extends View
     @title.setText _.last(atom.project.path.split("/")) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
-
-    test_path = atom.project.getPath()+"/resource/ios"
-    @icon.attr 'src',"#{test_path}/test.png"
-    @mobileprovision.setText "#{test_path}/comeontom_dis1210.mobileprovision"
-    @p12.setText "#{test_path}/Distribution.p12"
-    @password.setText "123456"
-    @scheme.setText "chameleon-bundled"
-    @BundleIdentifier.setText "com.foreveross.comeontom"
-    @src.setText "exhibition/index.html"
+    @src.setText "main/index.html"
+    # test_path = atom.project.getPath()+"/resource/ios"
+    # @icon.attr 'src',"#{test_path}/test.png"
+    # @mobileprovision.setText "#{test_path}/comeontom_dis1210.mobileprovision"
+    # @p12.setText "#{test_path}/Distribution.p12"
+    # @password.setText "123456"
+    # @scheme.setText "chameleon-bundled"
+    # @BundleIdentifier.setText "com.foreveross.comeontom"
   onClickIcon: ->
     openFile
       title: 'Select Icon Image'
