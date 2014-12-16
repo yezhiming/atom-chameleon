@@ -121,11 +121,11 @@ class PackageListView extends View
     .then (result) =>
       console.log "validate"
       throw new Error('upload fail') unless result.result is 'success'
-      @validateAttach result.id
+      @validateAttach(result.id).then (nResult) -> _.extend(nResult, boundle: result.id)
     .then (result) =>
       console.log "new module"
       throw new Error('validate fail') unless result.result is 'success'
-      @createModule _.extend result, {widget_id: '548698920cf2da4e8927bab5', boundle: id}
+      @newModule _.extend result, {widget_id: '548698920cf2da4e8927bab5'}
     .then (result) ->
       cell.changeState 'normal' if result.result is 'success'
     .catch (err) ->
@@ -141,18 +141,20 @@ class PackageListView extends View
       success JSON.parse(body) if success
 
   newModule: (data, success, error) ->
-    r = request.post "#{C_Server}/bsl-web/mam/widgetVersion/add", (err, res, body)=>
-      return error err if err
-      success JSON.parse(body) if success
 
-    form = r.form()
-    form.append 'name', data.name
-    form.append 'identify', data.identifier
-    form.append 'boundle', data.boundle
-    form.append 'build', data.build
-    form.append 'version', data.version
-    form.append 'release_not', data.releaseNote
-    form.append 'widget_id', data.widget_id
+    Q.Promise (resolve, reject, notify) ->
+
+      r = request.post "#{C_Server}/bsl-web/mam/widgetVersion/add", (err, res, body)=>
+        if err then reject(err) else resolve JSON.parse(body)
+
+      form = r.form()
+      form.append 'name', data.name
+      form.append 'identify', data.identifier
+      form.append 'boundle', data.boundle
+      form.append 'build', data.build
+      form.append 'version', data.version
+      form.append 'release_not', data.releaseNote
+      form.append 'widget_id', data.widget_id
 
   login: (tanant, username, password) ->
     console.log "login"
@@ -167,18 +169,10 @@ class PackageListView extends View
     request_get "#{C_Server}/bsl-web/mam/attachment/readfile/#{id}"
 
   uploadAttach: (buf) ->
-    # request_post url: "#{C_Server}/bsl-web/mam/attachment/upload",
-    #   form:
-    #     file: buf
-    #     filename: 'upload.zip'
-    #     contentType: 'application/zip'
 
     Q.Promise (resolve, reject, notify) ->
       r = request.post "#{C_Server}/bsl-web/mam/attachment/upload", (err, res, body)=>
-          if err
-            reject(err)
-          else
-            resolve JSON.parse(body)
+          if err then reject(err) else resolve JSON.parse(body)
 
       form = r.form()
       form.append "file", buf,
