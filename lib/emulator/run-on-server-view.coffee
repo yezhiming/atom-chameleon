@@ -1,6 +1,6 @@
 path = require 'path'
 fs = require 'fs-extra'
-{View, EditorView} = require 'atom'
+{View, EditorView, $$} = require 'atom'
 remote = require 'remote'
 dialog = remote.require 'dialog'
 Q = require 'q'
@@ -41,6 +41,12 @@ class RunOnServerView extends View
           @label 'http port'
           @subview 'httpPort', new EditorView(mini: true)
 
+        @div class: 'form-group', =>
+          @div =>
+            @span 'Proxy Config'
+            @span click:'addProxy', class: 'glyphicon glyphicon-plus'
+          @div class: 'proxy-list'
+
         # @div class: "checkbox", =>
         #   @label =>
         #     @input type: "checkbox", id: 'usingPushState'
@@ -57,6 +63,26 @@ class RunOnServerView extends View
         @selectedIndexFile.text 'index.html' if exists
 
     @httpPort.setText "3000"
+
+    # @find('.glyphicon-minus').on 'click', (e) ->
+    #   console.log "remove"
+    #   item = $(e.target).closest('.proxy-item')
+    #   item.remove()
+    #   e.preventDefault()
+
+  addProxy: ->
+    item = $$ ->
+      @div class: 'proxy-item row', =>
+        @div class: 'col-xs-4', =>
+          @subview 'c', new EditorView(mini: true)
+        @div class: 'col-xs-7', =>
+          @subview 'd', new EditorView(mini: true)
+        @div class: 'col-xs-1', =>
+          @span class: 'glyphicon glyphicon-minus'
+    @find('.proxy-list').append item
+
+  removeProxy: ->
+    console.log "remove"
 
   onSelectRootPath: ->
 

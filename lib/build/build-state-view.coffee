@@ -49,7 +49,9 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
   initialize: ->
+    # http url
     @server = atom.config.get('atom-butterfly.puzzleServerAddress')
+    # https url
     @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
     @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
 
@@ -60,11 +62,15 @@ class BuildStatusView extends View
     atom.workspaceView.append(this)
 
     console.log "try to connect."
+
+    # @socket = io @server,
+    #   reconnectionAttempts: Infinity
+    #   reconnectionDelay: 10
+
     @socket = io @server,
-      reconnectionAttempts: Infinity
-      reconnectionDelay: 10
-      reconnectionDelayMax: 100
-      timeout: 3000
+      reconnection: true
+      reconnectionDelay: 50
+      reconnectionDelayMax: 12000
 
     @socket.on 'connect', =>
       console.log "socket connected. #{@access_token}"
@@ -73,8 +79,8 @@ class BuildStatusView extends View
     @socket.on 'disconnect', ->
       console.log "socket disconnected."
 
-    @socket.on 'reconnect', ->
-      console.log "socket reconnect."
+    @socket.on 'reconnect', (n)->
+      console.log "socket reconnect. #{n} counts"
 
     @socket.on 'error', (err) ->
       console.log "socket error: #{err}"
@@ -140,7 +146,7 @@ class BuildStatusView extends View
     else
       throw new Error('qrcode: unkown platform.')
     qr.make()
-    imgTag = qr.createImgTag(4)
+    imgTag = qr.createImgTag(8)
     @find('#qrcode').empty().append(imgTag)
 
   DeviceFun:->

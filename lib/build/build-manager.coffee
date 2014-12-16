@@ -25,11 +25,13 @@ class BuildManager
 
     buildWizard.finishPromise()
     .then (result) =>
+      console.log "开始压缩..."
       buildWizard.destroy()
       buildStateView.attach()
 
       require('../../utils/zip')(atom.project.path,"./","foreveross.zip").then (zip_path) ->_.extend(result, asset: zip_path)
     .then (result) =>
+      console.log "结束压缩...#{result}"
       @sendBuildRequest(result)
     .then (result) =>
       zip_path = "#{atom.project.path}/foreveross.zip"
