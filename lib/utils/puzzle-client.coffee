@@ -17,13 +17,13 @@ class PuzzleClient
 
   getTask: (task_id) ->
     request_get
-      url: "#{@server}/api/tasks/#{task_id}"
+      url: "#{@server}/api/tasks/#{task_id}?access_token=#{@access_token}"
       rejectUnauthorized: false
     .then (result) -> JSON.parse result[1]
 
   deleteTask: (task_id) ->
     request_delete
-      url: "#{@server}/api/tasks/#{task_id}"
+      url: "#{@server}/api/tasks/#{task_id}?access_token=#{@access_token}"
       rejectUnauthorized: false
     .then (result) -> JSON.parse result[1]
 

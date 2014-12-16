@@ -98,7 +98,13 @@ class BuildStatusView extends View
 
   destroy: ->
     @socket?.disconnect()
-    puzzleClient.deleteTask @task.id if @task and @task.state != 'complete'
+    if @task and @task.state != 'complete'
+      puzzleClient.deleteTask @task.id
+      .then ->
+        console.log "task #{@task.id} deleted."
+      .catch ->
+        console.error "failed to delete task #{@task.id}"
+
     @detach()
 
   setTask: (@task) ->
