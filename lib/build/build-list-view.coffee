@@ -1,6 +1,6 @@
 {$, View, SelectListView, $$} = require 'atom'
-request = require 'request'
 Q = require 'q'
+puzzleClient = require '../utils/puzzle-client'
 
 class BuildTaskListView extends SelectListView
 
@@ -38,9 +38,6 @@ class V extends View
           @button 'Refresh', click: 'refreshTaskList', class: 'inline-block-tight btn'
 
   initialize: ->
-    @server = atom.config.get('atom-butterfly.puzzleServerAddress')
-    @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
-    @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
 
   attach: ->
     atom.workspaceView.append(this)
@@ -50,9 +47,7 @@ class V extends View
     @detach()
 
   refreshTaskList: ->
-    Q.nfcall request.get, "#{@server}/api/tasks?access_token=#{@access_token}"
-    .then (result) ->
-      JSON.parse result[1]
+    puzzleClient.getTasks()
     .then (result) =>
       @listView.setItems(result)
     .catch (err) ->

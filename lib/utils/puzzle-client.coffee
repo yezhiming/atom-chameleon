@@ -15,6 +15,13 @@ class PuzzleClient
 
     @access_token = atom.config.get("#{PACKAGE}.puzzleAccessToken")
 
+  getTasks: ->
+    request_get
+      url: "#{@server}/api/tasks?access_token=#{@access_token}"
+      rejectUnauthorized: false
+    .then (result) ->
+      JSON.parse result[1]
+
   getTask: (task_id) ->
     request_get
       url: "#{@server}/api/tasks/#{task_id}?access_token=#{@access_token}"

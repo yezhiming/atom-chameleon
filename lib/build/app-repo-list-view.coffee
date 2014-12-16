@@ -58,9 +58,6 @@ class V extends View
           @button 'Add', click: 'onClickAdd', class: 'inline-block-tight btn'
 
   initialize: ->
-    @server = atom.config.get('atom-butterfly.puzzleServerAddress')
-    @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
-    @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
 
     @listView.on 'confirmed', (event, item) =>
       @trigger 'confirmed', item
