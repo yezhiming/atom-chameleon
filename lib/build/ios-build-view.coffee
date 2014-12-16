@@ -101,7 +101,7 @@ class V extends View
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
   serialize: ->
-    _.reduce KEYS, (all, key) =>
+    KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
 
     , {icon: @icon[0].src.replace "file://", ""}
