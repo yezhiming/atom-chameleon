@@ -40,7 +40,7 @@ class BuildStatusView extends View
           @div id: 'toggle-out', =>
             @span class: 'glyphicon glyphicon-chevron-down'
             @span 'show output:'
-          @div id: 'out', style: 'height: 300px; overflow: scroll; color: white;', =>
+          @div id: 'out', outlet: 'out', style: 'height: 300px; overflow: scroll; color: white;', =>
 
       @div class: 'actions', =>
         @div class: 'pull-left', =>
@@ -86,17 +86,16 @@ class BuildStatusView extends View
       @find('.task-state').text job.state
       @showState(job)
 
-    @socket.on 'stdout', (out) =>
-      out_element = @find('#out')
-      out_element.append("<pre>#{out}</pre>")
-      out_element.scrollTop = out_element.scrollHeight
+    @socket.on 'stdout', (out) => @_output(out)
 
-    @socket.on 'stderr', (out) =>
-      out_element = @find('#out')
-      out_element.append("<pre class='text-warning'>#{out}</pre>")
-      out_element.scrollTop = out_element.scrollHeight
+    @socket.on 'stderr', (out) => @_output(out, 'text-error')
+
+  _output: (content, style = '')->
+    @out.append("<pre class='#{style}'>#{content}</pre>")
+    @out[0].scrollTop = @out[0].scrollHeight
 
   destroy: ->
+
     @socket?.disconnect()
     if @task and @task.state != 'complete'
       puzzleClient.deleteTask @task.id
