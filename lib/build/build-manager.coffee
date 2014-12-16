@@ -96,9 +96,12 @@ class BuildManager
           form.append "scheme","#{options.scheme}"
           form.append "repository_url","#{options.repository_url}"
 
+        unless (options.content_src is "")
+          form.append "content_src","#{options.content_src}"
+
         form.append "title","#{options.title}"
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
-        form.append "content_src","#{options.content_src}"
+        
 
         form.append "asset",fs.createReadStream(options.asset)

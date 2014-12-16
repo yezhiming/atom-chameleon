@@ -103,20 +103,8 @@ class V extends View
   serialize: ->
     KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
-
+      return all
     , {icon: @icon[0].src.replace "file://", ""}
-
-    # icon: @icon[0].src.replace "file://", ""
-    # title: @title.getText()
-    # version: @version.getText()
-    # build: @build.getText()
-    # bundleIdentifier: @bundleIdentifier.getText()
-    # mobileprovision: @mobileprovision.getText()
-    # p12: @p12.getText()
-    # p12_password: @p12_password.getText()
-    # scheme: @scheme.getText()
-    # content_src: @content_src.getText()
-    # repository_url: @repository_url.getText()
 
   getResult: ->
     @serialize()
