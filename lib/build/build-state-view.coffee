@@ -48,10 +48,11 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
   initialize: ->
-    
 
   attach: ->
     atom.workspaceView.append(this)
+
+    @console.toggleLogger()
 
     console.log "try to connect."
 
