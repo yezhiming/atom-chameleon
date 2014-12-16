@@ -21,12 +21,17 @@ module.exports =
     # create access_token if necessary
     token = atom.config.get('atom-butterfly.puzzleAccessToken')
     atom.config.set('atom-butterfly.puzzleAccessToken', UUID.v4()) unless token
+    # create a new session_token on startup
+    atom.config.set('atom-butterfly.puzzleSessionToken', UUID.v4())
 
     @projectManager = new (require './project/project-manager')()
     @projectManager.activate()
 
     @packageManager = new (require './package/package-manager')()
     @packageManager.activate()
+
+    @fileManager = new (require './file/file-manager')()
+    @fileManager.activate()
 
     @buildManager = new (require './build/build-manager')()
     @buildManager.activate()
@@ -43,6 +48,7 @@ module.exports =
   deactivate: ->
     @projectManager.deactivate?()
     @packageManager.deactivate?()
+    @fileManager.deactivate?()
     @buildManager.deactivate?()
     @emulatorManager.deactivate?()
 
