@@ -146,7 +146,7 @@ class BuildStatusView extends View
     else
       throw new Error('qrcode: unkown platform.')
     qr.make()
-    imgTag = qr.createImgTag(8)
+    imgTag = qr.createImgTag(4)
     @find('#qrcode').empty().append(imgTag)
 
   DeviceFun:->
