@@ -8,6 +8,7 @@ io = require 'socket.io-client'
 Q = require 'q'
 
 puzzleClient = require '../utils/puzzle-client'
+ConsoleView = require '../utils/console-view'
 
 {allowUnsafeNewFunction} = require('loophole')
 Download = allowUnsafeNewFunction -> require 'download'
@@ -36,11 +37,7 @@ class BuildStatusView extends View
 
         @div id: 'qrcode'
 
-        @div =>
-          @div id: 'toggle-out', =>
-            @span class: 'glyphicon glyphicon-chevron-down'
-            @span 'show output:'
-          @div id: 'out', outlet: 'out', style: 'height: 300px; overflow: scroll; color: white;', =>
+        @subview 'console', new ConsoleView()
 
       @div class: 'actions', =>
         @div class: 'pull-left', =>
@@ -51,9 +48,7 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
   initialize: ->
-
-    @find('#toggle-out').on 'click', => @find('#out').toggle()
-    # @devicebtn.show()
+    
 
   attach: ->
     atom.workspaceView.append(this)
@@ -87,13 +82,9 @@ class BuildStatusView extends View
       @find('.task-state').text job.state
       @showState(job)
 
-    @socket.on 'stdout', (out) => @_output(out)
+    @socket.on 'stdout', (out) => @console.append(out)
 
-    @socket.on 'stderr', (out) => @_output(out, 'text-error')
-
-  _output: (content, style = '')->
-    @out.append("<pre class='#{style}'>#{content}</pre>")
-    @out[0].scrollTop = @out[0].scrollHeight
+    @socket.on 'stderr', (out) => @console.append(out, 'text-error')
 
   destroy: ->
 
