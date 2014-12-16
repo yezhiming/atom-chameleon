@@ -7,6 +7,8 @@ request = require 'request'
 io = require 'socket.io-client'
 Q = require 'q'
 
+puzzleClient = require '../utils/puzzle-client'
+
 {allowUnsafeNewFunction} = require('loophole')
 Download = allowUnsafeNewFunction -> require 'download'
 
@@ -49,11 +51,6 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
   initialize: ->
-    # http url
-    @server = atom.config.get('atom-butterfly.puzzleServerAddress')
-    # https url
-    @serverSecured = atom.config.get('atom-butterfly.puzzleServerAddressSecured')
-    @access_token = atom.config.get('atom-butterfly.puzzleAccessToken')
 
     @find('#toggle-out').on 'click', => @find('#out').toggle()
     # @devicebtn.show()
@@ -63,18 +60,14 @@ class BuildStatusView extends View
 
     console.log "try to connect."
 
-    # @socket = io @server,
-    #   reconnectionAttempts: Infinity
-    #   reconnectionDelay: 10
-
-    @socket = io @server,
+    @socket = io puzzleClient.server,
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
 
     @socket.on 'connect', =>
-      console.log "socket connected. #{@access_token}"
-      @socket.emit 'bind', @access_token
+      console.log "socket connected. #{puzzleClient.access_token}"
+      @socket.emit 'bind', puzzleClient.access_token
 
     @socket.on 'disconnect', ->
       console.log "socket disconnected."
@@ -105,6 +98,7 @@ class BuildStatusView extends View
 
   destroy: ->
     @socket?.disconnect()
+    puzzleClient.deleteTask @task.id if @task?.id?
     @detach()
 
   setTask: (@task) ->
@@ -128,10 +122,7 @@ class BuildStatusView extends View
 
   refreshTaskState: ->
 
-    Q.nfcall request.get,
-      url: "#{@server}/api/tasks/#{@task.id}"
-      rejectUnauthorized: false
-    .then (result) -> JSON.parse result[1]
+    puzzleClient.getTask @task.id
     .then (task) => @setTask(task)
     .catch (err) -> alert "error: #{err}"
 
@@ -140,9 +131,9 @@ class BuildStatusView extends View
     qr = qrcode(4, 'M')
     if platform == 'ios'
       # @devicebtn.show()
-      qr.addData("#{@serverSecured}/archives/#{@task.id}/install/ios")
+      qr.addData("#{puzzleClient.serverSecured}/archives/#{@task.id}/install/ios")
     else if platform == 'android'
-      qr.addData("#{@serverSecured}/archives/#{@task.id}.apk")
+      qr.addData("#{puzzleClient.serverSecured}/archives/#{@task.id}.apk")
     else
       throw new Error('qrcode: unkown platform.')
     qr.make()
@@ -151,7 +142,7 @@ class BuildStatusView extends View
 
   DeviceFun:->
     # https://172.16.1.95:8443/archives/device/4/ios
-    downLoadPath = "#{@server}/archives/device/#{@task.id}/ios"
+    downLoadPath = "#{puzzleClient.server}/archives/device/#{@task.id}/ios"
     # downLoadPath = "http://172.16.1.95:8080/archives/device/5/ios"
     destPath = "#{atom.project.path}/#{@task.id}/comeontom.app"
     # destPath = "#{atom.project.path}/5/comeontom.app"

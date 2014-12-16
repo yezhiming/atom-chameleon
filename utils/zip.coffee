@@ -4,9 +4,9 @@ Q = require 'q'
 {exec} = require 'child_process'
 
 module.exports = (pathDir,source,decs,cb)->
-  
+
   Q.Promise (resolve, reject, notify) ->
-  
+
   # exec
     commands = "zip -r #{decs} #{source}"
 
@@ -19,11 +19,6 @@ module.exports = (pathDir,source,decs,cb)->
       zip_path = "#{pathDir}/#{decs}"
       resolve(zip_path)
 
-    foreverossZip.stdout.on 'data', (data) ->
-      console.log data
-    foreverossZip.stderr.on 'data', (data) ->
-      console.log data
-  
   # spawn
     # args = ["-r",decs,source];
     # foreverossZip = spawn("zip", args,{cwd:"#{pathDir}"})

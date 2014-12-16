@@ -24,7 +24,7 @@ class BuildManager
     buildStateView = new (require './build-state-view')()
 
     buildWizard.finishPromise()
-    .then (result) =>
+    .then (result) ->
       console.log "开始压缩..."
       buildWizard.destroy()
       buildStateView.attach()
@@ -33,15 +33,13 @@ class BuildManager
     .then (result) =>
       console.log "结束压缩...#{result}"
       @sendBuildRequest(result)
-    .then (result) =>
+    .then (result) ->
       zip_path = "#{atom.project.path}/foreveross.zip"
       if fs.existsSync zip_path
         fs.unlinkSync(zip_path)
       JSON.parse result
     .then (task) ->
       buildStateView.setTask(task)
-
-
     .catch (err) ->
       buildStateView.destroy()
       console.trace err.stack
