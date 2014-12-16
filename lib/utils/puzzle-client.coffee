@@ -6,7 +6,7 @@ request_delete = Q.denodeify request.delete
 
 class PuzzleClient
 
-  initialize: ->
+  constructor: ->
     PACKAGE = 'atom-butterfly'
     # http url
     @server = atom.config.get("#{PACKAGE}.puzzleServerAddress")
