@@ -77,12 +77,13 @@ module.exports =
 
     # create project with options
     .then (options) ->
-      # {createProjectPromise} = require './project/scaffold'
-      # createProjectPromise(options)
+
       switch options.template
         when 'simple' then options.repo = "https://github.com/yezhiming/butterfly-starter.git"
         when 'modular' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
         else options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
+
+      # promise of project creation
       (require "./project/scaffolder")(options)
 
     # open new project
@@ -98,24 +99,3 @@ module.exports =
       alert('error occur!')
     .finally ->
       pv.destroy()
-
-  _setupDebugServer: ->
-
-    unless @serverStatusView and @debugServer
-
-      ServerStatusView = require './server-status-view'
-      @serverStatusView = new ServerStatusView()
-      @serverStatusView.on 'stopServer', => @debugServer.stop()
-
-      DebugServer = require './debug-server'
-      @debugServer = new DebugServer()
-      @debugServer.on 'start', => @serverStatusView.attach()
-      @debugServer.on 'stop', => @serverStatusView.detach()
-
-  cmdLaunchEmulator: ->
-
-    unless @emulatorView?
-      EmulatorView = require './emulator/emulator-view'
-      @emulatorView = new EmulatorView()
-
-    @emulatorView.toggle()
