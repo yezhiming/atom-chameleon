@@ -4,6 +4,9 @@ path = require 'path'
 _ = require 'underscore'
 AppRepoListView = require './app-repo-list-view'
 
+KEYS = ['title', 'version', 'build', 'bundleIdentifier', 'mobileprovision'
+'p12', 'p12_password', 'scheme', 'content_src', 'repository_url']
+
 module.exports =
 class V extends View
   @content: ->
@@ -27,31 +30,32 @@ class V extends View
             @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
           @div class: 'form-group', =>
             @label 'p12 password:'
-            @subview 'password', new EditorView(mini: true)
+            @subview 'p12_password', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Application URL:'
-            @subview 'url', new EditorView(mini: true)
+            @subview 'repository_url', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Scheme:'
             @subview 'scheme', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Bundle Identifier:'
-            @subview 'BundleIdentifier', new EditorView(mini: true)
+            @subview 'bundleIdentifier', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Content Src:'
-            @subview 'src', new EditorView(mini: true, placeholderText: 'click here to content-src')
+            @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
   initialize: ->
     [
       {view: @mobileprovision, suffix: 'mobileprovision'}
       {view: @p12, suffix: 'p12'}
-      {view: @src, suffix: 'html', relative: true}
+      {view: @content_src, suffix: 'html', relative: true}
     ]
     .forEach (each) ->
       #disable input
       each.view.setInputEnabled false
       #select file
       each.view.on 'click', ->
+        console.log "window: #{window.localStroage}"
         openFile
           title: "Select .#{each.suffix} File"
           filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
@@ -61,9 +65,9 @@ class V extends View
           else
             each.view.setText destPath[0]
 
-    @url.on 'click', =>
+    @repository_url.on 'click', =>
       new AppRepoListView()
-      .on 'confirmed', (event, repo) => @url.setText repo.url
+      .on 'confirmed', (event, repo) => @repository_url.setText repo.url
       .attach()
       .filterPlatform('ios')
 
@@ -73,10 +77,18 @@ class V extends View
     @build.setText "1"
 
     # restore last options
+    # console.log "window: #{window.localStroage}"
+    # json = window.localStroage.getItem "ios-build-view"
+    # if json
+    #   json = JSON.parse json
+    #   KEYS.each (key) =>
+    #     this[key].setText json[key]
+    #   @icon.prop 'src', json['icon']
 
   destroy: ->
 
     # save last options
+    # localStroage.setItem "ios-build-view", JSON.stringify(@serialize())
 
     console.log  "ios-build-view destroy."
     @remove()
@@ -88,15 +100,23 @@ class V extends View
     .then (destPath) =>
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
+  serialize: ->
+    _.reduce KEYS, (all, key) =>
+      all[key] = this[key].getText()
+
+    , {icon: @icon[0].src.replace "file://", ""}
+
+    # icon: @icon[0].src.replace "file://", ""
+    # title: @title.getText()
+    # version: @version.getText()
+    # build: @build.getText()
+    # bundleIdentifier: @bundleIdentifier.getText()
+    # mobileprovision: @mobileprovision.getText()
+    # p12: @p12.getText()
+    # p12_password: @p12_password.getText()
+    # scheme: @scheme.getText()
+    # content_src: @content_src.getText()
+    # repository_url: @repository_url.getText()
+
   getResult: ->
-    icon:@icon[0].src.replace "file://", ""
-    title: @title.getText()
-    version: @version.getText()
-    build: @build.getText()
-    BundleIdentifier:@BundleIdentifier.getText()
-    Mobileprovision: @mobileprovision.getText()
-    p12: @p12.getText()
-    p12_password: @password.getText()
-    scheme: @scheme.getText()
-    content_src: @src.getText()
-    repository_url: @url.getText()
+    @serialize()
