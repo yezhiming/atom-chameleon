@@ -57,18 +57,32 @@ class BuildManager
         form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
         form.append "builder","cordova-android"
         form.append "platform","android"
-        form.append "repository_url","#{options.repository_url}"
-        form.append "buildtype","#{options.scheme}"
-        form.append "keystore",fs.createReadStream (options.keystore)
-        form.append "alias","#{options.alias}"
-        form.append "keypass","#{options.keypass}"
-        form.append "aliaspass","#{options.aliaspass}"
+        form.append "asset",fs.createReadStream(options.asset)
+
+        # 若不填写，使用默认图标
+        unless options.icon is ""
+          form.append "icon",fs.createReadStream(options.icon)
+
+        # 以下只要一个信息不填写，那么就使用默认的证书发布安卓应用
+        unless ((options.keystore is "") && (options.keypass is "") && (options.alias is "") && (options.aliaspass is ""))
+          form.append "keystore",fs.createReadStream (options.keystore)
+          form.append "keypass","#{options.keypass}"
+          form.append "alias","#{options.alias}"
+          form.append "aliaspass","#{options.aliaspass}"
+
+        # 如果不填写，就使用默认库
+        unless ((options.repository_url is "") && (options.scheme is ""))
+          form.append "repository_url","#{options.repository_url}"
+          form.append "buildtype","#{options.scheme}"
+          
+        # 不填写，使用默认启动页面
+        unless (options.content_src is "")
+          form.append "content_src","#{options.content_src}"
+        
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
         form.append "title","#{options.title}"
-        form.append "content_src","#{options.content_src}"
-        form.append "icon",fs.createReadStream(options.icon)
-        form.append "asset",fs.createReadStream(options.asset)
+        
 
     else
       Q.Promise (resolve, reject, notify) =>
