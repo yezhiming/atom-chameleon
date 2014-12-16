@@ -23,7 +23,6 @@
     "adm-zip": "*",
     "socket.io-client": "*",
     "uuid": "~2.0.1",
-    "download":"*",
-    "ios-deploy":"*"
+    "download":"*"
   }
 }
