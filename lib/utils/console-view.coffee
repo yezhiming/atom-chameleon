@@ -18,3 +18,4 @@ class ConsoleView extends View
 
   toggleLogger: ->
     @out.toggle()
+    @out[0].scrollTop = @out[0].scrollHeight
