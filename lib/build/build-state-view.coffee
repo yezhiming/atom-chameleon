@@ -84,7 +84,7 @@ class BuildStatusView extends View
     @socket.on 'update', (job) =>
       console.log "task updated"
       @find('.task-state').text job.state
-      @updateQRCode(job.data.platform) if job.state == 'complete'
+      @showState(job)
 
     @socket.on 'stdout', (out) =>
       out_element = @find('#out')
@@ -117,7 +117,6 @@ class BuildStatusView extends View
   showState: (task) ->
     @loading.show()
 
-    @loading.hide() if task.state == 'failed'
     switch task.state
       when 'complete'
         @loading.hide()
