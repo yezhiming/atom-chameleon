@@ -64,6 +64,7 @@ class BuildStatusView extends View
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
+      timeout: 3000
 
     @socket.on 'connect', =>
       console.log "socket connected. #{puzzleClient.access_token}"
@@ -96,7 +97,8 @@ class BuildStatusView extends View
 
   destroy: ->
 
-    @socket?.disconnect()
+    # @socket?.disconnect()
+
     if @task and @task.state != 'complete'
       puzzleClient.deleteTask @task.id
       .then ->
