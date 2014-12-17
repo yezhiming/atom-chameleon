@@ -28,7 +28,7 @@ class BuildManager
       console.log "开始压缩..."
       buildWizard.destroy()
       buildStateView.attach()
-  
+
       require('../../utils/zip')(atom.project.path,"./","foreveross.zip").then (zip_path) ->_.extend(result, asset: zip_path)
     .then (result) ->
       console.log "结束压缩...#{result}"
@@ -80,11 +80,11 @@ class BuildManager
         unless ((options.repository_url is "") && (options.scheme is ""))
           form.append "repository_url","#{options.repository_url}"
           form.append "buildtype","#{options.scheme}"
-          
+
         # 不填写，使用默认启动页面
         unless (options.content_src is "")
           form.append "content_src","#{options.content_src}"
-        
+
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
         form.append "title","#{options.title}"
@@ -92,7 +92,7 @@ class BuildManager
 
     else
       Q.Promise (resolve, reject, notify) =>
-        r = request.post {url:"#{@server}/api/tasks",timeout: 1000*60*10}, (err, httpResponse, body)=>
+        r = request.post {url:"#{@server}/api/tasks",timeout: 1000*60*10}, (err, httpResponse, body)->
           if err then reject(err) else resolve(body)
 
         form = r.form()
@@ -100,12 +100,13 @@ class BuildManager
         form.append "builder","cordova-ios"
         form.append "platform","ios"
 
-        # 以下四个值需要同时不为空，否则不发送到服务器  如果不填写，那么使用服务器的默认证书
-        unless ( (options.Mobileprovision is "") || (options.p12 is "") || (options.p12_password is "") || (options.BundleIdentifier is ""))
-          form.append "mobileprovision",fs.createReadStream(options.mobileprovision)
+        # 以下三个参数需要同时不为空，否则不发送到服务器  如果不填写，那么使用服务器的默认证书
+        if options.mobileprovision and options.p12 and options.p12_password
+          form.append "mobileprovision", fs.createReadStream(options.mobileprovision)
           form.append "p12",fs.createReadStream(options.p12)
           form.append "p12_password","#{options.p12_password}"
-          form.append "bundleIdentifier","#{options.bundleIdentifier}"
+
+        form.append "bundleIdentifier","#{options.bundleIdentifier}"
 
         # 若不填写，使用默认图标
         unless options.icon is ""
@@ -122,6 +123,6 @@ class BuildManager
         form.append "title","#{options.title}"
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
-      
+
         form.append "asset",fs.createReadStream(options.asset)
         form.append "socketId","#{options.socketId}"

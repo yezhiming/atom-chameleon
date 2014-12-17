@@ -21,8 +21,6 @@ module.exports =
     # create access_token if necessary
     token = atom.config.get('atom-butterfly.puzzleAccessToken')
     atom.config.set('atom-butterfly.puzzleAccessToken', UUID.v4()) unless token
-    # create a new session_token on startup
-    atom.config.set('atom-butterfly.puzzleSessionToken', UUID.v4())
 
     @projectManager = new (require './project/project-manager')()
     @projectManager.activate()

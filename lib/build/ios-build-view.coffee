@@ -22,15 +22,21 @@ class V extends View
 
         @div class: 'col-xs-9', =>
 
-          @div class: 'form-group', =>
-            @label 'Mobileprovision:'
-            @subview 'mobileprovision', new EditorView(mini: true, placeholderText: 'click here to select mobileprovision file')
-          @div class: 'form-group', =>
-            @label 'p12:'
-            @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
-          @div class: 'form-group', =>
-            @label 'p12 password:'
-            @subview 'p12_password', new EditorView(mini: true)
+          @div class: '', =>
+            @input type: 'checkbox', outlet: 'useMyCert', click: 'toggleUseMyCert'
+            @span 'Use my mobileprovision:'
+
+          @div outlet: 'cert', =>
+            @div class: 'form-group', =>
+              @label 'Mobileprovision:'
+              @subview 'mobileprovision', new EditorView(mini: true, placeholderText: 'click here to select mobileprovision file')
+            @div class: 'form-group', =>
+              @label 'p12:'
+              @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
+            @div class: 'form-group', =>
+              @label 'p12 password:'
+              @subview 'p12_password', new EditorView(mini: true)
+
           @div class: 'form-group', =>
             @label 'Application URL:'
             @subview 'repository_url', new EditorView(mini: true)
@@ -45,6 +51,8 @@ class V extends View
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
   initialize: ->
+
+    # 选择文件
     [
       {view: @mobileprovision, suffix: 'mobileprovision'}
       {view: @p12, suffix: 'p12'}
@@ -65,6 +73,7 @@ class V extends View
           else
             each.view.setText destPath[0]
 
+    # 选择原生代码仓库
     @repository_url.on 'click', =>
       new AppRepoListView()
       .on 'confirmed', (event, repo) => @repository_url.setText repo.url
@@ -85,6 +94,10 @@ class V extends View
     #     this[key].setText json[key]
     #   @icon.prop 'src', json['icon']
 
+  attached: ->
+    console.log 'attached'
+    @cert.toggle()
+
   destroy: ->
 
     # save last options
@@ -92,6 +105,9 @@ class V extends View
 
     console.log  "ios-build-view destroy."
     @remove()
+
+  toggleUseMyCert: ->
+    @cert.toggle()
 
   onClickIcon: ->
     openFile
@@ -101,10 +117,15 @@ class V extends View
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
   serialize: ->
-    KEYS.reduce (all, key) =>
+    result = KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
       return all
     , {icon: @icon[0].src.replace "file://", ""}
+
+    unless @useMyCert.prop('checked')
+      result = _.omit result, ['mobileprovision', 'p12', 'p12_password']
+
+    return result
 
   getResult: ->
     @serialize()
