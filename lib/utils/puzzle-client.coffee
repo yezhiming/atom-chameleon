@@ -2,7 +2,7 @@ Q = require 'q'
 request = require 'request'
 
 request_get = Q.denodeify request.get
-request_delete = Q.denodeify request.delete
+request_delete = Q.denodeify request.del
 
 class PuzzleClient
 
@@ -29,6 +29,7 @@ class PuzzleClient
     .then (result) -> JSON.parse result[1]
 
   deleteTask: (task_id) ->
+    console.log "#{@server}/api/tasks/#{task_id}?access_token=#{@access_token}"
     request_delete
       url: "#{@server}/api/tasks/#{task_id}?access_token=#{@access_token}"
       rejectUnauthorized: false
