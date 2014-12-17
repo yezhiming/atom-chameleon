@@ -80,6 +80,7 @@ class BuildStatusView extends View
 
     @socket.on 'update', (job) =>
       console.log "task updated"
+      @task.state = job.state
       @find('.task-state').text job.state
       @showState(job)
 
