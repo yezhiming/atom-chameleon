@@ -43,8 +43,8 @@ class WizardView extends View
 
     @_destroyCurrentStep()
 
-    nextFlow = @constructor.flow[@order]
-    View = nextFlow(previous_result)
+    nextStep = @constructor.flow[@order]
+    View = nextStep(previous_result)
 
     @currentView = new View(this)
     if @currentView.attachTo then @currentView.attachTo(@contentView) else @contentView.append(@currentView)
