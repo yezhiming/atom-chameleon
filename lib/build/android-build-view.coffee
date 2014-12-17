@@ -4,6 +4,10 @@ path = require 'path'
 _ = require 'underscore'
 AppRepoListView = require './app-repo-list-view'
 
+
+KEYS = ['title', 'version', 'build', 'keystore', 'alias'
+'keypass', 'aliaspass', 'repository_url', 'scheme', 'content_src']
+
 module.exports =
 class V extends View
   @content: ->
@@ -24,28 +28,27 @@ class V extends View
             @subview 'keystore', new EditorView(mini: true, placeholderText: 'click here to select keystore file')
           @div class: 'form-group', =>
             @label 'alias:'
-            @subview 'alias', new EditorView(mini: true)
+            @subview 'alias', new EditorView(mini: true,placeholderText:'请输入别名')
           @div class: 'form-group', =>
             @label 'keypass:'
-            @subview 'keypass', new EditorView(mini: true)
+            @subview 'keypass', new EditorView(mini: true,placeholderText:'请输入密码')
           @div class: 'form-group', =>
             @label 'aliaspass:'
-            @subview 'aliaspass', new EditorView(mini: true)
+            @subview 'aliaspass', new EditorView(mini: true,placeholderText:'请输入别名密码')
           @div class: 'form-group', =>
             @label 'Application URL:'
-            @subview 'url', new EditorView(mini: true)
+            @subview 'repository_url', new EditorView(mini: true,placeholderText:'点击选择源码库')
           @div class: 'form-group', =>
             @label 'Scheme:'
-            @subview 'scheme', new EditorView(mini: true)
+            @subview 'scheme', new EditorView(mini: true,placeholderText:'请输入bundle或者sandbox')
           @div class: 'form-group', =>
             @label 'Content Src:'
-            @subview 'src', new EditorView(mini: true, placeholderText: 'click here to content-src')
+            @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
   initialize: ->
     [
       {view: @keystore, suffix: 'keystore'}
-      # {view: @p12, suffix: 'p12'}
-      {view: @src, suffix: 'html', relative: true}
+      {view: @content_src, suffix: 'html', relative: true}
     ]
     .forEach (each) ->
       #disable input
@@ -61,9 +64,9 @@ class V extends View
           else
             each.view.setText destPath[0]
 
-    @url.on 'click', =>
+    @repository_url.on 'click', =>
       new AppRepoListView()
-      .on 'confirmed', (event, repo) => @url.setText repo.url
+      .on 'confirmed', (event, repo) => @repository_url.setText repo.url
       .attach()
       .filterPlatform('android')
 
@@ -71,15 +74,15 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
 
-    path = atom.project.getPath()+"/resource/android"
-    @icon.attr('src',"#{path}/test.png")
-    @keystore.setText "#{path}/test_1.keystore"
-    @alias.setText "test_1"
-    @keypass.setText "test123"
-    @aliaspass.setText "test123"
-    @url.setText "http://localhost:800/androiddown/android.zip"
-    @scheme.setText "bundle"
-    @src.setText "exhibition/index.html"
+    # path = atom.project.getPath()+"/resource/android"
+    # @icon.attr('src',"#{path}/test.png")
+    # @keystore.setText "#{path}/test_1.keystore"
+    # @alias.setText "test_1"
+    # @keypass.setText "test123"
+    # @aliaspass.setText "test123"
+    # @url.setText "http://localhost:800/androiddown/android.zip"
+    # @scheme.setText "bundle" ＃还有一个sandbox
+    # @src.setText "exhibition/index.html"
 
   onClickIcon: ->
     openFile
@@ -88,15 +91,25 @@ class V extends View
     .then (destPath) =>
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
+  # getResult: ->
+  #   icon:@icon[0].src.replace "file://", ""
+  #   title: @title.getText()
+  #   version: @version.getText()
+  #   build:@build.getText()
+  #   keystore: @keystore.getText()
+  #   alias: @alias.getText()
+  #   keypass:@keypass.getText()
+  #   aliaspass:@aliaspass.getText()
+  #   scheme: @scheme.getText()
+  #   content_src: @src.getText()
+  #   app_url: @url.getText()
+
+
+  serialize: ->
+    KEYS.reduce (all, key) =>
+      all[key] = this[key].getText()
+      return all
+    , {icon: @icon[0].src.replace "file://", ""}
+
   getResult: ->
-    icon:@icon[0].src.replace "file://", ""
-    title: @title.getText()
-    version: @version.getText()
-    build:@build.getText()
-    keystore: @keystore.getText()
-    alias: @alias.getText()
-    keypass:@keypass.getText()
-    aliaspass:@aliaspass.getText()
-    scheme: @scheme.getText()
-    content_src: @src.getText()
-    app_url: @url.getText()
+    @serialize()

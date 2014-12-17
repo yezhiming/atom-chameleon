@@ -38,7 +38,7 @@ repos = [
   }
   {
     name: 'Chameleon Android'
-    url: 'https://git.oschina.net/chameleon/chameleon-android-v3/repository/archive?ref=master'
+    url: 'https://git.oschina.net/chameleon/chameleon-android-v3.git'
     description: 'Standard Chameleon Application'
     platform: 'android'
   }
