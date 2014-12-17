@@ -79,18 +79,17 @@ class BuildStatusView extends View
       console.log "socket timeout"
 
     @socket.on 'update', (job) =>
-      console.log "task updated"
-      @find('.task-state').text job.state
-      @showState(job)
+      console.log "compare #{job.id} #{@task.id}"
+      if job.id == @task.id
+        console.log "task #{job.id} updated"
+        @find('.task-state').text job.state
+        @showState(job)
 
     @socket.on 'stdout', (out) => @console.append(out)
 
     @socket.on 'stderr', (out) => @console.append(out, 'text-error')
 
   destroy: ->
-
-    # @socket?.disconnect()
-
     if @task and @task.state != 'complete'
       puzzleClient.deleteTask @task.id
       .then ->
