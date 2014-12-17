@@ -28,10 +28,16 @@ class BuildManager
       console.log "开始压缩..."
       buildWizard.destroy()
       buildStateView.attach()
-
+  
       require('../../utils/zip')(atom.project.path,"./","foreveross.zip").then (zip_path) ->_.extend(result, asset: zip_path)
-    .then (result) =>
+    .then (result) ->
       console.log "结束压缩...#{result}"
+      Q.Promise (resolve, reject, notify) ->
+        buildStateView.socket.on "resSocketId",(sid)->
+          console.log "resSocketId:#{sid}"
+          resolve(_.extend(result, socketId: sid))
+        buildStateView.socket.emit "reqSocketId"
+    .then (result) =>
       @sendBuildRequest(result)
     .then (result) ->
       zip_path = "#{atom.project.path}/foreveross.zip"
@@ -82,7 +88,7 @@ class BuildManager
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
         form.append "title","#{options.title}"
-        
+        form.append "socketId","#{options.socketId}"
 
     else
       Q.Promise (resolve, reject, notify) =>
@@ -116,6 +122,6 @@ class BuildManager
         form.append "title","#{options.title}"
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
-        
-
+      
         form.append "asset",fs.createReadStream(options.asset)
+        form.append "socketId","#{options.socketId}"
