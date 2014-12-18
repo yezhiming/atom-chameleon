@@ -79,11 +79,13 @@ class BuildStatusView extends View
       console.log "socket timeout"
 
     @socket.on 'update', (job) =>
-      if job.id == @task.id
-        console.log "task #{job.id} updated"
-        @task = job
-        @find('.task-state').text job.state
-        @showState(job)
+      console.log "task #{job.id} updated"
+      @setTask(job)
+      # if job.id == @task.id
+      #   console.log "task #{job.id} updated"
+      #   @task = job
+      #   @find('.task-state').text job.state
+      #   @showState(job)
 
     @socket.on 'stdout', (out) => @console.append(out)
 
