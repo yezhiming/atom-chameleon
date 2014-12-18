@@ -11,7 +11,10 @@ class Chooser extends View
         @ul class: 'grid-view', =>
           for item in options.items
             @li 'data-id': item.id, =>
-              @span class: 'glyphicon ' + item.glyphicon or ''
+              if item.glyphicon
+                @span class: 'glyphicon ' + item.glyphicon or ''
+              else if item.image
+                @img src: item.image
               @span class: 'name', item.name
       @div outlet: 'description', class: 'description'
 

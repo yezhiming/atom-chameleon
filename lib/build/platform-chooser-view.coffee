@@ -3,9 +3,24 @@
 ChooserView = require '../utils/chooser-view'
 
 items = [
-  {id: 'ios', name: 'iOS', description: 'iOS Application'}
-  {id: 'android', name: 'Android', description: 'Android Application'}
-  {id: 'windows', name: 'Windows Mobile', description: 'Windows Application'}
+  {
+    id:     'ios'
+    name:   'iOS'
+    image:  'atom://atom-butterfly/images/apple.png'
+    description: 'iOS Application'
+  }
+  {
+    id: 'android'
+    name: 'Android'
+    image: 'atom://atom-butterfly/images/android.png'
+    description: 'Android Application'
+  }
+  {
+    id: 'windows'
+    name: 'Windows Mobile'
+    image: 'atom://atom-butterfly/images/windows.png'
+    description: 'Windows Application'
+  }
 ]
 
 module.exports =
@@ -20,3 +35,7 @@ class V extends View
 
   getResult: ->
     platform: @chooser.getSelectedItem().id
+
+  onNext: (options, next) ->
+    options.platform = @chooser.getSelectedItem().id
+    next()
