@@ -79,9 +79,9 @@ class BuildStatusView extends View
       console.log "socket timeout"
 
     @socket.on 'update', (job) =>
-      console.log "compare #{job.id} #{@task.id}"
       if job.id == @task.id
         console.log "task #{job.id} updated"
+        @task = job
         @find('.task-state').text job.state
         @showState(job)
 
