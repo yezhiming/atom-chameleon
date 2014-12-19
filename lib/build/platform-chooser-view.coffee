@@ -36,6 +36,6 @@ class V extends View
   getResult: ->
     platform: @chooser.getSelectedItem().id
 
-  onNext: (options, next) ->
-    options.platform = @chooser.getSelectedItem().id
-    next()
+  onNext: (wizard) ->
+    wizard.options.platform = @chooser.getSelectedItem().id
+    wizard.next()

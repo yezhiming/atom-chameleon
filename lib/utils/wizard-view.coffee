@@ -33,7 +33,7 @@ class WizardView extends View
     _.extend this, EventEmitter.prototype
 
     @order = 0 #current flow order
-    @result = {} #result collector
+    @options = {} #result collector
 
   _refresh: (previous_result)->
     # disable 'Previous' Button on the first flow
@@ -48,6 +48,7 @@ class WizardView extends View
 
     @currentView = new View(this)
     if @currentView.attachTo then @currentView.attachTo(@contentView) else @contentView.append(@currentView)
+    @currentView.attached?()
 
   _destroyCurrentStep: ->
     #invoke destroy if provided, invoke remove othervise
@@ -58,14 +59,14 @@ class WizardView extends View
     @_refresh()
 
   onClickNext: ->
-    #collect result into @result object
-    _.extend @result, @currentView.getResult() if @currentView.getResult
+    #collect result into @options object
+    _.extend @options, @currentView.getResult() if @currentView.getResult
 
     if @order < @constructor.flow.length - 1
       @order++
       @_refresh(@currentView.getResult())
     else
-      @emit 'finish', @result
+      @emit 'finish', @options
 
   attach: ->
     atom.workspaceView.append(this)
