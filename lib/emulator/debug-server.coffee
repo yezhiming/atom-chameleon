@@ -1,14 +1,12 @@
 {EventEmitter} = require 'events'
 path = require 'path'
-fs = require('fs')
+fs = require 'fs'
 _ = require 'underscore'
 
 {allowUnsafeEval, allowUnsafeNewFunction} = require 'loophole'
 express = allowUnsafeEval -> require 'express'
 # logger = require 'morgan'
 bodyParser = allowUnsafeEval -> require 'body-parser'
-request = require 'request'
-Decompress = require 'decompress'
 
 HttpProxy = require './proxy-middleware'
 

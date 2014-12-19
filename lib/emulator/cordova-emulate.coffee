@@ -1,5 +1,7 @@
 fs = require 'fs'
 path = require 'path'
+request = require 'request'
+Decompress = require 'decompress'
 
 module.exports = (router, buildPath) ->
 
@@ -7,15 +9,19 @@ module.exports = (router, buildPath) ->
     cmd = req.param('command')
     console.log "commad= #{cmd}"
     rePath = req.query.path
-    unless rePath
-      return next new Error('please add querystring(?absolutePath=/a/b/c) on the request...')
+    req.rpath = path.join buildPath, rePath if rePath
 
-    req.rpath = path.join buildPath, rePath
-    if cmd is 'stat' or cmd is 'download' or cmd is 'readFile'
+    if cmd is 'download'
       next()
+    else if cmd is 'stat' or cmd is 'readFile'
+      unless rePath
+        res.status(400).send "please add querystring 'path'"
+      else
+        next()
     else
-      fs[cmd] req.rpath, ->
-        res.status(200).json(arguments)
+      console.log "cmd: #{cmd}"
+      # 代理其余的函数
+      fs[cmd] req.rpath, -> res.status(200).json(arguments)
 
   # /fs/stat?path=/a/b/c
   router.get '/fs/stat', (req, res, next) ->
