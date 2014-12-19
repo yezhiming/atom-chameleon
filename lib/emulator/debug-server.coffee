@@ -10,6 +10,7 @@ bodyParser = allowUnsafeEval -> require 'body-parser'
 request = require 'request'
 Decompress = require 'decompress'
 
+HttpProxy = require './proxy-middleware'
 
 module.exports =
 class DebugServer extends EventEmitter
@@ -46,7 +47,9 @@ class DebugServer extends EventEmitter
       api = allowUnsafeEval -> require options.api
       api(app)
 
-    app.use(require './proxy-middleware')
+    app.use HttpProxy {
+      "^\/mam\/": {host: "115.28.1.119", port: 18860}
+    }
 
     # 代理请求之后，这样不会破坏http结构
     app.use(bodyParser.json())
