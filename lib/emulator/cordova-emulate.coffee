@@ -23,7 +23,7 @@ module.exports = (router, buildPath) ->
       res.status(200).json
         err: err
         stats: stats
-        isDirectory: stats.isDirectory()
+        isDirectory: stats.isDirectory?()
 
 
   router.get '/fs/readFile', (req, res, next) ->
