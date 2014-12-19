@@ -40,12 +40,13 @@ class BuildStatusView extends View
         @subview 'console', new ConsoleView()
 
       @div class: 'actions', =>
-        @div class: 'pull-left',outlet:"cancelbutton", =>
-          @button 'Cancel', click: 'CancelFun', class: 'inline-block-tight btn'
-        @div class: 'pull-left',outlet:"closebutton",style:"display:none", =>
-          @button 'Close', click: 'CloseFun', class: 'inline-block-tight btn'
+        @div class: 'pull-left',outlet:"closebutton", =>
+          @button 'Close', click: 'destroy', class: 'inline-block-tight btn'
+        
         @div class: 'pull-right',outlet:"refreshbutton", =>
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
+        @div class: 'pull-right',outlet:"cancelbutton", =>
+          @button 'Cancel', click: 'cancel', class: 'inline-block-tight btn'
 
   initialize: ->
 
@@ -92,14 +93,7 @@ class BuildStatusView extends View
     @socket.on 'stderr', (out) => @console.append(out, 'text-error')
 
   destroy: ->
-    if @task and @task.state != 'complete'
-      puzzleClient.deleteTask @task.id
-      .then ->
-        console.log "task #{@task.id} deleted."
-      .catch ->
-        console.error "failed to delete task #{@task.id}"
-
-    @detach()
+    @remove()
 
   setTask: (@task) ->
     @find('.task-id').text @task.id
@@ -157,25 +151,11 @@ class BuildStatusView extends View
         console.log "status:#{status}"
       )
 
-
-  CloseFun:->
-    console.log "CloseFun"
-    r=confirm("关闭该窗口，意味着将停止编译");
-    if r
-      @destroy()
-    else
-      console.log "cancle"
-
   CancelFun:->
-    console.log "CancelFun"
-    if @cancelbutton.attr('class') is "pull-left"
-      @refreshbutton.hide()
-      @cancelbutton.removeClass("pull-left")
-      @cancelbutton.addClass("pull-right")
-      @closebutton.show()
-    else
-      @refreshbutton.show()
-      @cancelbutton.removeClass("pull-right")
-      @cancelbutton.addClass("pull-left")
-      @closebutton.hide()
+    if @task and @task.state != 'complete'
+      puzzleClient.deleteTask @task.id
+      .then ->
+        console.log "task #{@task.id} deleted."
+      .catch ->
+        console.error "failed to delete task #{@task.id}"
     
