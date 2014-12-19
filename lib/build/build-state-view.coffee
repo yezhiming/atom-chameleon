@@ -40,11 +40,11 @@ class BuildStatusView extends View
         @subview 'console', new ConsoleView()
 
       @div class: 'actions', =>
-        @div class: 'pull-left', =>
-          @button 'Cancel', click: 'destroy', class: 'inline-block-tight btn'
-        @div class: 'pull-right',outlet:"devicebtn",style:"display:none", =>
-          @button 'Device', click: 'DeviceFun', class: 'inline-block-tight btn'
-        @div class: 'pull-right', =>
+        @div class: 'pull-left',outlet:"cancelbutton", =>
+          @button 'Cancel', click: 'CancelFun', class: 'inline-block-tight btn'
+        @div class: 'pull-left',outlet:"closebutton",style:"display:none", =>
+          @button 'Close', click: 'CloseFun', class: 'inline-block-tight btn'
+        @div class: 'pull-right',outlet:"refreshbutton", =>
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
   initialize: ->
@@ -156,3 +156,26 @@ class BuildStatusView extends View
       Device(destPath,(status)->
         console.log "status:#{status}"
       )
+
+
+  CloseFun:->
+    console.log "CloseFun"
+    r=confirm("关闭该窗口，意味着将停止编译");
+    if r
+      @destroy()
+    else
+      console.log "cancle"
+
+  CancelFun:->
+    console.log "CancelFun"
+    if @cancelbutton.attr('class') is "pull-left"
+      @refreshbutton.hide()
+      @cancelbutton.removeClass("pull-left")
+      @cancelbutton.addClass("pull-right")
+      @closebutton.show()
+    else
+      @refreshbutton.show()
+      @cancelbutton.removeClass("pull-right")
+      @cancelbutton.addClass("pull-left")
+      @closebutton.hide()
+    
