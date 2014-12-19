@@ -5,7 +5,7 @@ _ = require 'underscore'
 AppRepoListView = require './app-repo-list-view'
 
 KEYS = ['title', 'version', 'build', 'bundleIdentifier', 'mobileprovision'
-'p12', 'p12_password', 'scheme', 'content_src', 'repository_url']
+'p12', 'p12_password', 'scheme', 'content_src', 'repository_url','pushp12','pushp12password']
 
 module.exports =
 class V extends View
@@ -36,6 +36,9 @@ class V extends View
             @div class: 'form-group', =>
               @label 'p12 password:'
               @subview 'p12_password', new EditorView(mini: true)
+            @div class: 'form-group', =>
+              @label 'Bundle Identifier:'
+              @subview 'bundleIdentifier', new EditorView(mini: true)
 
           @div class: 'form-group', =>
             @label 'Application URL:'
@@ -44,19 +47,28 @@ class V extends View
             @label 'Scheme:'
             @subview 'scheme', new EditorView(mini: true)
           @div class: 'form-group', =>
-            @label 'Bundle Identifier:'
-            @subview 'bundleIdentifier', new EditorView(mini: true)
-          @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
-  initialize: ->
+          @div class: '', =>
+            @input type: 'checkbox', outlet: 'useMyCert', click: 'togglePushServersCert'
+            @span 'Use Push Services:'
 
+          @div outlet:"pushcer",=>
+            @div class: 'form-group', =>
+              @label 'Push Services p12 path:'
+              @subview 'pushp12', new EditorView(mini: true, placeholderText: 'click here to Push Services p12 path')
+            @div class: 'form-group', =>
+              @label 'Push Services p12 password:'
+              @subview 'pushp12password', new EditorView(mini: true)
+
+  initialize: ->
     # 选择文件
     [
       {view: @mobileprovision, suffix: 'mobileprovision'}
       {view: @p12, suffix: 'p12'}
       {view: @content_src, suffix: 'html', relative: true}
+      {view:@pushp12,suffix:'p12'}
     ]
     .forEach (each) ->
       #disable input
@@ -97,6 +109,7 @@ class V extends View
   attached: ->
     console.log 'attached'
     @cert.toggle()
+    @pushcer.toggle()
 
   destroy: ->
 
@@ -108,6 +121,9 @@ class V extends View
 
   toggleUseMyCert: ->
     @cert.toggle()
+
+  togglePushServersCert: ->
+    @pushcer.toggle()
 
   onClickIcon: ->
     openFile

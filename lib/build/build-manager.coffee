@@ -120,6 +120,11 @@ class BuildManager
         unless (options.content_src is "")
           form.append "content_src","#{options.content_src}"
 
+        # 是否使用push servers
+        unless ((options.pushp12 is "") && (options.pushp12password is ""))
+          form.append "pushp12",fs.createReadStream(options.pushp12)
+          form.append "pushp12password",options.pushp12password
+            
         form.append "title","#{options.title}"
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"

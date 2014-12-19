@@ -40,12 +40,13 @@ class BuildStatusView extends View
         @subview 'console', new ConsoleView()
 
       @div class: 'actions', =>
-        @div class: 'pull-left', =>
-          @button 'Cancel', click: 'destroy', class: 'inline-block-tight btn'
-        @div class: 'pull-right',outlet:"devicebtn",style:"display:none", =>
-          @button 'Device', click: 'DeviceFun', class: 'inline-block-tight btn'
-        @div class: 'pull-right', =>
+        @div class: 'pull-left',outlet:"closebutton", =>
+          @button 'Close', click: 'destroy', class: 'inline-block-tight btn'
+        
+        @div class: 'pull-right',outlet:"refreshbutton", =>
           @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
+        @div class: 'pull-right',outlet:"cancelbutton", =>
+          @button 'Cancel', click: 'cancel', class: 'inline-block-tight btn'
 
   initialize: ->
 
@@ -92,14 +93,7 @@ class BuildStatusView extends View
     @socket.on 'stderr', (out) => @console.append(out, 'text-error')
 
   destroy: ->
-    if @task and @task.state != 'complete'
-      puzzleClient.deleteTask @task.id
-      .then ->
-        console.log "task #{@task.id} deleted."
-      .catch ->
-        console.error "failed to delete task #{@task.id}"
-
-    @detach()
+    @remove()
 
   setTask: (@task) ->
     @find('.task-id').text @task.id
@@ -156,3 +150,12 @@ class BuildStatusView extends View
       Device(destPath,(status)->
         console.log "status:#{status}"
       )
+
+  CancelFun:->
+    if @task and @task.state != 'complete'
+      puzzleClient.deleteTask @task.id
+      .then ->
+        console.log "task #{@task.id} deleted."
+      .catch ->
+        console.error "failed to delete task #{@task.id}"
+    
