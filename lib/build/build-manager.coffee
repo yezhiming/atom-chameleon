@@ -101,7 +101,8 @@ class BuildManager
         form.append "platform","ios"
 
         # 以下三个参数需要同时不为空，否则不发送到服务器  如果不填写，那么使用服务器的默认证书
-        unless ((options.mobileprovision is "") && (options.p12 is "") && (options.p12_password is ""))
+        # unless ((options.mobileprovision is "") && (options.p12 is "") && (options.p12_password is ""))
+        if options.mobileprovision && options.p12 && options.p12_password
           form.append "mobileprovision", fs.createReadStream(options.mobileprovision)
           form.append "p12",fs.createReadStream(options.p12)
           form.append "p12_password","#{options.p12_password}"
@@ -121,7 +122,8 @@ class BuildManager
           form.append "content_src","#{options.content_src}"
 
         # 是否使用push servers
-        unless ((options.pushp12 is "") && (options.pushp12password is ""))
+        # unless ((options.pushp12 is "") && (options.pushp12password is ""))
+        if options.pushp12 && options.pushp12password
           form.append "pushp12",fs.createReadStream(options.pushp12)
           form.append "pushp12password",options.pushp12password
             

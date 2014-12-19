@@ -52,7 +52,7 @@ class V extends View
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
           @div class: '', =>
-            @input type: 'checkbox', outlet: 'useMyCert', click: 'togglePushServersCert'
+            @input type: 'checkbox', outlet: 'usePushCert', click: 'togglePushServersCert'
             @span 'Use Push Services:'
 
           @div outlet:"pushcer",=>
@@ -141,8 +141,8 @@ class V extends View
 
     unless @useMyCert.prop('checked')
       result = _.omit result, ['mobileprovision', 'p12', 'p12_password']
-
-    unless @pushcer.prop('checked')
+    
+    unless @usePushCert.prop('checked')
       result = _.omit result, ['pushp12', 'pushp12password']
 
     return result
