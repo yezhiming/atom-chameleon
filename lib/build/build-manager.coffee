@@ -101,7 +101,7 @@ class BuildManager
         form.append "platform","ios"
 
         # 以下三个参数需要同时不为空，否则不发送到服务器  如果不填写，那么使用服务器的默认证书
-        if options.mobileprovision and options.p12 and options.p12_password
+        unless ((options.mobileprovision is "") && (options.p12 is "") && (options.p12_password is ""))
           form.append "mobileprovision", fs.createReadStream(options.mobileprovision)
           form.append "p12",fs.createReadStream(options.p12)
           form.append "p12_password","#{options.p12_password}"

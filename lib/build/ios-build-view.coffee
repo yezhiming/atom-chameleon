@@ -36,9 +36,10 @@ class V extends View
             @div class: 'form-group', =>
               @label 'p12 password:'
               @subview 'p12_password', new EditorView(mini: true)
-            @div class: 'form-group', =>
-              @label 'Bundle Identifier:'
-              @subview 'bundleIdentifier', new EditorView(mini: true)
+            
+          @div class: 'form-group', =>
+            @label 'Bundle Identifier:'
+            @subview 'bundleIdentifier', new EditorView(mini: true)
 
           @div class: 'form-group', =>
             @label 'Application URL:'
@@ -140,6 +141,9 @@ class V extends View
 
     unless @useMyCert.prop('checked')
       result = _.omit result, ['mobileprovision', 'p12', 'p12_password']
+
+    unless @pushcer.prop('checked')
+      result = _.omit result, ['pushp12', 'p12', 'p12_password']
 
     return result
 
