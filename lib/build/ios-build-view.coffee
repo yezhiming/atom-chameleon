@@ -36,6 +36,9 @@ class V extends View
             @div class: 'form-group', =>
               @label 'p12 password:'
               @subview 'p12_password', new EditorView(mini: true)
+            @div class: 'form-group', =>
+              @label 'Bundle Identifier:'
+              @subview 'bundleIdentifier', new EditorView(mini: true)
 
           @div class: 'form-group', =>
             @label 'Application URL:'
@@ -43,9 +46,6 @@ class V extends View
           @div class: 'form-group', =>
             @label 'Scheme:'
             @subview 'scheme', new EditorView(mini: true)
-          @div class: 'form-group', =>
-            @label 'Bundle Identifier:'
-            @subview 'bundleIdentifier', new EditorView(mini: true)
           @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
