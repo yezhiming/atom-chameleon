@@ -28,7 +28,7 @@ module.exports = (options) ->
           'content-type': req.headers['content-type']
         }
       , (response) ->
-        res.writeHead reponse.statusCode, response.headers
+        res.writeHead response.statusCode, response.headers
         response.pipe(res)
         response.on 'data', (data) ->
           console.log "代理转发[服务器]响应: #{data.toString()}"
