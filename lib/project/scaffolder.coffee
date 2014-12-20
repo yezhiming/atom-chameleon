@@ -7,6 +7,7 @@ path = require 'path'
 fs = require 'fs-extra'
 Q = require 'q'
 {exec} = require 'child_process'
+{getResourcePath} = require '../utils/utils'
 
 remove = Q.denodeify fs.remove
 fscopy = Q.denodeify fs.copy
@@ -30,8 +31,7 @@ execute = (command) ->
 module.exports = (options) ->
 
   destPath = path.resolve options.path, options.name
-  packagePath = atom.packages.getActivePackage('atom-butterfly').path
-  scaffoldPath = "#{packagePath}/scaffold"
+  scaffoldPath = getResourcePath 'scaffold'
 
   execute "git clone #{options.repo} #{destPath}"
   .then -> remove "#{destPath}/.git"

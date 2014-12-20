@@ -3,6 +3,7 @@
 path = require 'path'
 _ = require 'underscore'
 AppRepoListView = require './app-repo-list-view'
+{getResourcePath} = require '../utils/utils'
 
 KEYS = ['title', 'version', 'build', 'bundleIdentifier', 'mobileprovision'
 'p12', 'p12_password', 'scheme', 'content_src', 'repository_url','pushp12','pushp12password']
@@ -105,8 +106,7 @@ class V extends View
     @title.setText _.last(atom.project.path.split("/")) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
-    @icon.attr('src', 'atom://atom-butterfly/images/icon.png')
-
+    @icon.attr 'src', getResourcePath('images', 'icon.png')
 
     # restore last options
     # console.log "window: #{window.localStroage}"
@@ -159,3 +159,7 @@ class V extends View
 
   getResult: ->
     @serialize()
+
+  onNext: (wizard) ->
+    wizard.mergeOptions @serialize()
+    wizard.nextStep()
