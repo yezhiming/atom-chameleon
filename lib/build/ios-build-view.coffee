@@ -1,4 +1,4 @@
-{$, View, EditorView} = require 'atom'
+{$, $$, View, EditorView} = require 'atom'
 {openFile} = require '../utils/dialog'
 path = require 'path'
 _ = require 'underscore'
@@ -43,7 +43,7 @@ class V extends View
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
           # use my cert
-          @div class: '', =>
+          @div class: 'optional-checkbox', =>
             @input type: 'checkbox', outlet: 'useMyCert', click: 'toggleUseMyCert'
             @span 'Use my mobileprovision:'
 
@@ -59,7 +59,7 @@ class V extends View
               @subview 'p12_password', new EditorView(mini: true)
 
           # use push
-          @div class: '', =>
+          @div class: 'optional-checkbox', =>
             @input type: 'checkbox', outlet: 'usePushCert', click: 'togglePushServersCert'
             @span 'Use Push Services:'
 
@@ -105,6 +105,8 @@ class V extends View
     @title.setText _.last(atom.project.path.split("/")) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
+    @icon.attr('src', 'atom://atom-butterfly/images/icon.png')
+
 
     # restore last options
     # console.log "window: #{window.localStroage}"
