@@ -11,32 +11,23 @@ module.exports =
 class V extends View
   @content: ->
     @div id: 'ios-build-view', =>
-      @h2 'Build iOS App:'
+      @h1 'Build iOS App:'
 
       @div class: 'row', =>
         @div class: 'col-xs-3', =>
           @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
-          @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
-          @subview 'version', new EditorView(mini: true, placeholderText: 'Version'), class: 'version'
-          @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
+          @div class: 'form-group', =>
+            @label 'Title:'
+            @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
+          @div class: 'form-group', =>
+            @label 'Version:'
+            @subview 'version', new EditorView(mini: true, placeholderText: 'Version'), class: 'version'
+          @div class: 'form-group', =>
+            @label 'Build:'
+            @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
 
         @div class: 'col-xs-9', =>
 
-          @div class: '', =>
-            @input type: 'checkbox', outlet: 'useMyCert', click: 'toggleUseMyCert'
-            @span 'Use my mobileprovision:'
-
-          @div outlet: 'cert', =>
-            @div class: 'form-group', =>
-              @label 'Mobileprovision:'
-              @subview 'mobileprovision', new EditorView(mini: true, placeholderText: 'click here to select mobileprovision file')
-            @div class: 'form-group', =>
-              @label 'p12:'
-              @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
-            @div class: 'form-group', =>
-              @label 'p12 password:'
-              @subview 'p12_password', new EditorView(mini: true)
-            
           @div class: 'form-group', =>
             @label 'Bundle Identifier:'
             @subview 'bundleIdentifier', new EditorView(mini: true)
@@ -51,6 +42,23 @@ class V extends View
             @label 'Content Src:'
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
+          # use my cert
+          @div class: '', =>
+            @input type: 'checkbox', outlet: 'useMyCert', click: 'toggleUseMyCert'
+            @span 'Use my mobileprovision:'
+
+          @div outlet: 'cert', =>
+            @div class: 'form-group', =>
+              @label 'Mobileprovision:'
+              @subview 'mobileprovision', new EditorView(mini: true, placeholderText: 'click here to select mobileprovision file')
+            @div class: 'form-group', =>
+              @label 'p12:'
+              @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
+            @div class: 'form-group', =>
+              @label 'p12 password:'
+              @subview 'p12_password', new EditorView(mini: true)
+
+          # use push
           @div class: '', =>
             @input type: 'checkbox', outlet: 'usePushCert', click: 'togglePushServersCert'
             @span 'Use Push Services:'
@@ -141,7 +149,7 @@ class V extends View
 
     unless @useMyCert.prop('checked')
       result = _.omit result, ['mobileprovision', 'p12', 'p12_password']
-    
+
     unless @usePushCert.prop('checked')
       result = _.omit result, ['pushp12', 'pushp12password']
 
