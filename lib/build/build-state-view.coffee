@@ -42,11 +42,10 @@ class BuildStatusView extends View
       @div class: 'actions', =>
         @div class: 'pull-left',outlet:"closebutton", =>
           @button 'Close', click: 'destroy', class: 'inline-block-tight btn'
-        
+
         @div class: 'pull-right',outlet:"refreshbutton", =>
-          @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
-        @div class: 'pull-right',outlet:"cancelbutton", =>
           @button 'Cancel', click: 'cancel', class: 'inline-block-tight btn'
+          @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
 
   initialize: ->
 
@@ -88,9 +87,9 @@ class BuildStatusView extends View
       #   @find('.task-state').text job.state
       #   @showState(job)
 
-    @socket.on 'stdout', (out) => @console.append(out)
+    @socket.on 'stdout', (out) => @console.append(out.content)
 
-    @socket.on 'stderr', (out) => @console.append(out, 'text-error')
+    @socket.on 'stderr', (out) => @console.append(out.content, 'text-error')
 
   destroy: ->
     @remove()
@@ -158,4 +157,3 @@ class BuildStatusView extends View
         console.log "task #{@task.id} deleted."
       .catch ->
         console.error "failed to delete task #{@task.id}"
-    
