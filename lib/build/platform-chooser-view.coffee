@@ -33,9 +33,6 @@ class V extends View
     parentView.append(this)
     @chooser.selectFirstItemView()
 
-  getResult: ->
-    platform: @chooser.getSelectedItem().id
-
   onNext: (wizard) ->
     wizard.mergeOptions {platform: @chooser.getSelectedItem().id}
     wizard.nextStep()

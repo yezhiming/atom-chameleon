@@ -26,7 +26,10 @@ class ProjectInfoView extends View
   destroy: ->
     @detach()
 
-  getResult: ->
-    name: @editor.getText()
-    bootstrap: @find('#withBootstrap').is(":checked")
-    ratchet: @find('#withRatchet').is(":checked")
+  onNext: (wizard) ->
+    wizard.mergeOptions {
+      name: @editor.getText()
+      bootstrap: @find('#withBootstrap').is(":checked")
+      ratchet: @find('#withRatchet').is(":checked")
+    }
+    wizard.nextStep()

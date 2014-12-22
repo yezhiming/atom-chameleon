@@ -157,9 +157,6 @@ class V extends View
 
     return result
 
-  getResult: ->
-    @serialize()
-
   onNext: (wizard) ->
     wizard.mergeOptions @serialize()
     wizard.nextStep()

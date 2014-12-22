@@ -31,5 +31,5 @@ class TemplateChooserView extends View
   destroy: ->
     @detach()
 
-  getResult: ->
-    'template': @chooser.getSelectedItem().id
+  onNext: (wizard) ->
+    wizard.mergeOptions {'template': @chooser.getSelectedItem().id}

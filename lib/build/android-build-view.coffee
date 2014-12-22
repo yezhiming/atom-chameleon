@@ -74,16 +74,6 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
 
-    # path = atom.project.getPath()+"/resource/android"
-    # @icon.attr('src',"#{path}/test.png")
-    # @keystore.setText "#{path}/test_1.keystore"
-    # @alias.setText "test_1"
-    # @keypass.setText "test123"
-    # @aliaspass.setText "test123"
-    # @url.setText "http://localhost:800/androiddown/android.zip"
-    # @scheme.setText "bundle" ＃还有一个sandbox
-    # @src.setText "exhibition/index.html"
-
   onClickIcon: ->
     openFile
       title: 'Select Icon Image'
@@ -91,25 +81,12 @@ class V extends View
     .then (destPath) =>
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
-  # getResult: ->
-  #   icon:@icon[0].src.replace "file://", ""
-  #   title: @title.getText()
-  #   version: @version.getText()
-  #   build:@build.getText()
-  #   keystore: @keystore.getText()
-  #   alias: @alias.getText()
-  #   keypass:@keypass.getText()
-  #   aliaspass:@aliaspass.getText()
-  #   scheme: @scheme.getText()
-  #   content_src: @src.getText()
-  #   app_url: @url.getText()
-
-
   serialize: ->
     KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
       return all
     , {icon: @icon[0].src.replace "file://", ""}
 
-  getResult: ->
-    @serialize()
+  onNext: (wizard) ->
+    wizard.mergeOptions @serialize()
+    wizard.nextStep()

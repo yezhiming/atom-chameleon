@@ -66,11 +66,14 @@ class V extends View
   destroy: ->
     @remove()
 
-  getResult: ->
-    name: @name.getText()
-    title: @title.getText()
-    identifier: @identifier.getText()
-    version: @version.getText()
-    description: @description.getText() or ""
-    invisible: @invisible.prop('checked')
-    icon_path: @icon.attr('src')
+  onNext: (wizard) ->
+    wizard.mergeOptions {
+      name: @name.getText()
+      title: @title.getText()
+      identifier: @identifier.getText()
+      version: @version.getText()
+      description: @description.getText() or ""
+      invisible: @invisible.prop('checked')
+      icon_path: @icon.attr('src')
+    }
+    wizard.nextStep()
