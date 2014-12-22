@@ -33,3 +33,4 @@ class TemplateChooserView extends View
 
   onNext: (wizard) ->
     wizard.mergeOptions {'template': @chooser.getSelectedItem().id}
+    wizard.nextStep()

@@ -86,7 +86,7 @@ class WizardView extends View
   nextStep: ->
     if @order < @constructor.flow.length - 1
       @order++
-      @_refresh(@currentView.getResult())
+      @_refresh(@options)
     else
       @emit 'finish', @options
 
