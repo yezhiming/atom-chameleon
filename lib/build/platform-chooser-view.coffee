@@ -37,5 +37,5 @@ class V extends View
     platform: @chooser.getSelectedItem().id
 
   onNext: (wizard) ->
-    wizard.options.platform = @chooser.getSelectedItem().id
-    wizard.next()
+    wizard.mergeOptions {platform: @chooser.getSelectedItem().id}
+    wizard.nextStep()

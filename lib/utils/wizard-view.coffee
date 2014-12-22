@@ -60,13 +60,15 @@ class WizardView extends View
 
   onClickNext: ->
     #collect result into @options object
-    _.extend @options, @currentView.getResult() if @currentView.getResult
+    # _.extend @options, @currentView.getResult() if @currentView.getResult
+    #
+    # if @order < @constructor.flow.length - 1
+    #   @order++
+    #   @_refresh(@currentView.getResult())
+    # else
+    #   @emit 'finish', @options
 
-    if @order < @constructor.flow.length - 1
-      @order++
-      @_refresh(@currentView.getResult())
-    else
-      @emit 'finish', @options
+    @currentView.onNext(this)
 
   attach: ->
     atom.workspaceView.append(this)
@@ -79,12 +81,27 @@ class WizardView extends View
 
     @remove()
 
+
+  # call by step view
+  nextStep: ->
+    if @order < @constructor.flow.length - 1
+      @order++
+      @_refresh(@currentView.getResult())
+    else
+      @emit 'finish', @options
+
+  mergeOptions: (options) ->
+    _.extend @options, options
+
   enableNext: ->
     @next.prop 'disabled', false
 
   disableNext: ->
     @next.prop 'disabled', true
 
+  #
+  # for promise style
+  #
   finishPromise: ->
     Q.Promise (resolve, reject, notify) =>
       @on 'finish', (result) -> resolve(result)
