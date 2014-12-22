@@ -4,6 +4,8 @@ path = require 'path'
 _ = require 'underscore'
 AppRepoListView = require './app-repo-list-view'
 
+{getResourcePath} = require '../utils/utils'
+
 
 KEYS = ['title', 'version', 'build', 'keystore', 'alias'
 'keypass', 'aliaspass', 'repository_url', 'scheme', 'content_src']
@@ -23,18 +25,7 @@ class V extends View
 
         @div class: 'col-xs-9', =>
 
-          @div class: 'form-group', =>
-            @label 'keystore:'
-            @subview 'keystore', new EditorView(mini: true, placeholderText: 'click here to select keystore file')
-          @div class: 'form-group', =>
-            @label 'alias:'
-            @subview 'alias', new EditorView(mini: true,placeholderText:'请输入别名')
-          @div class: 'form-group', =>
-            @label 'keypass:'
-            @subview 'keypass', new EditorView(mini: true,placeholderText:'请输入密码')
-          @div class: 'form-group', =>
-            @label 'aliaspass:'
-            @subview 'aliaspass', new EditorView(mini: true,placeholderText:'请输入别名密码')
+          
           @div class: 'form-group', =>
             @label 'Application URL:'
             @subview 'repository_url', new EditorView(mini: true,placeholderText:'点击选择源码库')
@@ -44,7 +35,28 @@ class V extends View
           @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
+          
+          
+          @div class: 'optional-checkbox', =>
+            @input type: 'checkbox', outlet: 'useMyCert', click: 'toggleUseMyCert'
+            @span 'Use my keystore:'
 
+          @div outlet: 'cert', =>
+            @div class: 'form-group', =>
+              @label 'keystore:'
+              @subview 'keystore', new EditorView(mini: true, placeholderText: 'click here to select keystore file')
+            @div class: 'form-group', =>
+              @label 'alias:'
+              @subview 'alias', new EditorView(mini: true,placeholderText:'请输入别名')
+            @div class: 'form-group', =>
+              @label 'keypass:'
+              @subview 'keypass', new EditorView(mini: true,placeholderText:'请输入密码')
+            @div class: 'form-group', =>
+              @label 'aliaspass:'
+              @subview 'aliaspass', new EditorView(mini: true,placeholderText:'请输入别名密码')
+
+
+      
   initialize: ->
     [
       {view: @keystore, suffix: 'keystore'}
@@ -73,6 +85,14 @@ class V extends View
     @title.setText _.last(atom.project.path.split("/")) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
+    @icon.attr 'src', getResourcePath('images', 'icon.png')
+
+  attached: ->
+    console.log 'attached'
+    @cert.toggle()
+  
+  toggleUseMyCert: ->
+    @cert.toggle()
 
   onClickIcon: ->
     openFile
@@ -82,10 +102,15 @@ class V extends View
       @icon.attr('src', destPath[0]) if destPath.length > 0
 
   serialize: ->
-    KEYS.reduce (all, key) =>
+    result = KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
       return all
     , {icon: @icon[0].src.replace "file://", ""}
+    
+    unless @useMyCert.prop('checked')
+      result = _.omit result, ['keystore', 'alias', 'keypass','aliaspass']
+  
+    return result
 
   onNext: (wizard) ->
     wizard.mergeOptions @serialize()

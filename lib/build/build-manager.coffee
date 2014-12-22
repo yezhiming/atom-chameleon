@@ -70,7 +70,8 @@ class BuildManager
           form.append "icon",fs.createReadStream(options.icon)
 
         # 以下只要一个信息不填写，那么就使用默认的证书发布安卓应用
-        unless ((options.keystore is "") && (options.keypass is "") && (options.alias is "") && (options.aliaspass is ""))
+        # unless ((options.keystore is "") && (options.keypass is "") && (options.alias is "") && (options.aliaspass is ""))
+        if (options.keystore && options.keypass && options.alias && options.aliaspass)
           form.append "keystore",fs.createReadStream (options.keystore)
           form.append "keypass","#{options.keypass}"
           form.append "alias","#{options.alias}"
