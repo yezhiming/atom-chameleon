@@ -1,14 +1,28 @@
 spawn = require('child_process').spawn
 Q = require 'q'
+fs = require 'fs'
+fsplus = require 'fs-plus'
+
+uuid = require 'uuid'
 
 {exec} = require 'child_process'
 
-module.exports = (pathDir,source,decs,cb)->
+module.exports = (pathDir,cb)->
 
   Q.Promise (resolve, reject, notify) ->
 
+    decs = fsplus.absolute "~/.atom/atom-butterfly"
+
+    zipFile = "#{uuid.v1()}.zip"
+    
+    unless fsplus.isDirectorySync(decs)
+      console.log "新建文件夹：#{decs}"
+      fs.mkdirSync decs
+
+    zipFile = "#{decs}/#{zipFile}"
+
   # exec
-    commands = "zip -r #{decs} #{source}"
+    commands = "zip -r #{zipFile} ./"
 
     options =
       cwd:"#{pathDir}"
@@ -16,8 +30,8 @@ module.exports = (pathDir,source,decs,cb)->
     foreverossZip = exec commands, options, (error,stdout,stderr)=>
       if error isnt null
         reject(error)
-      zip_path = "#{pathDir}/#{decs}"
-      resolve(zip_path)
+      # zip_path = "#{pathDir}/#{decs}"
+      resolve(zipFile)
 
   # spawn
     # args = ["-r",decs,source];

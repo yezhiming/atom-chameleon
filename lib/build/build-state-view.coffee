@@ -43,9 +43,9 @@ class BuildStatusView extends View
         @div class: 'pull-left',outlet:"closebutton", =>
           @button 'Close', click: 'destroy', class: 'inline-block-tight btn'
 
-        @div class: 'pull-right',outlet:"refreshbutton", =>
-          @button 'Cancel', click: 'cancel', class: 'inline-block-tight btn'
-          @button 'Refresh', click: 'refreshTaskState', class: 'inline-block-tight btn'
+        @div class: 'pull-right', =>
+          @button 'Cancel', click: 'cancel',outlet:'cancelbutton', class: 'inline-block-tight btn'
+          @button 'Refresh', click: 'refreshTaskState',outlet:'refreshbutton', class: 'inline-block-tight btn'
 
   initialize: ->
 
@@ -108,9 +108,16 @@ class BuildStatusView extends View
       when 'complete'
         @loading.hide()
         @updateQRCode(task.data.platform)
+        @cancelbutton.disable()
+        @refreshbutton.disable()
       when 'failed'
         @loading.hide()
         @find('.glyphicon-remove').removeClass('hidden')
+        @cancelbutton.disable()
+        @refreshbutton.disable()
+
+  
+
 
   refreshTaskState: ->
 
@@ -150,10 +157,13 @@ class BuildStatusView extends View
         console.log "status:#{status}"
       )
 
-  CancelFun:->
-    if @task and @task.state != 'complete'
-      puzzleClient.deleteTask @task.id
-      .then ->
-        console.log "task #{@task.id} deleted."
-      .catch ->
-        console.error "failed to delete task #{@task.id}"
+  cancel:->
+    selectConfirm=confirm("请确认是否中止编译？");
+    if selectConfirm
+      if @task and @task.state != 'complete'
+        puzzleClient.deleteTask @task.id
+        .then ->
+          console.log "task #{@task.id} deleted."
+        .catch ->
+          console.error "failed to delete task #{@task.id}"
+    

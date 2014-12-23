@@ -3,6 +3,8 @@ request = require 'request'
 Q = require 'q'
 _ = require 'underscore'
 
+
+
 module.exports =
 class BuildManager
 
@@ -23,13 +25,17 @@ class BuildManager
     buildWizard = new PublishAppView().attach()
     buildStateView = new (require './build-state-view')()
 
+    removeZipPath = null
+
     buildWizard.finishPromise()
     .then (result) ->
       console.log "开始压缩..."
       buildWizard.destroy()
       buildStateView.attach()
 
-      require('../../utils/zip')(atom.project.path,"./","foreveross.zip").then (zip_path) ->_.extend(result, asset: zip_path)
+      require('../../utils/zip')(atom.project.path).then (zip_path) ->
+        removeZipPath = zip_path
+        _.extend(result, asset: zip_path)
     .then (result) ->
       console.log "结束压缩...#{result}"
       Q.Promise (resolve, reject, notify) ->
@@ -40,9 +46,9 @@ class BuildManager
     .then (result) =>
       @sendBuildRequest(result)
     .then (result) ->
-      zip_path = "#{atom.project.path}/foreveross.zip"
-      if fs.existsSync zip_path
-        fs.unlinkSync(zip_path)
+      console.log "删除文件：#{removeZipPath}"
+      if fs.existsSync removeZipPath
+        fs.unlinkSync(removeZipPath)
       JSON.parse result
     .then (task) ->
       buildStateView.setTask(task)
