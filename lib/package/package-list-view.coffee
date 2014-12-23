@@ -5,6 +5,7 @@ path = require 'path'
 fs = require 'fs'
 request = require 'request'
 Q = require 'q'
+# encrypt = require './sandbox/sandboxLite'
 
 readdir = Q.denodeify fs.readdir
 stat = Q.denodeify fs.stat
@@ -100,7 +101,8 @@ class PackageListView extends View
     @list.html ''
     PackageCell = require './package-cell-template'
     for module in modules
-      if(module.package)
+      _package = module.package
+      if(_package && _package.build && _package.version)
         cell = new PackageCell(module)
         cell.on 'upload', (cell, module)=>
           @upload(cell, module)
@@ -108,6 +110,8 @@ class PackageListView extends View
 
     atom.workspaceView.append this
 
+    #   @encrypt module.path, (path.join atom.project.path, 'encrypt', module.package.identifier)
+    # .then (result) =>
   upload: (cell, module)->
     cell.changeState 'upload'
 
@@ -116,6 +120,7 @@ class PackageListView extends View
       throw new Error('login fail') unless result.result is 'true'
       console.log "upload"
       zip = new AdmZip()
+      # zip.addLocalFolder path.join(atom.project.path, 'encrypt', module.package.identifier)
       zip.addLocalFolder module.path
       @uploadAttach zip.toBuffer()
     .then (result) =>
@@ -123,9 +128,13 @@ class PackageListView extends View
       throw new Error('upload fail') unless result.result is 'success'
       @validateAttach(result.id).then (nResult) -> _.extend(nResult, boundle: result.id)
     .then (result) =>
+      console.log "fetchWidgetId"
+      @fetchWidgetIdByIdentifier(module.package.identifier).then (nResult) ->
+        _.extend(result, widget_id: nResult.id)
+    .then (result) =>
       console.log "new module"
       throw new Error('validate fail') unless result.result is 'success'
-      @newModule _.extend result, {widget_id: '548698920cf2da4e8927bab5'}
+      @newModule _.extend result, {widget_id: result.widget_id}
     .then (result) ->
       cell.changeState 'normal' if result.result is 'success'
     .catch (err) ->
@@ -139,6 +148,9 @@ class PackageListView extends View
     r = request.get "#{C_Server}/bsl-web/mam/attachment/readfile/#{id}", (err, res, body)=>
       return error err if err
       success JSON.parse(body) if success
+
+  fetchWidgetIdByIdentifier: (id, success, error) ->
+    r = request_get "http://115.28.1.119:18860/mam/api/mam/widget/checkIdentity?identify=#{id}"
 
   newModule: (data, success, error) ->
 
@@ -178,6 +190,12 @@ class PackageListView extends View
       form.append "file", buf,
         filename: 'upload.zip'
         contentType: 'application/zip'
+
+  encrypt: (sourceDir, targetDir) ->
+
+    Q.Promise (resolve, reject, notify) ->
+      encrypt sourceDir, targetDir, 'foreveross', (err)=>
+        if err then reject(err) else resolve()
 
   destroy: ->
     @detach()
