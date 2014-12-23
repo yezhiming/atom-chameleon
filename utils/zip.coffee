@@ -7,19 +7,9 @@ uuid = require 'uuid'
 
 {exec} = require 'child_process'
 
-module.exports = (pathDir,cb)->
+module.exports = (pathDir,zipFile,cb)->
 
   Q.Promise (resolve, reject, notify) ->
-
-    decs = fsplus.absolute "~/.atom/atom-butterfly"
-
-    zipFile = "#{uuid.v1()}.zip"
-    
-    unless fsplus.isDirectorySync(decs)
-      console.log "新建文件夹：#{decs}"
-      fs.mkdirSync decs
-
-    zipFile = "#{decs}/#{zipFile}"
 
   # exec
     commands = "zip -r #{zipFile} ./"

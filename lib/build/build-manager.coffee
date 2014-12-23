@@ -3,7 +3,8 @@ request = require 'request'
 Q = require 'q'
 _ = require 'underscore'
 
-
+fsplus = require 'fs-plus'
+uuid = require 'uuid'
 
 module.exports =
 class BuildManager
@@ -25,7 +26,12 @@ class BuildManager
     buildWizard = new PublishAppView().attach()
     buildStateView = new (require './build-state-view')()
 
-    removeZipPath = null
+    decs = fsplus.absolute "~/.atom/atom-butterfly"
+    zipFile = "#{uuid.v1()}.zip"
+    unless fsplus.isDirectorySync(decs)
+      console.log "新建文件夹：#{decs}"
+      fs.mkdirSync decs
+    removeZipPath = "#{decs}/#{zipFile}"
 
     buildWizard.finishPromise()
     .then (result) ->
@@ -33,9 +39,7 @@ class BuildManager
       buildWizard.destroy()
       buildStateView.attach()
 
-      require('../../utils/zip')(atom.project.path).then (zip_path) ->
-        removeZipPath = zip_path
-        _.extend(result, asset: zip_path)
+      require('../../utils/zip')(atom.project.path,removeZipPath).then (zip_path) ->_.extend(result, asset: zip_path)
     .then (result) ->
       console.log "结束压缩...#{result}"
       Q.Promise (resolve, reject, notify) ->
