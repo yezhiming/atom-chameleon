@@ -161,6 +161,11 @@ class BuildStatusView extends View
     selectConfirm=confirm("请确认是否中止编译？");
     if selectConfirm
       if @task and @task.state != 'complete'
+        @loading.hide()
+        @find('.glyphicon-remove').removeClass('hidden')
+        @find('.task-state').text "failed"
+        @cancelbutton.disable()
+        @refreshbutton.disable()
         puzzleClient.deleteTask @task.id
         .then ->
           console.log "task #{@task.id} deleted."
