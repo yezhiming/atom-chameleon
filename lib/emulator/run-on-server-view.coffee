@@ -8,10 +8,6 @@ Q = require 'q'
 
 fsmkdirs = Q.denodeify fs.mkdirs
 
-# placeholder
-PH_ROOT = 'click here to select root path'
-PH_INDEX = 'the index page'
-
 module.exports =
 class RunOnServerView extends View
   @content: ->
