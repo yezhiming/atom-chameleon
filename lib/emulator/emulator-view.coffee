@@ -16,13 +16,13 @@ class EmulatorView extends View
       @div class: 'device', =>
         @tag 'webview', outlet: 'webview', class: 'device-content'
 
-      @div class: 'control', =>
-        @form class: 'form-inline', role: 'form', =>
-
-          @div class: 'block', =>
-            @button 'Open with Chrome', class: 'btn btn-primary inline-block-tight', click: 'onClickChrome'
-            @button 'Open with iOS Emulator', class: 'btn btn-primary inline-block-tight', click: 'onClickIOSSimulator'
-            @button 'Debug', class: 'btn btn-primary inline-block-tight', click: 'onClickDebug'
+      # @div class: 'control', =>
+      #   @form class: 'form-inline', role: 'form', =>
+      #
+      #     @div class: 'block', =>
+      #       @button 'Open with Chrome', class: 'btn btn-primary inline-block-tight', click: 'onClickChrome'
+      #       @button 'Open with iOS Emulator', class: 'btn btn-primary inline-block-tight', click: 'onClickIOSSimulator'
+      #       @button 'Debug', class: 'btn btn-primary inline-block-tight', click: 'onClickDebug'
 
   initialize: (serializeState) ->
     #observe tree-view side toggle event
