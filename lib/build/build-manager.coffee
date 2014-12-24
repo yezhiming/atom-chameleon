@@ -26,7 +26,8 @@ class BuildManager
     buildWizard = new PublishAppView().attach()
     buildStateView = new (require './build-state-view')()
 
-    decs = fsplus.absolute "~/.atom/atom-butterfly"
+    # 这样就可以可以不仅在windows还是mac都可以获取到.atom路径
+    decs = "#{atom.getConfigDirPath()}/atom-butterfly"
     zipFile = "#{uuid.v1()}.zip"
     unless fsplus.isDirectorySync(decs)
       console.log "新建文件夹：#{decs}"

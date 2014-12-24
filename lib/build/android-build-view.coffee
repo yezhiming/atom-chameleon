@@ -82,7 +82,7 @@ class V extends View
       .attach()
       .filterPlatform('android')
 
-    @title.setText _.last(atom.project.path.split("/")) if atom.project.path
+    @title.setText _.last(atom.project.path.split(path.sep)) if atom.project.path
     @version.setText "1.0.0"
     @build.setText "1"
     @icon.attr 'src', getResourcePath('images', 'icon.png')
@@ -105,7 +105,7 @@ class V extends View
     result = KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
       return all
-    , {icon: @icon[0].src.replace "file://", ""}
+    , {icon: url.parse(this.icon[0].src).path.replace("/","")}
     
     unless @useMyCert.prop('checked')
       result = _.omit result, ['keystore', 'alias', 'keypass','aliaspass']
