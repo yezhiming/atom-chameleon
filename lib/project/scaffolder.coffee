@@ -15,8 +15,14 @@ fscopy = Q.denodeify fs.copy
 execute = (command) ->
 
   Q.Promise (resolve, reject, notify) ->
-    cp = exec command, (error) ->
+    options = null
+    if atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
+      options =
+        env: path:atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
+
+    cp = exec command, options, (error) ->
       if error then reject(error) else resolve()
+
 
     cp.stdout.on 'data', (data) -> notify out: data.toString()
     cp.stderr.on 'data', (data) -> notify out: data.toString()

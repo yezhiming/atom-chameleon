@@ -16,6 +16,7 @@ module.exports =
     puzzleServerAddress: 'http://localhost:8080'
     puzzleServerAddressSecured: 'https://localhost:8443'
     puzzleAccessToken: ''
+    gitCloneEnvironmentPath: ''
 
   activate: (state) ->
     # create access_token if necessary
@@ -100,6 +101,6 @@ module.exports =
       console.log progress.out if progress.out
     .catch (error) ->
       console.trace error.stack
-      alert('error occur!')
+      alert('请设置git的环境变量')
     .finally ->
       pv.destroy()
