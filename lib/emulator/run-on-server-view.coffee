@@ -1,9 +1,10 @@
 path = require 'path'
 fs = require 'fs-extra'
-{View, EditorView, $$} = require 'atom'
+{$, $$, View, EditorView} = require 'atom'
 remote = require 'remote'
 dialog = remote.require 'dialog'
 Q = require 'q'
+{openFile} = require '../utils/dialog'
 
 fsmkdirs = Q.denodeify fs.mkdirs
 
@@ -29,14 +30,6 @@ class RunOnServerView extends View
             @span class: 'input-group-btn', =>
               @button 'Select', class: 'btn btn-default reset-to-bootstrap-default', type: 'button', click: 'onSelectIndex'
 
-        #TODO: proxy api
-        @div class: "form-group", =>
-          @label 'Select Custom API'
-          @div class: "input-group", =>
-            @div outlet: 'customAPIFile', class: 'form-control'
-            @span class: 'input-group-btn', =>
-              @button 'Select', class: 'btn btn-default reset-to-bootstrap-default', type: 'button', click: 'onSelectAPI'
-
         @div class: "form-group", =>
           @label 'http port'
           @subview 'httpPort', new EditorView(mini: true)
@@ -59,8 +52,11 @@ class RunOnServerView extends View
     @selectedRootPath.text '.'
 
     if atom.project.path
-      fs.exists path.resolve(atom.project.path, 'index.html'), (exists)=>
-        @selectedIndexFile.text 'index.html' if exists
+
+      fs.exists path.resolve(atom.project.path, 'index.html'), (exists1)=>
+        fs.exists path.resolve(atom.project.path, 'main', 'index.html'), (exists2)=>
+          @selectedIndexFile.text 'index.html' if exists1
+          @selectedIndexFile.text 'main/index.html' if exists2
 
     @httpPort.setText "3000"
 
@@ -79,7 +75,7 @@ class RunOnServerView extends View
           @subview 'd', new EditorView(mini: true)
         @div class: 'col-xs-1', =>
           @span class: 'glyphicon glyphicon-minus'
-    @find('.proxy-list').append item
+    @find('.proxy-list').append $(item)
 
   removeProxy: ->
     console.log "remove"
@@ -108,23 +104,11 @@ class RunOnServerView extends View
       #note: use val method for input tag
       @selectedIndexFile.text path.relative(atom.project.path, destPath[0]) if destPath
 
-  onSelectAPI: ->
-
-    dialog.showOpenDialog {
-      title: 'Custom API Script'
-      defaultPath: atom.project.path
-      filters: [{name: "js_coffee", extensions: ['js', 'coffee']}]
-      properties: ['openFile']
-    }, (destPath) =>
-
-      @customAPIFile.text path.relative(atom.project.path, destPath[0]) if destPath
-
   onClickRun: ->
     rootPath = path.resolve(atom.project.path, @selectedRootPath.text())
     destPath = path.resolve(atom.project.path, @selectedIndexFile.text())
     httpPort = parseInt @httpPort.getText()
     pushState = @find('#usingPushState').is(":checked")
-    apiScript = if @customAPIFile.text() then path.resolve(atom.project.path, @customAPIFile.text()) else null
 
     #TODO: validation
 
