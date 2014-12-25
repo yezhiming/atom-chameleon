@@ -108,11 +108,12 @@ class RunOnServerView extends View
   onClickRun: ->
     # cp resource to os tempdir
     tmpDir = path.resolve os.tmpdir(), path.basename(atom.project.path)
+    if fs.existsSync tmpDir
+      fs.removeSync tmpDir
     fs.copySync atom.project.path, tmpDir
-    atom.project.path = tmpDir
 
-    rootPath = path.resolve(atom.project.path, @selectedRootPath.text())
-    destPath = path.resolve(atom.project.path, @selectedIndexFile.text())
+    rootPath = path.resolve(tmpDir, @selectedRootPath.text())
+    destPath = path.resolve(tmpDir, @selectedIndexFile.text())
     httpPort = parseInt @httpPort.getText()
     pushState = @find('#usingPushState').is(":checked")
 
