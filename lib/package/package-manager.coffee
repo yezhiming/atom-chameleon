@@ -31,7 +31,11 @@ class PackageManager
             "name": "#{options.title}",
             "identifier": "#{options.identifier}",
             "version": "#{options.version}",
-            "description": "#{options.description}"
+            "description": "#{options.description}",
+            "build": "1",
+            "dependencies": "{}",
+            "releaseNote": "#{options.title}",
+            "hidden": false
           }
           """, (err)->
             if err then resolve() else reject(err)
