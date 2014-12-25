@@ -112,7 +112,7 @@ class RunOnServerView extends View
 
     #TODO: validation
 
-    @trigger 'createServer', [rootPath, destPath, httpPort, pushState, apiScript]
+    @trigger 'createServer', [rootPath, destPath, httpPort, pushState]
 
     @destroy()
 
