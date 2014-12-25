@@ -1,6 +1,6 @@
 {View} = require "atom"
 _ = require "underscore"
-AdmZip = require 'adm-zip'
+zip = require '../../utils/zip'
 path = require 'path'
 fs = require 'fs'
 request = require 'request'
@@ -52,11 +52,14 @@ class PackageListView extends View
     @div class: 'overlay from-top select-list', =>
       @ol outlet: 'list', class: 'list-group package-list'
       @button 'Cancel', click: 'destroy', class: "btn btn-lg"
+      @span class: "loading loading-spinner-small inline-block pull-right",outlet: 'loading'
 
   attach: ->
     request = request.defaults({jar: true})
 
     root = atom.project.path
+
+    @loading.hide();
 
     readdir(root)
     # filter butterfly packages
@@ -90,7 +93,7 @@ class PackageListView extends View
     # show up
     .then (map) =>
       @showPackageList map
-    .catch (err) ->
+    .catch (err) =>
       console.log err.message
       console.trace err.stack
 
@@ -114,15 +117,13 @@ class PackageListView extends View
     # .then (result) =>
   upload: (cell, module)->
     cell.changeState 'upload'
-
+    @loading.show();
     @login 'cube', 'cube', 'cube'
     .then (result) =>
       throw new Error('login fail') unless result.result is 'true'
       console.log "upload"
-      zip = new AdmZip()
-      # zip.addLocalFolder path.join(atom.project.path, 'encrypt', module.package.identifier)
-      zip.addLocalFolder module.path
-      @uploadAttach zip.toBuffer()
+      zip(module.path, module.path).then (zipPath) =>
+        @uploadAttach zipPath + '.zip'
     .then (result) =>
       console.log "validate"
       throw new Error('upload fail') unless result.result is 'success'
@@ -135,9 +136,11 @@ class PackageListView extends View
       console.log "new module"
       throw new Error('validate fail') unless result.result is 'success'
       @newModule _.extend result, {widget_id: result.widget_id}
-    .then (result) ->
+    .then (result) =>
+      @loading.hide();
       cell.changeState 'normal' if result.result is 'success'
-    .catch (err) ->
+    .catch (err) =>
+      @loading.hide();
       console.trace err.stack
 
   #模块上传流程
@@ -180,14 +183,15 @@ class PackageListView extends View
   validateAttach: (id) ->
     request_get "#{C_Server}/bsl-web/mam/attachment/readfile/#{id}"
 
-  uploadAttach: (buf) ->
+  uploadAttach: (zipPath) ->
 
     Q.Promise (resolve, reject, notify) ->
       r = request.post "#{C_Server}/bsl-web/mam/attachment/upload", (err, res, body)=>
+          fs.unlink zipPath
           if err then reject(err) else resolve JSON.parse(body)
 
       form = r.form()
-      form.append "file", buf,
+      form.append "file", fs.createReadStream(zipPath),
         filename: 'upload.zip'
         contentType: 'application/zip'
 
