@@ -1,5 +1,6 @@
 path = require 'path'
 fs = require 'fs-extra'
+os = require 'os'
 {$, $$, View, EditorView} = require 'atom'
 remote = require 'remote'
 dialog = remote.require 'dialog'
@@ -105,6 +106,11 @@ class RunOnServerView extends View
       @selectedIndexFile.text path.relative(atom.project.path, destPath[0]) if destPath
 
   onClickRun: ->
+    # cp resource to os tempdir
+    tmpDir = path.resolve os.tmpdir(), path.basename(atom.project.path)
+    fs.copySync atom.project.path, tmpDir
+    atom.project.path = tmpDir
+
     rootPath = path.resolve(atom.project.path, @selectedRootPath.text())
     destPath = path.resolve(atom.project.path, @selectedIndexFile.text())
     httpPort = parseInt @httpPort.getText()
