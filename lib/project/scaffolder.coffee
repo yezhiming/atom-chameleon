@@ -23,6 +23,14 @@ execute = (command) ->
     cp = exec command, options, (error) ->
       if error then reject(error) else resolve()
 
+    cp.on 'exit', (code, signal) ->
+      console.log "code:#{code}   signal： #{signal}"
+      if code is 128 and signal is null
+        reject("存在同名文件夹")
+      if code is 1 and signal is null
+        reject("请在atom中设置git的路径")
+        
+
 
     cp.stdout.on 'data', (data) -> notify out: data.toString()
     cp.stderr.on 'data', (data) -> notify out: data.toString()

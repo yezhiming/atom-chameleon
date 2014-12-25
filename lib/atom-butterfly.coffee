@@ -101,6 +101,6 @@ module.exports =
       console.log progress.out if progress.out
     .catch (error) ->
       console.trace error.stack
-      alert('请设置git的环境变量')
+      alert("#{error}")
     .finally ->
       pv.destroy()
