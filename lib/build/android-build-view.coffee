@@ -6,6 +6,7 @@ AppRepoListView = require './app-repo-list-view'
 
 {getResourcePath} = require '../utils/utils'
 
+url = require 'url'
 
 KEYS = ['title', 'version', 'build', 'keystore', 'alias'
 'keypass', 'aliaspass', 'repository_url', 'scheme', 'content_src']
