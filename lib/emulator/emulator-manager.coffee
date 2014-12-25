@@ -49,5 +49,5 @@ class BuildManager
     unless @emulatorView?
       EmulatorView = require './emulator-view'
       @emulatorView = new EmulatorView()
-
-    @emulatorView.toggle()
+    else
+      @emulatorView.toggle()
