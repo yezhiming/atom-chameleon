@@ -51,8 +51,9 @@ class DebugServer extends EventEmitter
 
     # 代理请求之后，这样不会破坏http结构
     app.use(bodyParser.json())
-    app.use(bodyParser.urlencoded())
-
+    # TODO 暂时没用到表单提交的contentType
+    # 如果不注释，windows系统会报错［第一次点击时，系统会报错，第二次后就没问题］
+    # app.use(bodyParser.urlencoded())
     router = express.Router()
     (require './cordova-emulate')(router, options.rootPath) #TODO: copy一份
     app.use(router)
