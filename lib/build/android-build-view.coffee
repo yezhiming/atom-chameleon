@@ -26,7 +26,7 @@ class V extends View
 
         @div class: 'col-xs-9', =>
 
-          
+
           @div class: 'form-group', =>
             @label 'Application URL:'
             @subview 'repository_url', new EditorView(mini: true,placeholderText:'点击选择源码库')
@@ -36,8 +36,8 @@ class V extends View
           @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
-          
-          
+
+
           @div class: 'optional-checkbox', =>
             @input type: 'checkbox', outlet: 'useMyCert', click: 'toggleUseMyCert'
             @span 'Use my keystore:'
@@ -57,7 +57,7 @@ class V extends View
               @subview 'aliaspass', new EditorView(mini: true,placeholderText:'请输入别名密码')
 
 
-      
+
   initialize: ->
     [
       {view: @keystore, suffix: 'keystore'}
@@ -91,7 +91,7 @@ class V extends View
   attached: ->
     console.log 'attached'
     @cert.toggle()
-  
+
   toggleUseMyCert: ->
     @cert.toggle()
 
@@ -106,12 +106,18 @@ class V extends View
     result = KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
       return all
-    , {icon: url.parse(this.icon[0].src).path.replace("/","")}
-    
+    , @iconSrcPath()
+
     unless @useMyCert.prop('checked')
       result = _.omit result, ['keystore', 'alias', 'keypass','aliaspass']
-  
+
     return result
+
+  iconSrcPath:->
+    if process.platform is "win32"
+      {icon: url.parse(this.icon[0].src).path.replace("/","")}
+    else
+      {icon: url.parse(this.icon[0].src).path}
 
   onNext: (wizard) ->
     wizard.mergeOptions @serialize()
