@@ -150,7 +150,7 @@ class V extends View
     result = KEYS.reduce (all, key) =>
       all[key] = this[key].getText()
       return all
-    , {icon: url.parse(this.icon[0].src).path.replace("/","")}
+    , @iconSrcPath()
 
     unless @useMyCert.prop('checked')
       result = _.omit result, ['mobileprovision', 'p12', 'p12_password']
@@ -159,6 +159,12 @@ class V extends View
       result = _.omit result, ['pushp12', 'pushp12password']
 
     return result
+
+  iconSrcPath:->
+    if process.platform is "win32"
+      {icon: url.parse(this.icon[0].src).path.replace("/","")}
+    else
+      {icon: url.parse(this.icon[0].src).path}
 
   onNext: (wizard) ->
     wizard.mergeOptions @serialize()
