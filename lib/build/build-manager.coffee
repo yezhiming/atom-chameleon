@@ -3,7 +3,6 @@ request = require 'request'
 Q = require 'q'
 _ = require 'underscore'
 
-fsplus = require 'fs-plus'
 uuid = require 'uuid'
 
 module.exports =
@@ -29,7 +28,7 @@ class BuildManager
     # 这样就可以可以不仅在windows还是mac都可以获取到.atom路径
     decs = "#{atom.getConfigDirPath()}/atom-butterfly"
     zipFile = "#{uuid.v1()}.zip"
-    unless fsplus.isDirectorySync(decs)
+    unless fs.statSync(decs).isDirectory()
       console.log "新建文件夹：#{decs}"
       fs.mkdirSync decs
     removeZipPath = "#{decs}/#{zipFile}"
@@ -138,7 +137,7 @@ class BuildManager
         if options.pushp12 && options.pushp12password
           form.append "pushp12",fs.createReadStream(options.pushp12)
           form.append "pushp12password",options.pushp12password
-            
+
         form.append "title","#{options.title}"
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"

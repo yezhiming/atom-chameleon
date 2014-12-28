@@ -1,7 +1,6 @@
 spawn = require('child_process').spawn
 Q = require 'q'
 fs = require 'fs'
-fsplus = require 'fs-plus'
 
 uuid = require 'uuid'
 

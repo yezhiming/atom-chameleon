@@ -18,7 +18,6 @@
     "download": "*",
     "express": "*",
     "fs-extra": "~0.12.0",
-    "fs-plus": "^2.4.0",
     "github": "0.2.3",
     "loophole": "*",
     "morgan": "*",
