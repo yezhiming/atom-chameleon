@@ -3,6 +3,7 @@ _ = require "underscore"
 zip = require '../../utils/zip'
 path = require 'path'
 fs = require 'fs'
+os = require 'os'
 request = require 'request'
 Q = require 'q'
 # encrypt = require './sandbox/sandboxLite'
@@ -122,7 +123,7 @@ class PackageListView extends View
     .then (result) =>
       throw new Error('login fail') unless result.result is 'true'
       console.log "upload"
-      zip(module.path, module.path).then (zipPath) =>
+      zip(module.path, path.join os.tmpdir(), module.package.identifier).then (zipPath) =>
         @uploadAttach zipPath + '.zip'
     .then (result) =>
       console.log "validate"
