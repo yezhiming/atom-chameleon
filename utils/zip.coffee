@@ -11,7 +11,11 @@ module.exports = (pathDir,zipFile,cb)->
   Q.Promise (resolve, reject, notify) ->
 
   # exec
-    commands = "zip -r #{zipFile} ./"
+    
+    if process.platform is "win32"
+      commands = "#{atom.getConfigDirPath()}/packages/atom-butterfly/utils/zip.exe -r #{zipFile} ./"
+    else
+      commands = "zip -r #{zipFile} ./"
 
     options =
       cwd:"#{pathDir}"
