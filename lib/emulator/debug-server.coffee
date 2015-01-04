@@ -23,7 +23,6 @@ class DebugServer extends EventEmitter
   start: (options)->
 
     app = express()
-    app.use express.static(options.rootPath)
     # app.use logger('dev')
 
     if options.pushState
@@ -34,9 +33,8 @@ class DebugServer extends EventEmitter
             res.sendFile path.resolve(options.defaultPage)
           else
             res.send 404
-
-    # NOTE: redirect to index.html, but express just works without it, -_-
     else
+      # NOTE1: redirect to index.html, but express just works without it, -_-
       app.get '/', (req, res) ->
         console.log "http server get '/', without pushState"
         res.sendFile path.resolve(options.defaultPage)
@@ -45,6 +43,8 @@ class DebugServer extends EventEmitter
       api = allowUnsafeEval -> require options.api
       api(app)
 
+    # 2333resolve NOTE1 express static middleware default active.  -> "/" mapping index.html
+    app.use express.static path.resolve options.rootPath
     app.use HttpProxy {
       "^\/mam\/": {host: "115.28.1.119", port: 18860}
     }
