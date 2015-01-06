@@ -20,9 +20,15 @@ class V extends View
       @div class: 'row', =>
         @div class: 'col-xs-3', =>
           @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
-          @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
-          @subview 'version', new EditorView(mini: true, placeholderText: 'Version'), class: 'version'
-          @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
+          @div class: 'form-group', =>
+            @label 'Title:'
+            @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
+          @div class: 'form-group', =>
+            @label 'Version:'
+            @subview 'version', new EditorView(mini: true, placeholderText: 'Version'), class: 'version'
+          @div class: 'form-group', =>
+            @label 'Build:'
+            @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
 
         @div class: 'col-xs-9', =>
 

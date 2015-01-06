@@ -9,6 +9,7 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
+    "fs-plus": "^2.4.0",
     "loophole": "*",
     "fs-extra": "~0.12.0",
     "uuid": "~2.0.1",
