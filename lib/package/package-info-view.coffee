@@ -14,7 +14,9 @@ class V extends View
         # icon
         @div class: 'col-xs-3', =>
           @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
-          @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
+          @div class: "form-group", =>
+            @label 'Title'
+            @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
         # info
         @div class: 'col-xs-9', =>
           @div class: "form-group", =>
