@@ -15,7 +15,7 @@ class PackageManager
     @packageListView?.destroy?()
 
   cmdCreatePackage: ->
-    @packageWizardView = new (require('./package-wizard-view'))() unless @packageWizardView?
+    @packageWizardView = new (require('./package-wizard-view'))() #unless @packageWizardView?
     @packageWizardView.attach()
     @packageWizardView.on 'finish', (options) =>
       @packageWizardView.destroy()
