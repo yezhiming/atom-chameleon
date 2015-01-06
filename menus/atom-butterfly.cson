@@ -40,7 +40,7 @@
         'label': 'New'
         'submenu': [
           {
-            'label': 'Porject...'
+            'label': 'Project...'
             'command': 'atom-butterfly:create-project'
           }
           {
