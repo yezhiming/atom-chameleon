@@ -5,7 +5,12 @@ _ = require 'underscore'
 
 uuid = require 'uuid'
 
-fsplus = require 'fs-plus'
+fsIsDirectorySync = (path) ->
+  try
+    stat = fs.statSync(path)
+    stat.isDirectory()
+  catch
+    false
 
 module.exports =
 class BuildManager
@@ -30,7 +35,7 @@ class BuildManager
     # 这样就可以可以不仅在windows还是mac都可以获取到.atom路径
     decs = "#{atom.getConfigDirPath()}/atom-butterfly"
     zipFile = "#{uuid.v1()}.zip"
-    unless fsplus.isDirectorySync(decs)
+    unless fsIsDirectorySync(decs)
       console.log "新建文件夹：#{decs}"
       fs.mkdirSync decs
     removeZipPath = "#{decs}/#{zipFile}"
