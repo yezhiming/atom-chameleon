@@ -39,7 +39,7 @@ class DebugServer extends EventEmitter
     else
       app.get '/', (req, res) ->
         console.log "http server get '/', without pushState"
-        res.sendFile path.resolve(options.defaultPage)
+        res.redirect path.relative options.rootPath, options.defaultPage
 
     if options.api
       api = allowUnsafeEval -> require options.api
