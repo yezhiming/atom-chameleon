@@ -46,7 +46,8 @@ class DebugServer extends EventEmitter
     # 2333resolve NOTE1 express static middleware default active.  -> "/" mapping index.html
     app.use express.static path.resolve options.rootPath
     app.use HttpProxy {
-      "^\/mam\/": {host: "115.28.1.119", port: 18860}
+      "^\/mam\/": {host: "115.28.1.119", port: 18860},
+      "^\/system\/api\/": {host: "115.28.1.119", port: 18860}
     }
 
     # 代理请求之后，这样不会破坏http结构

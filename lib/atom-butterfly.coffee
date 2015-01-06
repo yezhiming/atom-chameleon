@@ -39,6 +39,7 @@ module.exports =
     @emulatorManager.activate()
 
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
+    atom.workspaceView.command "atom-butterfly:debug-emulator", => @cmdDebugEmulator()
 
     #New
     atom.workspaceView.command "atom-butterfly:create-project", => @cmdCreateProject()
@@ -50,6 +51,9 @@ module.exports =
     @fileManager.deactivate?()
     @buildManager.deactivate?()
     @emulatorManager.deactivate?()
+
+  cmdDebugEmulator: ->
+    document.querySelector('webview').openDevTools()
 
   cmdDebug: ->
     # BowerView = require './scaffold/bower-view'

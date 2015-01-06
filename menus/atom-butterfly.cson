@@ -65,6 +65,10 @@
             'command': 'atom-butterfly:emulator'
           }
           {
+            'label': 'Debug Emulator'
+            'command': 'atom-butterfly:debug-emulator'
+          }
+          {
             'label': 'Install/Upgrade Butterfly.js'
             'command': 'atom-butterfly:install'
           }
