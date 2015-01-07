@@ -33,6 +33,24 @@ class V extends View
   initialize: (wizardView) ->
     @passwordEditorView @password
     
+    @editorOnDidChange @account, wizardView
+    @editorOnDidChange @password, wizardView
+    @editorOnDidChange @packageName, wizardView
+
+  # 验证editor是否填写了内容
+  editorOnDidChange:(editor, wizardView) ->
+    editor.getEditor().onDidChange =>
+      @editorVerify wizardView
+
+  editorVerify: (wizardView)->
+    unless  (@account.getText() is "") or
+            (@password.getText() is "") or
+            (@packageName.getText() is "")
+
+      wizardView.enableNext()
+    else
+      wizardView.disableNext()
+    
 
   destroy: ->
     @remove()
