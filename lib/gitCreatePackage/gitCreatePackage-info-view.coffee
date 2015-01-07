@@ -47,7 +47,7 @@ class V extends View
       password: @password.originalText
       packageName: @packageName.getText()
       describe: @describe.getText()
-    }afsdf
+    }
     wizard.nextStep()
 
   passwordEditorView: (editorView)->
