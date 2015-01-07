@@ -38,6 +38,9 @@ module.exports =
     @emulatorManager = new (require './emulator/emulator-manager')()
     @emulatorManager.activate()
 
+    @gitCreatePackageManager = new (require './gitCreatePackage/gitCreatePackage-manager')()
+    @gitCreatePackageManager.activate()
+
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
     atom.workspaceView.command "atom-butterfly:debug-emulator", => @cmdDebugEmulator()
 
@@ -51,6 +54,7 @@ module.exports =
     @fileManager.deactivate?()
     @buildManager.deactivate?()
     @emulatorManager.deactivate?()
+    @gitCreatePackageManager.deactivate?()
 
   cmdDebugEmulator: ->
     document.querySelector('webview').openDevTools()

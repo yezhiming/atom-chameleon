@@ -1,7 +1,7 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
-  'atom-text-editor': [
-
+  '.tree-view': [
+    {label: 'Create git package', command: 'atom-butterfly:gitCreatePackage'}
   ]
 
 'menu': [

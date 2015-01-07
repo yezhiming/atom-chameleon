@@ -24,6 +24,7 @@
     "bower": "*",
     "github": "0.2.3",
     "morgan": "*",
-    "socket.io-client": "*"
+    "socket.io-client": "*",
+    "underscore.string": "*"
   }
 }
