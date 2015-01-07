@@ -10,7 +10,7 @@ class V extends View
   
       @div class: "form-group", =>
         @label 'Select:'
-        @select class:'gitCreatePackageSelect', =>
+        @select class:'gitCreatePackageSelect', outlet: 'selectGit', =>
           @option "github"
           @option "gogs"
         
@@ -28,9 +28,8 @@ class V extends View
 
       @div class: "form-group", =>
         @label 'Describe:'
-        @subview 'describe', new EditorView(mini: true)
+        @subview 'describe', new EditorView(mini: true, placeholderText: '可选' )
     
-
 
   initialize: (wizardView) ->
     console.log "wizardView"
@@ -43,13 +42,12 @@ class V extends View
 
   onNext: (wizard) ->
     wizard.mergeOptions {
-      repo: "github"
-      account: "Account"
-      password: "password"
-      packageName: "packageName"
-      describe: "describe"
-    }
-    return
+      repo: @selectGit.val()
+      account: @account.getText()
+      password: @password.originalText
+      packageName: @packageName.getText()
+      describe: @describe.getText()
+    }afsdf
     wizard.nextStep()
 
   passwordEditorView: (editorView)->

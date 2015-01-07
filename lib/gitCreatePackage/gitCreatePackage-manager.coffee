@@ -1,5 +1,3 @@
-
-FileListView = require '../utils/fileListView'
 module.exports =
 class GitCreatePackageManager
 
