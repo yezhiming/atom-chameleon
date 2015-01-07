@@ -1,7 +1,6 @@
 {$, $$, View, EditorView} = require 'atom'
 _s = require 'underscore.string'
 
-
 module.exports =
 class V extends View
   @content: ->
@@ -13,14 +12,14 @@ class V extends View
         @select class:'gitCreatePackageSelect', outlet: 'selectGit', =>
           @option "github"
           @option "gogs"
-        
+
       @div class: "form-group", =>
         @label 'Account:'
         @subview 'account', new EditorView(mini: true)
-
       @div class: "form-group", =>
         @label 'Password:'
         @subview 'password', new EditorView(mini: true)
+
       
       @div class: "form-group", =>
         @label 'Package Name:'
@@ -32,8 +31,6 @@ class V extends View
     
 
   initialize: (wizardView) ->
-    console.log "wizardView"
-    console.log "wizardView"
     @passwordEditorView @password
     
 
