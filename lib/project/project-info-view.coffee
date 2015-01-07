@@ -19,6 +19,16 @@ class ProjectInfoView extends View
           @input type: "checkbox", id: 'withBootstrap'
           @text('With Bootstrap')
 
+
+  initialize: (wizardView) ->
+    @editor.getEditor().onDidChange =>
+      unless @editor.getText() is ""
+        wizardView.enableNext()
+      else
+        wizardView.disableNext()
+      
+    
+
   attachTo: (parentView)->
     parentView.append(this)
     @editor.focus()
