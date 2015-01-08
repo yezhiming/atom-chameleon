@@ -8,9 +8,8 @@ github_flag =
   safe: false
 
 # gogs
-gogsApi = 'https://172.16.1.27:3000'
-gogs_flag =
-  safe: false
+gogsApi = 'https://try.gogs.io'
+gogs_flag = {}
 
 
 # api.github.com
@@ -25,13 +24,14 @@ github_init = ->
 
 github_authenticate = (options) ->
   github_init() unless github
-  console.log "#{options.username}: github authenticate..."
+  console.log "#{options.username}: github is authenticating..."
   github.authenticate
     type: "basic"
     username: options.username
     password: options.password
   github_flag["username"] = options.username
   github_flag["safe"] = true
+
 
 # gogs模拟登入获取cookies
 gogs_login = (options) ->
@@ -44,27 +44,55 @@ gogs_login = (options) ->
         password: options.password
       , (err, httpResponse, body) ->
           reject(err) if err
-          if httpResponse.statusCode is 200
-            resolve(httpResponse.headers['Set-Cookie'])
+          # if httpResponse.statusCode is 200
+          resolve(httpResponse.headers['set-cookie'])
 
-# gogs创建token
-gogs_authenticate = (cookies)->
+# gogs模拟登入获取csrf
+gogs_csrf = (cookies) ->
   Q.Promise (resolve, reject, notify) ->
-    console.log "gogs create token: POST #{gogsApi}/user/settings/applications}"
+    console.log "gogs fetch csrf: GET #{gogsApi}/}"
+    request.get
+      headers:
+          Cookie: cookies
+      url: "#{gogsApi}/"
+      , (err, httpResponse, body) ->
+          reject(err) if err
+          try
+            csrf = httpResponse.toJSON().headers['set-cookie'][0].split(';')[0].split('=')[1].replace(/%3D/g, '=')
+            resolve
+              cookies: cookies
+              csrf: csrf
+          catch e
+            reject e
 
-    request.post
-      url: "#{gogsApi}/user/settings/applications"
-      form:
-        type: 'token'
-        uname: 'chameloenIDE(Mistaken delete!)'
-        _csrf: cookies._csrf
-    , (err, httpResponse, body) ->
-        reject(err) if err
-        if httpResponse.statusCode is 200
-          temp = "<div class=\"alert alert-blue alert-radius block\"><i class=\"octicon octicon-info\"></i>*</div>"
-          body = body.substr body.indexOf temp  + temp.length
-          token = body.substr 0, body.indexOf '</div>'
-          resolve(token)
+# gogs生成accessToken
+gogs_authenticate = (msg) ->
+  Q.Promise (resolve, reject, notify) ->
+    if localStorage.getItem 'gogs_token'
+      console.log "localStorage token：#{localStorage.getItem 'gogs_token'}"
+      gogs_flag['token'] = localStorage.getItem 'gogs_token'
+      resolve(gogs_flag['token'])
+    else
+      console.log "gogs create token: POST #{gogsApi}/user/settings/applications}"
+      console.log msg
+      request.post
+        url: "#{gogsApi}/user/settings/applications"
+        headers:
+            Cookie: msg.cookies
+        form:
+          type: 'token'
+          name: 'chameloenIDE(Mistaken delete!)'
+          _csrf: msg.csrf
+      , (err, httpResponse, body) ->
+          reject(err) if err
+          if httpResponse.statusCode is 302
+            # decodeURIComponent 解码url
+            macaron_flash = decodeURIComponent httpResponse.toJSON().headers['set-cookie'][1]
+            token = macaron_flash.split('&success')[0].replace 'macaron_flash=info=', ''
+            console.log "token: #{token}"
+            resolve(token)
+            # 缓存token，不必每次都去生成
+            localStorage.gogs_token = token
 
 
 module.exports =
@@ -80,7 +108,9 @@ module.exports =
           # msg {name (String): Required}
           console.log "github creates repos..."
           github.repos.create msg, (err, data) ->
-            reject(err) if err
+            if err
+              github_flag.safe = false # eg：用户输错帐号密码重新验证 Etc.
+              reject(err)
             resolve(data)
       else
         github_authenticate msg.options
@@ -90,12 +120,12 @@ module.exports =
   gogs: ->
     # 如果仓库已经存在，则api自动提示
     createRepos: (msg) ->
+      callMyself = arguments.callee
       console.log "ready Pick up data："
       console.log msg
-      callMyself = arguments.callee
       # 匹配是否同一个用户的token后开始创建仓库
-      if gogs.flag.safe and msg.options.username is gogs_flag.username
-        console.log "gogs create token: POST #{gogsApi}/api/v1/user/repos"
+      if msg.options.username is gogs_flag.username and gogs_flag.token
+        console.log "gogs create repos: POST #{gogsApi}/api/v1/user/repos"
         Q.Promise (resolve, reject, notify) ->
           request
             method: 'POST'
@@ -107,21 +137,19 @@ module.exports =
             body: msg
             , (err, httpResponse, body) ->
                 reject(err) if err
-                resolve(data) if httpResponse.statusCode is 200
+                if httpResponse.statusCode is 403
+                  delete gogs_flag.token
+                  # localStorage 仅限制再atom上可以使用，因为是window属性
+                  localStorage.removeItem('gogs_token')
+                  resolve message: 'Invalid token.'
+                resolve(body) if httpResponse.statusCode is 200 or httpResponse.statusCode is 422
       else
-        Q.Promise (resolve, reject, notify) ->
-          gogs_login(msg.options)
-          .then (cookies) ->
-            gogs_authenticate()
-          .then (token) ->
-            gogs_flag.username = msg.options.username
-            gogs_flag.token = token # 保存用户token，如果用户再web界面删除的话，要重新保存
-            gogs.flag.safe = true
-            callMyself(msg)
-          .then ->
-            console.log '创建仓库完毕...'
-            done()
-          .catch (err) ->
-            gogs.flag.safe = false
-            console.trace err.stack
-            done(err)
+        gogs_login(msg.options)
+        .then (cookies) ->
+          gogs_csrf cookies
+        .then (obj) ->
+          gogs_authenticate obj
+        .then (token) ->
+          gogs_flag['username'] = msg.options.username
+          gogs_flag['token'] = token # 保存用户token，如果用户再web界面删除的话，要重新保存
+          callMyself(msg)
