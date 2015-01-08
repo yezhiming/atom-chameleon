@@ -80,14 +80,39 @@ class GitCreatePackageManager
 
         cp.on 'exit', (code, signal)->
           console.log "code:#{code}   signal： #{signal}"
-          return reject new Error "SIGTERM" if signal is 'SIGTERM' and code == null
+          if signal is 'SIGTERM' and code == null
+            reject new Error "SIGTERM"
+          else
+            resolve(repoUrl)
 
         cp.stdout.on 'data', (data) -> notify stdout: data.toString()
         cp.stderr.on 'data', (data) -> notify stderr: data.toString()
-    .then ->
+    .then (repoUrl)->
       # 开始发布到chameleon packagesManager
-      
-
+      server = atom.config.get('atom-butterfly.puzzleServerAddress')
+      r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
+        reject(err) if err
+        if httpResponse.statusCode is 201
+          resolve
+            result: true
+            statusCode: 201
+            body: body
+        else if httpResponse.statusCode is 403
+          resolve
+            result: false
+            statusCode: 403
+            body: body
+      form = r.form()
+      form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+      form.append "name", info.packageName
+      form.append "repository_url", repoUrl
+      form.append "description", info.describe || info.packageName
+      form.append "previews", info.previews if info.previews
+      # form.append "tags", info.tags if info.tags
+    .then (obj) ->
+      # TODO 是否更新此package
+      if obj.statusCode is 403
+        console.log 'update this package...'
     .progress (notify) ->
       console.log notify.stdout if notify.stdout
       console.error notify.stderr if notify.stderr
@@ -96,4 +121,4 @@ class GitCreatePackageManager
       done(error)
       alert("#{error}")
     .finally ->
-      console.log "发布package finally."
+      console.log "publish package finally."
