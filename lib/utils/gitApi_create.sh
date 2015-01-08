@@ -3,7 +3,7 @@
 
 
 set -e
-echo "刚创建github时进行代码上传"
+echo "刚创建github仓库时进行代码上传"
 
 #参数获取
 INDEX=0
@@ -36,7 +36,7 @@ if [ -z "$url" ]; then
 fi
 
 if [ -z "$describe" ]; then
-  describe="describe"
+  describe="init"
 fi
 
 cd $path
@@ -47,4 +47,5 @@ git init
 git add .
 git commit -m "$describe"
 git remote add origin $url
-git push -u origin master
+# git pull -f --all
+git push -u origin master -f

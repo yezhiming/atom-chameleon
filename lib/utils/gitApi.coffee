@@ -97,6 +97,26 @@ module.exports =
   github: ->
 
     # 上传公钥到服务器
+    getUser: (msg) ->
+      callMyself = arguments.callee
+      githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库
+      if github and githubObj and msg.options.username is githubObj.username and githubObj.safe
+        Q.Promise (resolve, reject, notify) ->
+          console.log "github fetch user..."
+          github.user.get msg, (err, data) ->
+            if err
+              # eg：用户输错帐号密码重新验证 Etc.
+              localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
+              reject(err)
+            resolve
+              result: true
+              message: data
+              type: 'github'
+      else
+        github_authenticate msg.options
+        callMyself(msg)
+
+    # 上传公钥到服务器
     createSshKey: (msg) ->
       callMyself = arguments.callee
       githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库

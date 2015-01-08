@@ -38,32 +38,45 @@ class GitCreatePackageManager
       _.extend(options, gitPath: tmpDir)
     .then (options) ->
       info = options
-      if options.repo is 'github'
+      if info.repo is 'github'
+        github().getUser
+          options:
+            username: options.account
+            password: options.password
+      else if info.repo is 'gogs'
+        console.log('todo')
+    .then (obj) ->
+      # console.log obj
+      if obj.result and obj.type is 'github'
+        info.username = obj.message.login
+      else if obj.result and obj.type is 'gogs'
+        info.username = obj.message.name
+      if info.repo is 'github'
         github().createRepos
           options:
-            username: options.account
-            password: options.password
-          name: options.packageName
-          description: options.describe
+            username: info.account
+            password: info.password
+          name: info.packageName
+          description: info.describe
           private: false
-          auto_init:true
-      else if options.repo is 'gogs'
+          auto_init: false
+      else if info.repo is 'gogs'
         gogs().createRepos
           options:
-            username: options.account
-            password: options.password
-          Name: options.packageName
-          Description: options.describe
+            username: info.account
+            password: info.password
+          Name: info.packageName
+          Description: info.describe
           Private: false
-          AutoInit: true
+          AutoInit: false
           License: 'MIT License'
     .then (obj) ->
       # 开始同步仓库资源
       if obj.type is 'gogs'
-        repoUrl = "#{gogsApi}/#{info.account}/#{info.packageName}.git"
+        repoUrl = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
       else if obj.type is 'github'
         # repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
-        repoUrl = "git@github.com:#{info.account}/#{info.packageName}.git"
+        repoUrl = "git@github.com:#{info.username}/#{info.packageName}.git"
 
       Q.Promise (resolve, reject, notify) ->
         args = [info.gitPath
@@ -85,33 +98,28 @@ class GitCreatePackageManager
           console.log stdout.toString()
           console.log stderr.toString()
           if error then reject(error) else resolve(repoUrl)
-        # cp.on 'exit', (code, signal)->
-        #   console.log "code:#{code}   signal： #{signal}"
-        #   if signal is 'SIGTERM' and code == null
-        #     reject new Error "SIGTERM"
-        #   else
-        #     resolve(repoUrl)
-    # .then (repoUrl)->
-    #   # 开始发布到chameleon packagesManager
-    #   server = atom.config.get('atom-butterfly.puzzleServerAddress')
-    #   r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
-    #     reject(err) if err
-    #     if httpResponse and httpResponse.statusCode is 201
-    #       resolve
-    #         result: true
-    #         statusCode: 201
-    #         body: body
-    #     else if httpResponse and httpResponse.statusCode is 403
-    #       resolve
-    #         result: false
-    #         statusCode: 403
-    #         body: body
-    #   form = r.form()
-    #   form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
-    #   form.append "name", info.packageName
-    #   form.append "repository_url", repoUrl
-    #   form.append "description", info.describe || info.packageName
-    #   form.append "previews", info.previews if info.previews
+          # error.code = 1 即非正常退出
+    .then (repoUrl)->
+      # 开始发布到chameleon packagesManager
+      server = atom.config.get('atom-butterfly.puzzleServerAddress')
+      r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
+        reject(err) if err
+        if httpResponse and httpResponse.statusCode is 201
+          resolve
+            result: true
+            statusCode: 201
+            body: body
+        else if httpResponse and httpResponse.statusCode is 403
+          resolve
+            result: false
+            statusCode: 403
+            body: body
+      form = r.form()
+      form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+      form.append "name", info.packageName
+      form.append "repository_url", repoUrl
+      form.append "description", info.describe || info.packageName
+      form.append "previews", info.previews if info.previews
       # form.append "tags", info.tags if info.tags
     .then (obj) ->
       # TODO 是否更新此package
