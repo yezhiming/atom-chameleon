@@ -91,27 +91,27 @@ class GitCreatePackageManager
         #     reject new Error "SIGTERM"
         #   else
         #     resolve(repoUrl)
-    .then (repoUrl)->
-      # 开始发布到chameleon packagesManager
-      server = atom.config.get('atom-butterfly.puzzleServerAddress')
-      r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
-        reject(err) if err
-        if httpResponse and httpResponse.statusCode is 201
-          resolve
-            result: true
-            statusCode: 201
-            body: body
-        else if httpResponse and httpResponse.statusCode is 403
-          resolve
-            result: false
-            statusCode: 403
-            body: body
-      form = r.form()
-      form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
-      form.append "name", info.packageName
-      form.append "repository_url", repoUrl
-      form.append "description", info.describe || info.packageName
-      form.append "previews", info.previews if info.previews
+    # .then (repoUrl)->
+    #   # 开始发布到chameleon packagesManager
+    #   server = atom.config.get('atom-butterfly.puzzleServerAddress')
+    #   r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
+    #     reject(err) if err
+    #     if httpResponse and httpResponse.statusCode is 201
+    #       resolve
+    #         result: true
+    #         statusCode: 201
+    #         body: body
+    #     else if httpResponse and httpResponse.statusCode is 403
+    #       resolve
+    #         result: false
+    #         statusCode: 403
+    #         body: body
+    #   form = r.form()
+    #   form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+    #   form.append "name", info.packageName
+    #   form.append "repository_url", repoUrl
+    #   form.append "description", info.describe || info.packageName
+    #   form.append "previews", info.previews if info.previews
       # form.append "tags", info.tags if info.tags
     .then (obj) ->
       # TODO 是否更新此package
