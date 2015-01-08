@@ -7,6 +7,7 @@ _ = require 'underscore'
 
 Q = require 'q'
 {github, gogs, gogsApi} = require '../utils/gitApi'
+{execFile} = require 'child_process'
 
 module.exports =
 class GitCreatePackageManager
@@ -14,7 +15,6 @@ class GitCreatePackageManager
   activate: ->
     atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
     console.log "GitCreatePackageManager activate"
-
 
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
@@ -63,19 +63,21 @@ class GitCreatePackageManager
         repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
 
       Q.Promise (resolve, reject, notify) ->
-        notify stdout: "execFile: #{file} #{args.join(' ') if args}"
-
         args = [info.gitPath
-        info.describe
-        repoUrl]
-        options:
+        repoUrl
+        info.describe]
+        options =
           maxBuffer: 1024*1024*10
-          env: path: atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
+        gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
+        options['env'] = path: gitPath if gitPath
+
         if obj.result # 创建仓库成功
-          file = 'gitApi_create.sh'
+          file = './lib/utils/gitApi_create.sh'
         else # 仓库已经存在
-          file = 'gitApi_update.sh'
-        cp = require 'child_process'.execFile file, args, options, (error, stdout, stderr) ->
+          file = './lib/utils/gitApi_update.sh'
+        
+        notify stdout: "execFile: #{file} #{args.join(' ') if args}"
+        cp = execFile file, args, options, (error, stdout, stderr) ->
           if error then reject(error) else resolve()
 
         cp.on 'exit', (code, signal)->

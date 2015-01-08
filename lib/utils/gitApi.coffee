@@ -101,8 +101,8 @@ module.exports =
   github: ->
     # 如果仓库已经存在，则返回错误
     createRepos: (msg) ->
-      console.log "ready Pick up data："
-      console.log msg
+      # console.log "ready Pick up data："
+      # console.log msg
       callMyself = arguments.callee
       if msg.options.username is github_flag.username and github_flag.safe
         Q.Promise (resolve, reject, notify) ->
@@ -130,8 +130,8 @@ module.exports =
     # 如果仓库已经存在，则api自动提示
     createRepos: (msg) ->
       callMyself = arguments.callee
-      console.log "ready Pick up data："
-      console.log msg
+      # console.log "ready Pick up data："
+      # console.log msg
       # 匹配是否同一个用户的token后开始创建仓库
       if msg.options.username is gogs_flag.username and gogs_flag.token
         console.log "gogs create repos: POST #{module.exports.gogsApi}/api/v1/user/repos"
@@ -150,8 +150,7 @@ module.exports =
                   delete gogs_flag.token
                   # localStorage 仅限制再atom上可以使用，因为是window属性
                   localStorage.removeItem('gogs_token')
-                  reject
-                    new Error 'code: 422 , message: Invalid token.'
+                  reject new Error 'code: 422 , message: Invalid token.'
                 if httpResponse.statusCode is 422
                   resolve
                     result: false
