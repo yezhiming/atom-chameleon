@@ -18,6 +18,10 @@ path=${array[0]}
 url=${array[1]}
 describe=${array[2]}
 
+echo "path:$path"
+echo "url:$url"
+echo "describe:$describe"
+
 if [ -z "$path" ]; then
   echo "请输入地址"
   exit 1
@@ -28,7 +32,7 @@ if [ -z "$url" ]; then
   exit 1
 fi
 
-if [ -z "$url" ]; then
+if [ -z "$describe" ]; then
   $describe="describe"
 fi
 
