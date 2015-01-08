@@ -27,7 +27,7 @@ class V extends View
 
       @div class: "form-group", =>
         @label 'Describe:'
-        @subview 'describe', new EditorView(mini: true, placeholderText: '可选' )
+        @subview 'describe', new EditorView(mini: true, placeholderText: 'optional' )
     
 
   initialize: (wizardView) ->
