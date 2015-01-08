@@ -22,6 +22,8 @@ class GitCreatePackageManager
     info = null
     gitCreatePackageWizardView.finishPromise()
     .then (options) ->
+      gitCreatePackageWizardView.destroy()
+
       selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
       if require('fs').statSync(selectPath).isFile()
         tmpfile = path.resolve os.tmpdir(), uuid.v1()
