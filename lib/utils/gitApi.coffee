@@ -8,7 +8,6 @@ github_flag =
   safe: false
 
 # gogs
-gogsApi = 'https://try.gogs.io'
 gogs_flag = {}
 
 
@@ -36,9 +35,9 @@ github_authenticate = (options) ->
 # gogs模拟登入获取cookies
 gogs_login = (options) ->
   Q.Promise (resolve, reject, notify) ->
-    console.log "gogs authenticate: POST #{gogsApi}/user/login}"
+    console.log "gogs authenticate: POST #{module.exports.gogsApi}/user/login}"
     request.post
-      url: "#{gogsApi}/user/login"
+      url: "#{module.exports.gogsApi}/user/login"
       form:
         uname: options.username
         password: options.password
@@ -50,11 +49,11 @@ gogs_login = (options) ->
 # gogs模拟登入获取csrf
 gogs_csrf = (cookies) ->
   Q.Promise (resolve, reject, notify) ->
-    console.log "gogs fetch csrf: GET #{gogsApi}/}"
+    console.log "gogs fetch csrf: GET #{module.exports.gogsApi}/}"
     request.get
       headers:
           Cookie: cookies
-      url: "#{gogsApi}/"
+      url: "#{module.exports.gogsApi}/"
       , (err, httpResponse, body) ->
           reject(err) if err
           try
@@ -73,10 +72,10 @@ gogs_authenticate = (msg) ->
       gogs_flag['token'] = localStorage.getItem 'gogs_token'
       resolve(gogs_flag['token'])
     else
-      console.log "gogs create token: POST #{gogsApi}/user/settings/applications}"
+      console.log "gogs create token: POST #{module.exports.gogsApi}/user/settings/applications}"
       console.log msg
       request.post
-        url: "#{gogsApi}/user/settings/applications"
+        url: "#{module.exports.gogsApi}/user/settings/applications"
         headers:
             Cookie: msg.cookies
         form:
@@ -97,6 +96,8 @@ gogs_authenticate = (msg) ->
 
 module.exports =
 
+  gogsApi: 'https://try.gogs.io',
+
   github: ->
     # 如果仓库已经存在，则返回错误
     createRepos: (msg) ->
@@ -108,10 +109,18 @@ module.exports =
           # msg {name (String): Required}
           console.log "github creates repos..."
           github.repos.create msg, (err, data) ->
+            if err and err.toJSON().code is 422 and (err.toJSON().message.indexOf 'name already exists on this account') != -1
+              resolve
+                result: false
+                message: err.toJSON()
+                type: 'github'
             if err
               github_flag.safe = false # eg：用户输错帐号密码重新验证 Etc.
               reject(err)
-            resolve(data)
+            resolve
+              result: true
+              message: data
+              type: 'github'
       else
         github_authenticate msg.options
         callMyself(msg)
@@ -125,11 +134,11 @@ module.exports =
       console.log msg
       # 匹配是否同一个用户的token后开始创建仓库
       if msg.options.username is gogs_flag.username and gogs_flag.token
-        console.log "gogs create repos: POST #{gogsApi}/api/v1/user/repos"
+        console.log "gogs create repos: POST #{module.exports.gogsApi}/api/v1/user/repos"
         Q.Promise (resolve, reject, notify) ->
           request
             method: 'POST'
-            url: "#{gogsApi}/api/v1/user/repos"
+            url: "#{module.exports.gogsApi}/api/v1/user/repos"
             headers:
                 Authorization: "token #{gogs_flag.token}"
                 'Content-Type': 'application/json; charset=utf8'
@@ -141,8 +150,18 @@ module.exports =
                   delete gogs_flag.token
                   # localStorage 仅限制再atom上可以使用，因为是window属性
                   localStorage.removeItem('gogs_token')
-                  resolve message: 'Invalid token.'
-                resolve(body) if httpResponse.statusCode is 200 or httpResponse.statusCode is 422
+                  reject
+                    new Error 'code: 422 , message: Invalid token.'
+                if httpResponse.statusCode is 422
+                  resolve
+                    result: false
+                    message: body
+                    type: 'gogs'
+                if httpResponse.statusCode is 200
+                  resolve
+                    result: true
+                    message: body
+                    type: 'gogs'
       else
         gogs_login(msg.options)
         .then (cookies) ->
