@@ -2,7 +2,7 @@ path = require 'path'
 fs = require 'fs-extra'
 os = require 'os'
 uuid = require 'uuid'
-
+request = require 'request'
 _ = require 'underscore'
 
 Q = require 'q'
@@ -69,23 +69,24 @@ class GitCreatePackageManager
         options =
           maxBuffer: 1024*1024*10
         gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
-        options['env'] = path: gitPath if gitPath
+        options['env'] = path: gitPath if gitPath and gitPath != ''
 
         if obj.result # 创建仓库成功
           file = './lib/utils/gitApi_create.sh'
         else # 仓库已经存在
           file = './lib/utils/gitApi_update.sh'
-        
+        file = "#{atom.getConfigDirPath()}/packages/atom-butterfly#{file}"
+
         notify stdout: "execFile: #{file} #{args.join(' ') if args}"
         cp = execFile file, args, options, (error, stdout, stderr) ->
-          if error then reject(error) else resolve()
+          if error then reject(error) else resolve(repoUrl)
 
-        cp.on 'exit', (code, signal)->
-          console.log "code:#{code}   signal： #{signal}"
-          if signal is 'SIGTERM' and code == null
-            reject new Error "SIGTERM"
-          else
-            resolve(repoUrl)
+        # cp.on 'exit', (code, signal)->
+        #   console.log "code:#{code}   signal： #{signal}"
+        #   if signal is 'SIGTERM' and code == null
+        #     reject new Error "SIGTERM"
+        #   else
+        #     resolve(repoUrl)
 
         cp.stdout.on 'data', (data) -> notify stdout: data.toString()
         cp.stderr.on 'data', (data) -> notify stderr: data.toString()
