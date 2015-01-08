@@ -62,7 +62,8 @@ class GitCreatePackageManager
       if obj.type is 'gogs'
         repoUrl = "#{gogsApi}/#{info.account}/#{info.packageName}.git"
       else if obj.type is 'github'
-        repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
+        # repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
+        repoUrl = "git@github.com:#{info.account}/#{info.packageName}.git"
 
       Q.Promise (resolve, reject, notify) ->
         args = [info.gitPath
@@ -74,41 +75,39 @@ class GitCreatePackageManager
         options['env'] = path: gitPath if gitPath and gitPath != ''
 
         if obj.result # 创建仓库成功
-          file = './lib/utils/gitApi_create.sh'
+          file = '/lib/utils/gitApi_create.sh'
         else # 仓库已经存在
-          file = './lib/utils/gitApi_update.sh'
+          file = '/lib/utils/gitApi_update.sh'
         file = "#{atom.getConfigDirPath()}/packages/atom-butterfly#{file}"
 
-        notify stdout: "execFile: #{file} #{args.join(' ') if args}"
+        console.log "execFile: #{file} #{args.join(' ') if args}"
         cp = execFile file, args, options, (error, stdout, stderr) ->
+          console.log stdout.toString()
+          console.log stderr.toString()
           if error then reject(error) else resolve(repoUrl)
-
         # cp.on 'exit', (code, signal)->
         #   console.log "code:#{code}   signal： #{signal}"
         #   if signal is 'SIGTERM' and code == null
         #     reject new Error "SIGTERM"
         #   else
         #     resolve(repoUrl)
-
-        cp.stdout.on 'data', (data) -> notify stdout: data.toString()
-        cp.stderr.on 'data', (data) -> notify stderr: data.toString()
     .then (repoUrl)->
       # 开始发布到chameleon packagesManager
       server = atom.config.get('atom-butterfly.puzzleServerAddress')
       r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
         reject(err) if err
-        if httpResponse.statusCode is 201
+        if httpResponse and httpResponse.statusCode is 201
           resolve
             result: true
             statusCode: 201
             body: body
-        else if httpResponse.statusCode is 403
+        else if httpResponse and httpResponse.statusCode is 403
           resolve
             result: false
             statusCode: 403
             body: body
       form = r.form()
-      form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+      form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
       form.append "name", info.packageName
       form.append "repository_url", repoUrl
       form.append "description", info.describe || info.packageName

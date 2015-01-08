@@ -99,6 +99,34 @@ module.exports =
   gogsApi: 'https://try.gogs.io',
 
   github: ->
+    
+    # 上传公钥到服务器
+    createSshKey: (msg) ->
+      # console.log "ready Pick up data："
+      # console.log msg
+      callMyself = arguments.callee
+      if msg.options.username is github_flag.username and github_flag.safe
+        Q.Promise (resolve, reject, notify) ->
+          unless msg.key or msg.title
+            reject new Error 'title (String): Required and key (String): Required.'
+          console.log "github creates ssh key..."
+          github.user.createKey msg, (err, data) ->
+            if err and err.toJSON().code is 422 and (err.toJSON().message.indexOf 'name already exists on this account') != -1
+              resolve
+                result: false
+                message: err.toJSON()
+                type: 'github'
+            if err
+              github_flag.safe = false # eg：用户输错帐号密码重新验证 Etc.
+              reject(err)
+            resolve
+              result: true
+              message: data
+              type: 'github'
+      else
+        github_authenticate msg.options
+        callMyself(msg)
+
     # 如果仓库已经存在，则返回错误
     createRepos: (msg) ->
       # console.log "ready Pick up data："

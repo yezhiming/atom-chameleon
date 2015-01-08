@@ -16,7 +16,10 @@ done
 
 path=${array[0]}
 url=${array[1]}
+# username=${array[2]}
+# password=${array[3]}
 describe=${array[2]}
+
 
 echo "path:$path"
 echo "url:$url"
@@ -33,10 +36,13 @@ if [ -z "$url" ]; then
 fi
 
 if [ -z "$describe" ]; then
-  $describe="describe"
+  describe="describe"
 fi
 
 cd $path
+# touch ~/.git-credentials 777 && echo https://$username:$password@github.com > ~/.git-credentials
+# git config --global credential.helper store
+# git config --global credential.helper osxkeychain
 git init
 git add .
 git commit -m "$describe"
