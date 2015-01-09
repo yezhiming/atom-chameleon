@@ -1,6 +1,8 @@
 Q = require 'q'
 request = require 'request'
 GitHubApi = require 'github'
+keypair = require 'keypair'
+fse = require 'fs-extra'
 github = null
 
 # api.github.com
@@ -94,8 +96,17 @@ module.exports =
 
   gogsApi: 'https://try.gogs.io',
 
-  github: ->
+  # 生成默认的公、密钥到userhome/.ssh
+  generateKeyPair: (home)->
+    # 生成默认的公、密钥到userhome/.ssh
+    pair = keypair()
+    fse.ensureDirSync "#{home}/.ssh"
+    fse.outputFileSync "#{home}/.ssh/chameleonIDE_rsa", pair.private
+    fse.outputFileSync "#{home}/.ssh/chameleonIDE_rsa.pub", pair.public
+    localStorage.installedSshKey = JSON.stringify public: pair.public flag: 'new'
 
+
+  github: ->
     # 上传公钥到服务器
     getUser: (msg) ->
       callMyself = arguments.callee
@@ -130,6 +141,10 @@ module.exports =
               # eg：用户输错帐号密码重新验证 Etc.
               localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
               reject(err)
+            # 更新sshkey标识
+            keyObj = JSON.parse localStorage.getItem 'installedSshKey'
+            keyObj['flag'] = 'old'
+            localStorage.installedSshKey = JSON.stringify keyObj
             resolve
               result: true
               message: data
@@ -155,7 +170,7 @@ module.exports =
                 type: 'github'
             if err
               # eg：用户输错帐号密码重新验证 Etc.
-              localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
+              localStorage.removeItem 'github' # localStorage 仅限制再atom上可以使用，因为是window属性
               reject(err)
             resolve
               result: true

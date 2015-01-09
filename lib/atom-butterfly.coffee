@@ -1,8 +1,10 @@
 ProgressView = require './utils/progress-view'
 _ = require 'underscore'
 {openDirectory} = require('./utils/dialog')
-UUID = require 'uuid'
+{generateKeyPair} = require '../utils/gitApi'
 
+UUID = require 'uuid'
+fs = require 'fs'
 # for debug properse only, it will add many ms to startup time.
 Q = require 'q'
 Q.longStackSupport = true
@@ -19,6 +21,12 @@ module.exports =
     gitCloneEnvironmentPath: ''
 
   activate: (state) ->
+    # git ssh 策略：ide每次检测不存在就默认生成keypair
+    home = if process.platform is 'win32' then process.env.URERPROFILE else process.env.HOME
+    if !localStorage.getItem 'installedSshKey' or !fs.existsSync "#{home}/.ssh/chameleonIDE_rsa" or !fs.existsSync "#{home}/.ssh/chameleonIDE_rsa.pub"
+      # 生成默认的公、密钥到userhome/.ssh
+      generateKeyPair(home)
+
     # create access_token if necessary
     token = atom.config.get('atom-butterfly.puzzleAccessToken')
     atom.config.set('atom-butterfly.puzzleAccessToken', UUID.v4()) unless token

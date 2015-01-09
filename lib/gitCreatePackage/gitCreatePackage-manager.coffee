@@ -6,7 +6,7 @@ request = require 'request'
 _ = require 'underscore'
 
 Q = require 'q'
-{github, gogs, gogsApi} = require '../utils/gitApi'
+{github, gogs, gogsApi, generateKeyPair} = require '../utils/gitApi'
 {execFile} = require 'child_process'
 
 module.exports =
@@ -38,13 +38,27 @@ class GitCreatePackageManager
       _.extend(options, gitPath: tmpDir)
     .then (options) ->
       info = options
+      # ide保证installedSshKey一定会存在localStorage
+      keyObj = JSON.parse localStorage.getItem 'installedSshKey'
+      if keyObj.flag is 'new' and info.repo is 'github'
+        github().createSshKey
+          options:
+            username: options.account
+            password: options.password
+          key: keyObj.public
+          title: 'chameleonIDE'
+      else if keyObj.flag is 'new' and info.repo is 'gogs'
+        console.log "TODO"
+    .then (data) ->
+      console.log data
+
       if info.repo is 'github'
         github().getUser
           options:
             username: options.account
             password: options.password
       else if info.repo is 'gogs'
-        console.log('todo')
+        console.log('TODO')
     .then (obj) ->
       # console.log obj
       if obj.result and obj.type is 'github'
@@ -97,29 +111,36 @@ class GitCreatePackageManager
         cp = execFile file, args, options, (error, stdout, stderr) ->
           console.log stdout.toString()
           console.log stderr.toString()
-          if error then reject(error) else resolve(repoUrl)
+          if error and (error.message.indexOf 'Permission denied (publickey)' != 1)
+            home = if process.platform is 'win32' then process.env.URERPROFILE else process.env.HOME
+            generateKeyPair(home) # 重新生成key
+            reject(error)
+          else if error
+            reject(error)
+          else
+            resolve(repoUrl)
           # error.code = 1 即非正常退出
     .then (repoUrl)->
       # 开始发布到chameleon packagesManager
-      server = atom.config.get('atom-butterfly.puzzleServerAddress')
-      r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
-        reject(err) if err
-        if httpResponse and httpResponse.statusCode is 201
-          resolve
-            result: true
-            statusCode: 201
-            body: body
-        else if httpResponse and httpResponse.statusCode is 403
-          resolve
-            result: false
-            statusCode: 403
-            body: body
-      form = r.form()
-      form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
-      form.append "name", info.packageName
-      form.append "repository_url", repoUrl
-      form.append "description", info.describe || info.packageName
-      form.append "previews", info.previews if info.previews
+      # server = atom.config.get('atom-butterfly.puzzleServerAddress')
+      # r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
+      #       reject(err) if err
+      #       if httpResponse and httpResponse.statusCode is 201
+      #         resolve
+      #           result: true
+      #           statusCode: 201
+      #           body: body
+      #       else if httpResponse and httpResponse.statusCode is 403
+      #         resolve
+      #           result: false
+      #           statusCode: 403
+      #           body: body
+      # form = r.form()
+      # form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+      # form.append "name", info.packageName
+      # form.append "repository_url", repoUrl
+      # form.append "description", info.describe || info.packageName
+      # form.append "previews", info.previews if info.previews
       # form.append "tags", info.tags if info.tags
     .then (obj) ->
       # TODO 是否更新此package

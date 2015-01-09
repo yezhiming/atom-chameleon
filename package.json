@@ -9,22 +9,23 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "loophole": "*",
-    "fs-extra": "~0.12.0",
-    "uuid": "~2.0.1",
-    "underscore": "*",
-    "q": "*",
-    "request": "*",
-    "decompress": "~2.1.1",
-    "download": "*",
     "adm-zip": "*",
-    "express": "*",
     "body-parser": "*",
     "bootstrap": "*",
     "bower": "*",
+    "decompress": "~2.1.1",
+    "download": "*",
+    "express": "*",
+    "fs-extra": "~0.12.0",
     "github": "0.2.3",
+    "keypair": "^1.0.0",
+    "loophole": "*",
     "morgan": "*",
+    "q": "*",
+    "request": "*",
     "socket.io-client": "*",
-    "underscore.string": "*"
+    "underscore": "*",
+    "underscore.string": "*",
+    "uuid": "~2.0.1"
   }
 }
