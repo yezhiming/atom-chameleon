@@ -5,6 +5,8 @@ uuid = require 'uuid'
 request = require 'request'
 _ = require 'underscore'
 
+ProgressView = require '../utils/progress-view'
+
 Q = require 'q'
 {github, gogs, gogsApi, generateKeyPair} = require '../utils/gitApi'
 {execFile} = require 'child_process'
@@ -19,10 +21,14 @@ class GitCreatePackageManager
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
     gitCreatePackageWizardView = new GitCreatePackageWizardView().attach()
+
+    pv = new ProgressView("Create git package...")
+
     info = null
     gitCreatePackageWizardView.finishPromise()
     .then (options) ->
       gitCreatePackageWizardView.destroy()
+      pv.attach()
 
       selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
       if require('fs').statSync(selectPath).isFile()
@@ -36,7 +42,7 @@ class GitCreatePackageManager
       fs.copySync selectPath, tmpDir
 
       _.extend(options, gitPath: tmpDir)
-    .then (options) ->
+    .then (options) -> # upload ssh key
       info = options
       # ide保证installedSshKey一定会存在localStorage
       keyObj = JSON.parse localStorage.getItem 'installedSshKey'
@@ -49,9 +55,8 @@ class GitCreatePackageManager
           title: 'chameleonIDE'
       else if keyObj.flag is 'new' and info.repo is 'gogs'
         console.log "TODO"
-    .then (data) ->
+    .then (data) -> # 获取用户名
       console.log data
-
       if info.repo is 'github'
         github().getUser
           options:
@@ -59,7 +64,8 @@ class GitCreatePackageManager
             password: options.password
       else if info.repo is 'gogs'
         console.log('TODO')
-    .then (obj) ->
+    .then (obj) -> # 创建仓库
+      pv.setTitle "在#{info.repo}上创建库"
       # console.log obj
       if obj.result and obj.type is 'github'
         info.username = obj.message.login
@@ -84,8 +90,7 @@ class GitCreatePackageManager
           Private: false
           AutoInit: false
           License: 'MIT License'
-    .then (obj) ->
-      # 开始同步仓库资源
+    .then (obj) -> # 开始同步仓库资源
       if obj.type is 'gogs'
         repoUrl = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
       else if obj.type is 'github'
@@ -155,3 +160,4 @@ class GitCreatePackageManager
       alert("#{error}")
     .finally ->
       console.log "publish package finally."
+      pv.destroy()
