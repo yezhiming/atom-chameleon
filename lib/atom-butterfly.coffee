@@ -31,10 +31,10 @@ module.exports =
       Q.Promise (resolve, reject, notify) ->
         # 生成默认的公、密钥到userhome/.ssh
         if atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
-          if process.platform is 'win32'
-            command = "set path=%path%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}"
-          else
-            command = "export PATH=$PATH#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}"
+          if process.platform is 'win32' and process.env.Path.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
+            command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}\""
+          else if process.platform != 'win32' and process.env.PATH.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
+            command = "cat /etc/profile && echo \\nexport PATH=$PATH#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')} >> /etc/profile && source /etc/profile"
           cp = exec command, (error, stdout, stderr) ->
               if error
                 reject(error)
