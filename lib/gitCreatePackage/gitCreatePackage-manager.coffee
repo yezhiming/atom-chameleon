@@ -79,7 +79,7 @@ class GitCreatePackageManager
           name: info.packageName
           description: info.describe
           private: false
-          auto_init: true
+          auto_init: false
       else if info.repo is 'gogs'
         gogs().createRepos
           options:
@@ -88,7 +88,7 @@ class GitCreatePackageManager
           Name: info.packageName
           Description: info.describe
           Private: false
-          AutoInit: true
+          AutoInit: false
           License: 'MIT License'
     .then (obj) -> # 开始同步仓库资源
       if obj.type is 'gogs'
