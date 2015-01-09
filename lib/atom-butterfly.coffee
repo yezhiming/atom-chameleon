@@ -2,7 +2,7 @@ ProgressView = require './utils/progress-view'
 _ = require 'underscore'
 {openDirectory} = require('./utils/dialog')
 {generateKeyPair} = require './utils/gitApi'
-
+path = require 'path'
 UUID = require 'uuid'
 fs = require 'fs'
 # for debug properse only, it will add many ms to startup time.
@@ -22,9 +22,15 @@ module.exports =
 
   activate: (state) ->
     # git ssh 策略：ide每次检测不存在就默认生成keypair
-    home = if process.platform is 'win32' then process.env.URERPROFILE else process.env.HOME
-    if !localStorage.getItem 'installedSshKey' or !fs.existsSync "#{home}/.ssh/chameleonIDE_rsa" or !fs.existsSync "#{home}/.ssh/chameleonIDE_rsa.pub"
+    home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
+    exist1 = fs.existsSync "#{home}/.ssh/id_dsa"
+    exist2 = fs.existsSync "#{home}/.ssh/id_dsa.pub"
+    if (!localStorage.getItem 'installedSshKey') or (!exist1) or (!exist2)
       # 生成默认的公、密钥到userhome/.ssh
+      if atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
+        # 自动添加环境变量
+        envPath = process.env.PATH || process.env.Path
+        envPath += "#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}"
       generateKeyPair(home)
 
     # create access_token if necessary

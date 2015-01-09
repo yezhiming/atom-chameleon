@@ -1,8 +1,9 @@
 Q = require 'q'
 request = require 'request'
 GitHubApi = require 'github'
-keypair = require 'keypair'
+generator = require 'ssh-keypair'
 fse = require 'fs-extra'
+fs = require 'fs'
 github = null
 
 # api.github.com
@@ -97,14 +98,22 @@ module.exports =
   gogsApi: 'https://try.gogs.io',
 
   # 生成默认的公、密钥到userhome/.ssh
-  generateKeyPair: (home)->
-    # 生成默认的公、密钥到userhome/.ssh
-    pair = keypair()
-    fse.ensureDirSync "#{home}/.ssh"
-    fse.outputFileSync "#{home}/.ssh/chameleonIDE_rsa", pair.private
-    fse.outputFileSync "#{home}/.ssh/chameleonIDE_rsa.pub", pair.public
-    localStorage.installedSshKey = JSON.stringify public: pair.public flag: 'new'
-
+  generateKeyPair: (home) ->
+    Q.Promise (resolve, reject, notify) ->
+      # 生成默认的公、密钥到userhome/.ssh
+      console.log 'generating rs KeyPair...'
+      # 遵循ssh-kengen规范
+      fse.ensureDirSync "#{home}/.ssh"
+      generator 'chameleonIDE@github.com', "#{home}/.ssh/id_dsa", (err) ->
+        if err
+          console.error err
+          reject(err)
+        else
+          pubKey = fs.readFileSync "#{home}/.ssh/id_dsa.pub", encoding:'utf-8'
+          localStorage.installedSshKey = JSON.stringify
+            public: pubKey
+            flag: 'new'
+          resolve(pubKey)
 
   github: ->
     # 上传公钥到服务器
@@ -141,14 +150,15 @@ module.exports =
               # eg：用户输错帐号密码重新验证 Etc.
               localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
               reject(err)
-            # 更新sshkey标识
-            keyObj = JSON.parse localStorage.getItem 'installedSshKey'
-            keyObj['flag'] = 'old'
-            localStorage.installedSshKey = JSON.stringify keyObj
-            resolve
-              result: true
-              message: data
-              type: 'github'
+            else
+              # 更新sshkey标识
+              keyObj = JSON.parse localStorage.getItem 'installedSshKey'
+              keyObj['flag'] = 'old'
+              localStorage.installedSshKey = JSON.stringify keyObj
+              resolve
+                result: true
+                message: data
+                type: 'github'
       else
         github_authenticate msg.options
         callMyself(msg)

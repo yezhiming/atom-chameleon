@@ -18,12 +18,12 @@
     "express": "*",
     "fs-extra": "~0.12.0",
     "github": "0.2.3",
-    "keypair": "^1.0.0",
     "loophole": "*",
     "morgan": "*",
     "q": "*",
     "request": "*",
     "socket.io-client": "*",
+    "ssh-keypair": "^1.1.0",
     "underscore": "*",
     "underscore.string": "*",
     "uuid": "~2.0.1"

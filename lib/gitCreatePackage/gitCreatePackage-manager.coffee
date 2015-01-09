@@ -52,21 +52,19 @@ class GitCreatePackageManager
             username: options.account
             password: options.password
           key: keyObj.public
-          title: 'chameleonIDE'
+          title: 'chameleonIDE foreveross inc.'
       else if keyObj.flag is 'new' and info.repo is 'gogs'
         console.log "TODO"
-    .then (data) -> # 获取用户名
-      console.log data
+    .then (key) -> # 获取用户名
       if info.repo is 'github'
         github().getUser
           options:
-            username: options.account
-            password: options.password
+            username: info.account
+            password: info.password
       else if info.repo is 'gogs'
         console.log('TODO')
     .then (obj) -> # 创建仓库
       pv.setTitle "在#{info.repo}上创建库"
-      # console.log obj
       if obj.result and obj.type is 'github'
         info.username = obj.message.login
       else if obj.result and obj.type is 'gogs'
@@ -116,16 +114,9 @@ class GitCreatePackageManager
         cp = execFile file, args, options, (error, stdout, stderr) ->
           console.log stdout.toString()
           console.log stderr.toString()
-          if error and (error.message.indexOf 'Permission denied (publickey)' != 1)
-            home = if process.platform is 'win32' then process.env.URERPROFILE else process.env.HOME
-            generateKeyPair(home) # 重新生成key
-            reject(error)
-          else if error
-            reject(error)
-          else
-            resolve(repoUrl)
+          if error then reject(error) else resolve(repoUrl)
           # error.code = 1 即非正常退出
-    .then (repoUrl)->
+    # .then (repoUrl) ->
       # 开始发布到chameleon packagesManager
       # server = atom.config.get('atom-butterfly.puzzleServerAddress')
       # r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
@@ -155,9 +146,13 @@ class GitCreatePackageManager
       console.log notify.stdout if notify.stdout
       console.error notify.stderr if notify.stderr
     .catch (error) ->
-      console.trace error.stack
-      done(error)
       alert("#{error}")
+      if error.message.indexOf 'Permission denied (publickey)' != 1
+        home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
+        generateKeyPair(home) # 重新生成key
+      else
+        console.trace error.stack
+        done(error)
     .finally ->
       console.log "publish package finally."
       pv.destroy()
