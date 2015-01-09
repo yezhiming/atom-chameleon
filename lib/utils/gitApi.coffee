@@ -101,7 +101,7 @@ module.exports =
   generateKeyPair: (home) ->
     Q.Promise (resolve, reject, notify) ->
       # 生成默认的公、密钥到userhome/.ssh
-      console.log 'generating rs KeyPair...'
+      console.log 'generating rsa KeyPair...'
       # 遵循ssh-kengen规范
       fse.ensureDirSync "#{home}/.ssh"
       generator 'chameleonIDE@github.com', "#{home}/.ssh/id_dsa", (err) ->

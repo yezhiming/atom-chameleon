@@ -47,15 +47,17 @@ class GitCreatePackageManager
       # ide保证installedSshKey一定会存在localStorage
       keyObj = JSON.parse localStorage.getItem 'installedSshKey'
       if keyObj.flag is 'new' and info.repo is 'github'
+        # TODO 由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
         github().createSshKey
           options:
             username: options.account
             password: options.password
           key: keyObj.public
-          title: 'chameleonIDE foreveross inc.'
+          title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
       else if keyObj.flag is 'new' and info.repo is 'gogs'
         console.log "TODO"
-    .then (key) -> # 获取用户名
+    .then (data) -> # 获取用户名
+      # data：上传服务器的key，成功后返回的内容，由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
       if info.repo is 'github'
         github().getUser
           options:
@@ -77,7 +79,7 @@ class GitCreatePackageManager
           name: info.packageName
           description: info.describe
           private: false
-          auto_init: false
+          auto_init: true
       else if info.repo is 'gogs'
         gogs().createRepos
           options:
@@ -86,7 +88,7 @@ class GitCreatePackageManager
           Name: info.packageName
           Description: info.describe
           Private: false
-          AutoInit: false
+          AutoInit: true
           License: 'MIT License'
     .then (obj) -> # 开始同步仓库资源
       if obj.type is 'gogs'
@@ -117,6 +119,7 @@ class GitCreatePackageManager
           if error then reject(error) else resolve(repoUrl)
           # error.code = 1 即非正常退出
     # .then (repoUrl) ->
+      # info.repoUrl = repoUrl
       # 开始发布到chameleon packagesManager
       # server = atom.config.get('atom-butterfly.puzzleServerAddress')
       # r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
@@ -142,6 +145,7 @@ class GitCreatePackageManager
       # TODO 是否更新此package
       if obj.statusCode is 403
         console.log 'update this package...'
+
     .progress (notify) ->
       console.log notify.stdout if notify.stdout
       console.error notify.stderr if notify.stderr

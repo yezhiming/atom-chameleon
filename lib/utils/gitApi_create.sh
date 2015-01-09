@@ -47,5 +47,7 @@ git init
 git add .
 git commit -m "$describe"
 git remote add origin $url
+git pull origin master
+git push -u origin master
 # git pull -f --all
-git push -u origin master -f
+# git push -u origin master -f

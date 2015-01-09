@@ -5,9 +5,11 @@ _ = require 'underscore'
 path = require 'path'
 UUID = require 'uuid'
 fs = require 'fs'
+{exec} = require 'child_process'
 # for debug properse only, it will add many ms to startup time.
 Q = require 'q'
 Q.longStackSupport = true
+
 
 module.exports =
 
@@ -26,12 +28,22 @@ module.exports =
     exist1 = fs.existsSync "#{home}/.ssh/id_dsa"
     exist2 = fs.existsSync "#{home}/.ssh/id_dsa.pub"
     if (!localStorage.getItem 'installedSshKey') or (!exist1) or (!exist2)
-      # 生成默认的公、密钥到userhome/.ssh
-      if atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
-        # 自动添加环境变量
-        envPath = process.env.PATH || process.env.Path
-        envPath += "#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}"
-      generateKeyPair(home)
+      Q.Promise (resolve, reject, notify) ->
+        # 生成默认的公、密钥到userhome/.ssh
+        if atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
+          if process.platform is 'win32'
+            command = "set path=%path%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}"
+          else
+            command = "export PATH=$PATH#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}"
+          cp = exec command, (error, stdout, stderr) ->
+              if error
+                reject(error)
+              else
+                console.log stdout.toString()
+                console.log stderr.toString()
+                resolve()
+      .then ->
+        generateKeyPair(home)
 
     # create access_token if necessary
     token = atom.config.get('atom-butterfly.puzzleAccessToken')
