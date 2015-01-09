@@ -1,7 +1,7 @@
 ProgressView = require './utils/progress-view'
 _ = require 'underscore'
 {openDirectory} = require('./utils/dialog')
-{generateKeyPair} = require '../utils/gitApi'
+{generateKeyPair} = require './utils/gitApi'
 
 UUID = require 'uuid'
 fs = require 'fs'
