@@ -5,6 +5,8 @@ uuid = require 'uuid'
 request = require 'request'
 _ = require 'underscore'
 
+ProgressView = require '../utils/progress-view'
+
 Q = require 'q'
 {github, gogs, gogsApi} = require '../utils/gitApi'
 {execFile} = require 'child_process'
@@ -19,10 +21,14 @@ class GitCreatePackageManager
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
     gitCreatePackageWizardView = new GitCreatePackageWizardView().attach()
+    
+    pv = new ProgressView("Create git package...")
+
     info = null
     gitCreatePackageWizardView.finishPromise()
     .then (options) ->
       gitCreatePackageWizardView.destroy()
+      pv.attach()
 
       selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
       if require('fs').statSync(selectPath).isFile()
@@ -38,6 +44,7 @@ class GitCreatePackageManager
       _.extend(options, gitPath: tmpDir)
     .then (options) ->
       info = options
+      pv.setTitle "在#{info.repo}上创建库"
       if info.repo is 'github'
         github().getUser
           options:
@@ -134,3 +141,4 @@ class GitCreatePackageManager
       alert("#{error}")
     .finally ->
       console.log "publish package finally."
+      pv.destroy()
