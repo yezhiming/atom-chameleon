@@ -143,7 +143,7 @@ class GitCreatePackageManager
       alert "#{error}"
       if error.message.indexOf('Permission denied (publickey)') != -1
         home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
-        generateKeyPair(home) # 重新生成key
+        generateKeyPair(home) # 重新上传key
       else
         console.trace error.stack
         done(error)

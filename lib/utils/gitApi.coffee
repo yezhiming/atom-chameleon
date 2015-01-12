@@ -159,12 +159,7 @@ module.exports =
             reject new Error 'params: title (String): Required and key (String): Required.'
           console.log "github creates ssh key..."
           github.user.createKey msg, (err, data) ->
-            if err
-              # eg：用户输错帐号密码重新验证 Etc.
-              localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
-              reject(err)
-            else
-              # 更新sshkey标识
+            if (err and err.message.indexOf 'key is already in use' != -1) or !err
               keyObj = JSON.parse localStorage.getItem 'installedSshKey'
               keyObj['gitHubFlag'] = 'old'
               localStorage.installedSshKey = JSON.stringify keyObj
@@ -172,6 +167,10 @@ module.exports =
                 result: true
                 message: data
                 type: 'github'
+            else if err
+              # eg：用户输错帐号密码重新验证 Etc.
+              localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
+              reject(err)
       else
         github_authenticate msg.options
         callMyself(msg)
