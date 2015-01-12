@@ -13,7 +13,7 @@ github_init = ->
     version: '3.0.0'
     # optional
     debug: false
-    timeout: 15000
+    timeout: 30000
     headers: 'user-agent': 'chameleon-ide'
 
 github_authenticate = (options) ->
@@ -100,10 +100,19 @@ module.exports =
   # 生成默认的公、密钥到userhome/.ssh
   generateKeyPair: (options) ->
     Q.Promise (resolve, reject, notify) ->
-      # 生成默认的公、密钥到userhome/.ssh
-      console.log 'generating rsa KeyPair...'
       # 遵循ssh-kengen规范
       fse.ensureDirSync "#{options.home}/.ssh"
+      msg =
+        gitHubFlag: 'new'
+        gogsFlag: 'new'
+      if fs.existsSync "#{options.home}/.ssh/id_dsa.pub"
+        console.log 'reset dsa KeyPair...'
+        pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
+        msg.public = pubKey
+        localStorage.installedSshKey = JSON.stringify msg
+        return resolve(pubKey)
+      # 生成默认的公、密钥到userhome/.ssh
+      console.log 'generating dsa KeyPair...'
       msg =
         gitHubFlag: 'new'
         gogsFlag: 'new'

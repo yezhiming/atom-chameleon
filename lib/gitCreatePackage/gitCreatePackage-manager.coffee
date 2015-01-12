@@ -50,6 +50,7 @@ class GitCreatePackageManager
       # ide保证installedSshKey一定会存在localStorage
       keyObj = JSON.parse localStorage.getItem 'installedSshKey'
       if keyObj.gitHubFlag is 'new' and info.repo is 'github'
+        pv.setTitle "上传ide公钥到github"
         # TODO 由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
         github().createSshKey
           options:
@@ -58,6 +59,7 @@ class GitCreatePackageManager
           key: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
       else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
+        pv.setTitle "上传ide公钥到gogs"
         console.log "TODO"
     .then (data) -> # 获取用户名
       # data：上传服务器的key，成功后返回的内容，由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
@@ -69,9 +71,9 @@ class GitCreatePackageManager
       else if info.repo is 'gogs'
         console.log('TODO')
     .then (obj) -> # 创建仓库
-      pv.setTitle "在#{info.repo}上创建库"
+      pv.setTitle "创建仓库：#{info.repo}"
       if obj.result and obj.type is 'github'
-        info.username = obj.message.login
+        info.username = obj.message.login # 添加github用户名
         github().createRepos
           options:
             username: info.account
@@ -79,9 +81,9 @@ class GitCreatePackageManager
           name: info.packageName
           description: info.describe
           private: false
-          auto_init: true
+          auto_init: false
       else if obj.result and obj.type is 'gogs'
-        info.username = obj.message.name
+        info.username = obj.message.name # 添加gogs用户名
         gogs().createRepos
           options:
             username: info.account
@@ -89,9 +91,10 @@ class GitCreatePackageManager
           Name: info.packageName
           Description: info.describe
           Private: false
-          AutoInit: true
+          AutoInit: false
           License: 'MIT License'
     .then (obj) -> # 开始同步仓库资源
+      pv.setTitle "同步仓库：#{info.repo}"
       if obj.type is 'gogs'
         # git@try.gogs.io:heyanjiemao/test.git
         repoUrl = "git@#{gogsApi.replace('https://', '')}:#{info.username}/#{info.packageName}.git"
@@ -106,36 +109,39 @@ class GitCreatePackageManager
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
       gitApi_create info.gitPath, repoUrl, options, info.describe
-    # .then (repoUrl) ->
-      # info.repoUrl = repoUrl
-      # 开始发布到chameleon packagesManager
-      # server = atom.config.get('atom-butterfly.puzzleServerAddress')
-      # r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
-      #       reject(err) if err
-      #       if httpResponse and httpResponse.statusCode is 201
-      #         resolve
-      #           result: true
-      #           statusCode: 201
-      #           body: body
-      #       else if httpResponse and httpResponse.statusCode is 403
-      #         resolve
-      #           result: false
-      #           statusCode: 403
-      #           body: body
-      # form = r.form()
-      # form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
-      # form.append "name", info.packageName
-      # form.append "repository_url", repoUrl
-      # form.append "description", info.describe || info.packageName
-      # form.append "previews", info.previews if info.previews
-      # form.append "tags", info.tags if info.tags
+    .then (repoUrl) ->
+      pv.setTitle "新增package：#{info.packageName}"
+      info.repoUrl = repoUrl
+      server = atom.config.get('atom-butterfly.puzzleServerAddress')
+      Q.Promise (resolve, reject, notify) ->
+        # 开始发布到chameleon packagesManager
+        r = request.post "#{server}/api/packages", (err, httpResponse, body) ->
+          reject(err) if err
+          if httpResponse and httpResponse.statusCode is 201
+            resolve
+              result: true
+              statusCode: 201
+              body: body
+          else if httpResponse and httpResponse.statusCode is 403
+            resolve
+              result: false
+              statusCode: 403
+              body: body
+        form = r.form()
+        form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+        form.append "name", info.packageName
+        form.append "author", info.username
+        form.append "repository_url", repoUrl
+        form.append "description", info.describe || info.packageName
+        form.append "previews", info.previews if info.previews
+        form.append "tags", info.tags if info.tags
     # .then (obj) ->
     #   # TODO 是否更新此package
     #   if obj.statusCode is 403
     #     console.log 'update this package...'
     .catch (error) ->
       alert "#{error}"
-      if error.message.indexOf 'Permission denied (publickey)' != 1
+      if error.message.indexOf('Permission denied (publickey)') != -1
         home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
         generateKeyPair(home) # 重新生成key
       else

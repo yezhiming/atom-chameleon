@@ -71,22 +71,22 @@ module.exports = (path, url, options, describe)->
           reject("Error: git remote add origin #{url} failed: #{output}")
         else
           resolve()
+  # .then =>
+  #   Q.Promise (resolve, reject, notify) =>
+  #     console.log "options5"
+  #     console.log options
+  #     console.log "pwd:#{pwd()}"
+  #     console.log 'git pull origin master'
+  #     exec 'git pull origin master', options, (code, output) ->
+  #       console.log('Exit code:', code);
+  #       console.log('Program output:', output);
+  #       if code !=0
+  #         reject("Error: git pull origin master failed: #{output}")
+  #       else
+  #         resolve()
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options5"
-      console.log options
-      console.log "pwd:#{pwd()}"
-      console.log 'git pull origin master'
-      exec 'git pull origin master', options, (code, output) ->
-        console.log('Exit code:', code);
-        console.log('Program output:', output);
-        if code !=0
-          reject("Error: git pull origin master failed: #{output}")
-        else
-          resolve()
-  .then =>
-    Q.Promise (resolve, reject, notify) =>
-      console.log "options6"
       console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git push -u origin master'
@@ -96,4 +96,4 @@ module.exports = (path, url, options, describe)->
         if code != 0
           reject("Error: git push -u origin master failed: #{output}")
         else
-          resolve()
+          resolve(url)
