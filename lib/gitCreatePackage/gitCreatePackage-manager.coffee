@@ -28,6 +28,13 @@ class GitCreatePackageManager
     gitCreatePackageWizardView.finishPromise()
     .then (options) ->
       gitCreatePackageWizardView.destroy()
+
+      if true
+        LoginView = require './gitCreatePackage-login-view.coffee'
+        loginView = new LoginView().attach()
+        loginView.setOptions options
+
+    .then (options) ->
       pv.attach()
 
       selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
