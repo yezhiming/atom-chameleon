@@ -100,6 +100,8 @@ class GitCreatePackageManager
         repoUrl = "git@github.com:#{info.username}/#{info.packageName}.git"
       options =
         async: true
+        timeout: 1000*60*10
+        maxBuffer: 1024*1024*10
       gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
@@ -127,16 +129,12 @@ class GitCreatePackageManager
       # form.append "description", info.describe || info.packageName
       # form.append "previews", info.previews if info.previews
       # form.append "tags", info.tags if info.tags
-    .then (obj) ->
-      # TODO 是否更新此package
-      if obj.statusCode is 403
-        console.log 'update this package...'
-
-    .progress (notify) ->
-      console.log notify.stdout if notify.stdout
-      console.error notify.stderr if notify.stderr
+    # .then (obj) ->
+    #   # TODO 是否更新此package
+    #   if obj.statusCode is 403
+    #     console.log 'update this package...'
     .catch (error) ->
-      alert("#{error}")
+      alert "#{error}"
       if error.message.indexOf 'Permission denied (publickey)' != 1
         home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
         generateKeyPair(home) # 重新生成key

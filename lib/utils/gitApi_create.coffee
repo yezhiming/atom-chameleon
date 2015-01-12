@@ -93,7 +93,7 @@ module.exports = (path, url, options, describe)->
       exec 'git push -u origin master', options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
-        if code !=0
+        if code != 0
           reject("Error: git push -u origin master failed: #{output}")
         else
           resolve()
