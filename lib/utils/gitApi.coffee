@@ -103,6 +103,9 @@ module.exports =
     Q.Promise (resolve, reject, notify) ->
       # 遵循ssh-kengen规范
       fse.ensureDirSync "#{options.home}/.ssh"
+      # 关闭确认公钥设置
+      if !fs.existsSync "#{options.home}/.ssh/config" and fs.readFileSync("#{options.home}/.ssh/config", options: 'utf8').indexOf 'StrictHostKeyChecking no' == -1
+        fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
       msg =
         gitHubFlag: 'new'
         gogsFlag: 'new'
@@ -127,9 +130,6 @@ module.exports =
           pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
           msg.public = pubKey
           localStorage.installedSshKey = JSON.stringify msg
-          # 关闭确认公钥设置
-          if !fs.existsSync "#{options.home}/.ssh/config" and fs.readFileSync("#{options.home}/.ssh/config", options: 'utf8').indexOf 'StrictHostKeyChecking no' == -1
-            fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
           resolve(pubKey)
 
   github: ->
@@ -171,7 +171,6 @@ module.exports =
                 result: true
                 message: data
                 type: 'github'
-              # # ssh -T git@github.com
               # exec 'ssh -T git@github.com', (code, output) ->
               #   console.log('Exit code:', code);
               #   console.log('Program output:', output);
