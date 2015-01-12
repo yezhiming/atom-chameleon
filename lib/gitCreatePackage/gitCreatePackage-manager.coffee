@@ -115,7 +115,7 @@ class GitCreatePackageManager
       server = atom.config.get('atom-butterfly.puzzleServerAddress')
       Q.Promise (resolve, reject, notify) ->
         # 开始发布到chameleon packagesManager
-        r = request.post {url:"#{@server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
+        r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
           return reject(err) if err
           if httpResponse and httpResponse.statusCode is 201
             resolve
@@ -136,9 +136,7 @@ class GitCreatePackageManager
         form.append "previews", info.previews if info.previews
         form.append "tags", info.tags if info.tags
     # .then (obj) ->
-    #   # TODO 是否更新此package
-    #   if obj.statusCode is 403
-    #     console.log 'update this package...'
+    #   # TODO 是否更新此package # if obj.statusCode is 403
     .catch (error) ->
       alert "#{error}"
       if error.message.indexOf('Permission denied (publickey)') != -1
