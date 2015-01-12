@@ -63,11 +63,11 @@ module.exports = (path, url, options, describe)->
       console.log "options4"
       console.log options
       console.log "pwd:#{pwd()}"
-      console.log 'git remote add origin '+url
-      exec 'git remote add origin '+url, options, (code, output) ->
+      console.log 'git remote add origin ' + url
+      exec 'git remote add origin ' + url, options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
-        if code !=0
+        if code != 0
           reject("Error: git remote add origin #{url} failed: #{output}")
         else
           resolve()

@@ -101,7 +101,7 @@ class GitCreatePackageManager
       options =
         async: true
       gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
-      options['env'] = path: gitPath if gitPath and gitPath != ''
+      options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
       gitApi_create info.gitPath, repoUrl, options, info.describe
     # .then (repoUrl) ->
