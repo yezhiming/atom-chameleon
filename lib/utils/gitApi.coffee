@@ -2,6 +2,7 @@ Q = require 'q'
 request = require 'request'
 GitHubApi = require 'github'
 {exec} = require 'child_process'
+{EOL} = require 'os'
 fse = require 'fs-extra'
 fs = require 'fs'
 github = null
@@ -129,7 +130,7 @@ module.exports =
           localStorage.installedSshKey = JSON.stringify msg
           # 关闭确认公钥设置
           if !fs.existsSync "#{options.home}/.ssh/config" and fs.readFileSync("#{options.home}/.ssh/config", options: 'utf8').indexOf 'StrictHostKeyChecking no' == -1
-            fs.appendFileSync "#{options.home}/.ssh/config", '\nStrictHostKeyChecking no\nUserKnownHostsFile /dev/null\n'
+            fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
           resolve(pubKey)
 
   github: ->
