@@ -115,8 +115,8 @@ class GitCreatePackageManager
       server = atom.config.get('atom-butterfly.puzzleServerAddress')
       Q.Promise (resolve, reject, notify) ->
         # 开始发布到chameleon packagesManager
-        r = request.post "#{server}/api/packages", (err, httpResponse, body) ->
-          reject(err) if err
+        r = request.post {url:"#{@server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
+          return reject(err) if err
           if httpResponse and httpResponse.statusCode is 201
             resolve
               result: true

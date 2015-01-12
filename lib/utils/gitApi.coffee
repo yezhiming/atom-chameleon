@@ -5,6 +5,7 @@ GitHubApi = require 'github'
 fse = require 'fs-extra'
 fs = require 'fs'
 github = null
+require 'shelljs/global'
 
 # api.github.com
 github_init = ->
@@ -163,10 +164,17 @@ module.exports =
               keyObj = JSON.parse localStorage.getItem 'installedSshKey'
               keyObj['gitHubFlag'] = 'old'
               localStorage.installedSshKey = JSON.stringify keyObj
-              resolve
-                result: true
-                message: data
-                type: 'github'
+              # ssh -T git@github.com
+              exec 'ssh -T git@github.com', (code, output) ->
+                console.log('Exit code:', code);
+                console.log('Program output:', output);
+                if code != 0
+                  reject("ssh -T git@github.com. failed:#{output}")
+                else
+                  resolve
+                    result: true
+                    message: data
+                    type: 'github'
             else if err
               # eg：用户输错帐号密码重新验证 Etc.
               localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
@@ -190,14 +198,15 @@ module.exports =
                 result: false
                 message: err.toJSON()
                 type: 'github'
-            if err
+            else if err
               # eg：用户输错帐号密码重新验证 Etc.
               localStorage.removeItem 'github' # localStorage 仅限制再atom上可以使用，因为是window属性
               reject(err)
-            resolve
-              result: true
-              message: data
-              type: 'github'
+            else
+              resolve
+                result: true
+                message: data
+                type: 'github'
       else
         github_authenticate msg.options
         callMyself(msg)
@@ -224,12 +233,12 @@ module.exports =
                 if httpResponse.statusCode is 403
                   localStorage.removeItem('gogs') # localStorage 仅限制再atom上可以使用，因为是window属性
                   reject new Error 'code: 422 , message: Invalid token.'
-                if httpResponse.statusCode is 422
+                else if httpResponse.statusCode is 422
                   resolve
                     result: false
                     message: body
                     type: 'gogs'
-                if httpResponse.statusCode is 200
+                else if httpResponse.statusCode is 200
                   resolve
                     result: true
                     message: body
