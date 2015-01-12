@@ -76,6 +76,7 @@ class V extends View
       else
         editorView.originalText = _s.splice(editorView.originalText, cursor.column, 0, String.fromCharCode(e.which))
       editorView.insertText '*'
+
       false
   
     editorView.hiddenInput.on 'keydown', (e) =>
@@ -87,7 +88,14 @@ class V extends View
           editorView.originalText = _s.splice(editorView.originalText, selection.start.column, selection.end.column - selection.start.column)
         else
           editorView.originalText = _s.splice(editorView.originalText, cursor.column - 1, 1)
+          return true
         editorView.backspace
-        false
-      true
+        return false
+
+      if e.which == 229
+        alert "密码不能为中文"
+        editorView.text ""
+        return false
+      return true
+
   
