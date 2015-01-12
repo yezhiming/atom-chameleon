@@ -6,7 +6,6 @@ GitHubApi = require 'github'
 fse = require 'fs-extra'
 fs = require 'fs'
 github = null
-# require 'shelljs/global'
 
 # api.github.com
 github_init = ->

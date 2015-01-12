@@ -69,7 +69,7 @@ class GitCreatePackageManager
       else if info.repo is 'gogs'
         console.log('TODO')
     .then (obj) -> # 创建仓库
-      pv.setTitle "创建仓库：#{info.repo}"
+      pv.setTitle "#{info.repo}创建仓库：#{info.packageName}"
       if obj.result and obj.type is 'github'
         info.username = obj.message.login # 添加github用户名
         github().createRepos
