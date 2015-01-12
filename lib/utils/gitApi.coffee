@@ -1,7 +1,7 @@
 Q = require 'q'
 request = require 'request'
 GitHubApi = require 'github'
-generator = require 'ssh-keypair'
+{exec} = require 'child_process'
 fse = require 'fs-extra'
 fs = require 'fs'
 github = null
@@ -98,22 +98,26 @@ module.exports =
   gogsApi: 'https://try.gogs.io',
 
   # 生成默认的公、密钥到userhome/.ssh
-  generateKeyPair: (home) ->
+  generateKeyPair: (options) ->
     Q.Promise (resolve, reject, notify) ->
       # 生成默认的公、密钥到userhome/.ssh
       console.log 'generating rsa KeyPair...'
       # 遵循ssh-kengen规范
-      fse.ensureDirSync "#{home}/.ssh"
-      generator 'chameleonIDE@github.com', "#{home}/.ssh/id_dsa", (err) ->
-        if err
-          console.error err
-          reject(err)
-        else
-          pubKey = fs.readFileSync "#{home}/.ssh/id_dsa.pub", encoding:'utf-8'
-          localStorage.installedSshKey = JSON.stringify
-            public: pubKey
-            flag: 'new'
-          resolve(pubKey)
+      fse.ensureDirSync "#{options.home}/.ssh"
+      msg =
+        gitHubFlag: 'new'
+        gogsFlag: 'new'
+      # 根据github规则，公钥名称暂时写死id_dsa
+      cp = exec "ssh-keygen -t das -C chameleonIDE@github.com -f #{options.home}/.ssh/id_dsa -N", options.options, (error, stdout, stderr) ->
+          if error
+            reject(error)
+          else
+            console.log stdout.toString()
+            console.log stderr.toString()
+            pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
+            msg.public = pubKey
+            localStorage.installedSshKey = JSON.stringify msg
+            resolve(pubKey)
 
   github: ->
     # 上传公钥到服务器
@@ -153,7 +157,7 @@ module.exports =
             else
               # 更新sshkey标识
               keyObj = JSON.parse localStorage.getItem 'installedSshKey'
-              keyObj['flag'] = 'old'
+              keyObj['gitHubFlag'] = 'old'
               localStorage.installedSshKey = JSON.stringify keyObj
               resolve
                 result: true

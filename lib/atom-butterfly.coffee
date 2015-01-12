@@ -2,10 +2,8 @@ ProgressView = require './utils/progress-view'
 _ = require 'underscore'
 {openDirectory} = require('./utils/dialog')
 {generateKeyPair} = require './utils/gitApi'
-path = require 'path'
 UUID = require 'uuid'
 fs = require 'fs'
-{exec} = require 'child_process'
 # for debug properse only, it will add many ms to startup time.
 Q = require 'q'
 Q.longStackSupport = true
@@ -28,22 +26,29 @@ module.exports =
     exist1 = fs.existsSync "#{home}/.ssh/id_dsa"
     exist2 = fs.existsSync "#{home}/.ssh/id_dsa.pub"
     if (!localStorage.getItem 'installedSshKey') or (!exist1) or (!exist2)
-      Q.Promise (resolve, reject, notify) ->
+      # Q.Promise (resolve, reject, notify) ->
         # 生成默认的公、密钥到userhome/.ssh
         if atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 一般mac不需要配置
-          if process.platform is 'win32' and process.env.Path.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
-            command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}\""
-          else if process.platform != 'win32' and process.env.PATH.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
-            command = "cat /etc/profile && echo \\nexport PATH=$PATH#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')} >> /etc/profile && source /etc/profile"
-          cp = exec command, (error, stdout, stderr) ->
-              if error
-                reject(error)
-              else
-                console.log stdout.toString()
-                console.log stderr.toString()
-                resolve()
-      .then ->
-        generateKeyPair(home)
+          generateKeyPair
+            home: home
+            options:
+              env: path: atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
+              maxBuffer: 1024*1024*10
+
+      #     if process.platform is 'win32' and process.env.Path.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
+      #       # TODO 这里要重启windows，atom才能读取到系统变量 真是蛋碎 T^T
+      #       command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}\""
+      #     else if process.platform != 'win32' and process.env.PATH.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
+      #       command = "cat /etc/profile && echo \\nexport PATH=$PATH#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')} >> /etc/profile && source /etc/profile"
+      #     cp = exec command, (error, stdout, stderr) ->
+      #         if error
+      #           reject(error)
+      #         else
+      #           console.log stdout.toString()
+      #           console.log stderr.toString()
+      #           resolve()
+      # .then ->
+      #   generateKeyPair(home)
 
     # create access_token if necessary
     token = atom.config.get('atom-butterfly.puzzleAccessToken')

@@ -46,7 +46,7 @@ class GitCreatePackageManager
       info = options
       # ide保证installedSshKey一定会存在localStorage
       keyObj = JSON.parse localStorage.getItem 'installedSshKey'
-      if keyObj.flag is 'new' and info.repo is 'github'
+      if keyObj.gitHubFlag is 'new' and info.repo is 'github'
         # TODO 由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
         github().createSshKey
           options:
@@ -54,7 +54,7 @@ class GitCreatePackageManager
             password: options.password
           key: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
-      else if keyObj.flag is 'new' and info.repo is 'gogs'
+      else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
         console.log "TODO"
     .then (data) -> # 获取用户名
       # data：上传服务器的key，成功后返回的内容，由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
@@ -69,9 +69,6 @@ class GitCreatePackageManager
       pv.setTitle "在#{info.repo}上创建库"
       if obj.result and obj.type is 'github'
         info.username = obj.message.login
-      else if obj.result and obj.type is 'gogs'
-        info.username = obj.message.name
-      if info.repo is 'github'
         github().createRepos
           options:
             username: info.account
@@ -79,8 +76,9 @@ class GitCreatePackageManager
           name: info.packageName
           description: info.describe
           private: false
-          auto_init: false
-      else if info.repo is 'gogs'
+          auto_init: true
+      else if obj.result and obj.type is 'gogs'
+        info.username = obj.message.name
         gogs().createRepos
           options:
             username: info.account
@@ -88,7 +86,7 @@ class GitCreatePackageManager
           Name: info.packageName
           Description: info.describe
           Private: false
-          AutoInit: false
+          AutoInit: true
           License: 'MIT License'
     .then (obj) -> # 开始同步仓库资源
       if obj.type is 'gogs'
@@ -96,7 +94,6 @@ class GitCreatePackageManager
       else if obj.type is 'github'
         # repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
         repoUrl = "git@github.com:#{info.username}/#{info.packageName}.git"
-
       Q.Promise (resolve, reject, notify) ->
         args = [info.gitPath
         repoUrl
