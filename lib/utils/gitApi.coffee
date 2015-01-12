@@ -108,16 +108,16 @@ module.exports =
         gitHubFlag: 'new'
         gogsFlag: 'new'
       # 根据github规则，公钥名称暂时写死id_dsa
-      cp = exec "ssh-keygen -t das -C chameleonIDE@github.com -f #{options.home}/.ssh/id_dsa -N", options.options, (error, stdout, stderr) ->
-          if error
-            reject(error)
-          else
-            console.log stdout.toString()
-            console.log stderr.toString()
-            pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
-            msg.public = pubKey
-            localStorage.installedSshKey = JSON.stringify msg
-            resolve(pubKey)
+      cp = exec "ssh-keygen -t dsa -C chameleonIDE@github.com -f #{options.home}/.ssh/id_dsa -N ''", options.options, (error, stdout, stderr) ->
+        if error
+          reject(error)
+        else
+          console.log stdout.toString()
+          console.log stderr.toString()
+          pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
+          msg.public = pubKey
+          localStorage.installedSshKey = JSON.stringify msg
+          resolve(pubKey)
 
   github: ->
     # 上传公钥到服务器
