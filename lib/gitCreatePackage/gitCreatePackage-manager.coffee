@@ -6,12 +6,10 @@ request = require 'request'
 _ = require 'underscore'
 
 ProgressView = require '../utils/progress-view'
-
 gitApi_create = require '../utils/gitApi_create'
 
 Q = require 'q'
 {github, gogs, gogsApi, generateKeyPair} = require '../utils/gitApi'
-{execFile} = require 'child_process'
 
 module.exports =
 class GitCreatePackageManager
