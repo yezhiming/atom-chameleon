@@ -1,7 +1,7 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
   '.tree-view': [
-    {label: 'Create git package', command: 'atom-butterfly:gitCreatePackage'}
+    {label: 'Publish Puzzle Package', command: 'atom-butterfly:gitCreatePackage'}
   ]
 
 'menu': [
@@ -82,7 +82,11 @@
             'command': 'atom-chameleon:publish-application'
           }
           {
-            'label': 'Package'
+            'label': 'Chameleon Package'
+            'command': 'atom-chameleon:publish-package'
+          }
+          {
+            'label': 'Puzzle Package'
             'command': 'atom-chameleon:publish-package'
           }
         ]
