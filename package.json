@@ -26,6 +26,7 @@
     "ssh-keypair": "^1.1.0",
     "underscore": "*",
     "underscore.string": "*",
-    "uuid": "~2.0.1"
+    "uuid": "~2.0.1",
+    "shelljs": "*"
   }
 }

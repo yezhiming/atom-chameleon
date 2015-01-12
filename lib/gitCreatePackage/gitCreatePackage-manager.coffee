@@ -7,6 +7,8 @@ _ = require 'underscore'
 
 ProgressView = require '../utils/progress-view'
 
+gitApi_create = require '../utils/gitApi_create'
+
 Q = require 'q'
 {github, gogs, gogsApi, generateKeyPair} = require '../utils/gitApi'
 {execFile} = require 'child_process'
@@ -39,6 +41,7 @@ class GitCreatePackageManager
       tmpDir = path.resolve tmpfile, path.basename(selectPath)
       if fs.existsSync tmpDir
         fs.removeSync tmpDir
+      console.log "tmpDir: #{tmpDir}"
       fs.copySync selectPath, tmpDir
 
       _.extend(options, gitPath: tmpDir)
@@ -94,27 +97,37 @@ class GitCreatePackageManager
       else if obj.type is 'github'
         # repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
         repoUrl = "git@github.com:#{info.username}/#{info.packageName}.git"
-      Q.Promise (resolve, reject, notify) ->
-        args = [info.gitPath
-        repoUrl
-        info.describe]
-        options =
-          maxBuffer: 1024*1024*10
-        gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
-        options['env'] = path: gitPath if gitPath and gitPath != ''
 
-        if obj.result # 创建仓库成功
-          file = '/lib/utils/gitApi_create.sh'
-        else # 仓库已经存在
-          file = '/lib/utils/gitApi_update.sh'
-        file = "#{atom.getConfigDirPath()}/packages/atom-butterfly#{file}"
+      options =
+        async: true
+      gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
+      options['env'] = path: gitPath if gitPath and gitPath != ''
 
-        console.log "execFile: #{file} #{args.join(' ') if args}"
-        cp = execFile file, args, options, (error, stdout, stderr) ->
-          console.log stdout.toString()
-          console.log stderr.toString()
-          if error then reject(error) else resolve(repoUrl)
-          # error.code = 1 即非正常退出
+      gitApi_create info.gitPath, repoUrl, options, info.describe
+
+      # Q.Promise (resolve, reject, notify) ->
+        
+
+        # args = [info.gitPath
+        # repoUrl
+        # info.describe]
+        # options =
+        #   maxBuffer: 1024*1024*10
+        # gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
+        # options['env'] = path: gitPath if gitPath and gitPath != ''
+        #
+        # if obj.result # 创建仓库成功
+        #   file = '/lib/utils/gitApi_create.sh'
+        # else # 仓库已经存在
+        #   file = '/lib/utils/gitApi_update.sh'
+        # file = "#{atom.getConfigDirPath()}/packages/atom-butterfly#{file}"
+        #
+        # console.log "execFile: #{file} #{args.join(' ') if args}"
+        # cp = execFile file, args, options, (error, stdout, stderr) ->
+        #   console.log stdout.toString()
+        #   console.log stderr.toString()
+        #   if error then reject(error) else resolve(repoUrl)
+        #   # error.code = 1 即非正常退出
     # .then (repoUrl) ->
       # info.repoUrl = repoUrl
       # 开始发布到chameleon packagesManager
