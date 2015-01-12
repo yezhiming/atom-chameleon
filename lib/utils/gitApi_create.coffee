@@ -96,4 +96,4 @@ module.exports = (path, url, options, describe)->
         if code != 0
           reject("Error: git push -u origin master failed: #{output}")
         else
-          resolve()
+          resolve(url)

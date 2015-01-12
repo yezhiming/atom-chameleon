@@ -13,7 +13,7 @@ github_init = ->
     version: '3.0.0'
     # optional
     debug: false
-    timeout: 15000
+    timeout: 30000
     headers: 'user-agent': 'chameleon-ide'
 
 github_authenticate = (options) ->
