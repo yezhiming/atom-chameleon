@@ -90,10 +90,13 @@ class GitCreatePackageManager
           License: 'MIT License'
     .then (obj) -> # 开始同步仓库资源
       if obj.type is 'gogs'
-        repoUrl = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
+        # git@try.gogs.io:heyanjiemao/test.git
+        repoUrl = "git@#{gogsApi.replace('https://', '')}:#{info.username}/#{info.packageName}.git"
       else if obj.type is 'github'
         # repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
         repoUrl = "git@github.com:#{info.username}/#{info.packageName}.git"
+
+
       Q.Promise (resolve, reject, notify) ->
         args = [info.gitPath
         repoUrl
@@ -101,20 +104,19 @@ class GitCreatePackageManager
         options =
           maxBuffer: 1024*1024*10
         gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
-        options['env'] = path: gitPath if gitPath and gitPath != ''
-
+        options['env'] = path: gitPath if gitPath and gitPath
         if obj.result # 创建仓库成功
           file = '/lib/utils/gitApi_create.sh'
         else # 仓库已经存在
           file = '/lib/utils/gitApi_update.sh'
         file = "#{atom.getConfigDirPath()}/packages/atom-butterfly#{file}"
-
         console.log "execFile: #{file} #{args.join(' ') if args}"
         cp = execFile file, args, options, (error, stdout, stderr) ->
           console.log stdout.toString()
           console.log stderr.toString()
           if error then reject(error) else resolve(repoUrl)
           # error.code = 1 即非正常退出
+
     # .then (repoUrl) ->
       # info.repoUrl = repoUrl
       # 开始发布到chameleon packagesManager

@@ -26,15 +26,13 @@ module.exports =
     exist1 = fs.existsSync "#{home}/.ssh/id_dsa"
     exist2 = fs.existsSync "#{home}/.ssh/id_dsa.pub"
     if (!localStorage.getItem 'installedSshKey') or (!exist1) or (!exist2)
-      # Q.Promise (resolve, reject, notify) ->
-        # 生成默认的公、密钥到userhome/.ssh
-        if atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 一般mac不需要配置
-          generateKeyPair
-            home: home
-            options:
-              env: path: atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
-              maxBuffer: 1024*1024*10
-
+      options =
+        maxBuffer: 1024*1024*10
+      options.env = path: atom.config.get('atom-butterfly.gitCloneEnvironmentPath') if atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 一般mac不需要配置
+      # 生成默认的公、密钥到userhome/.ssh
+      generateKeyPair
+        home: home
+        options
       #     if process.platform is 'win32' and process.env.Path.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
       #       # TODO 这里要重启windows，atom才能读取到系统变量 真是蛋碎 T^T
       #       command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}\""
