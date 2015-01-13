@@ -20,8 +20,8 @@ class V extends View
         
   setValues: (obj) ->
     @title.html("#{obj.package.name} Create sucess")
-    @urlPath.html("#{obj.package.repository_url}")
-    @urlPath.attr "href", obj.package.repository_url
+    @urlPath.html("#{obj.package.https}")
+    @urlPath.attr "href",obj.package.https
 
   copyUrlFun: ->
     atom.clipboard.write @urlPath.html()

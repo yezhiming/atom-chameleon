@@ -145,8 +145,13 @@ class GitCreatePackageManager
         form.append "previews", info.previews if info.previews
         form.append "tags", info.tags if info.tags
     .then (obj) ->
-    #   # TODO 是否更新此package # if obj.statusCode is 403
+      # TODO 是否更新此package # if obj.statusCode is 403
       bodyJson = $.parseJSON(obj.body)
+      if info.repo is 'github'
+        bodyJson.package.https = "https://github.com/#{info.username}/#{info.packageName}.git"
+      else if info.repo is 'gogs'
+        bodyJson.package.https = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
+      
       console.log bodyJson
       unless obj.result
         alert body.message
