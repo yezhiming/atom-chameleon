@@ -59,7 +59,7 @@ class GitCreatePackageManager
       # ide保证installedSshKey一定会存在localStorage
       keyObj = JSON.parse localStorage.getItem 'installedSshKey'
       if keyObj.gitHubFlag is 'new' and info.repo is 'github'
-        pv.setTitle "上传ide公钥到github"
+        pv.setTitle "Upload IDE public key to github"
         # TODO 由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
         github().createSshKey
           options:
@@ -68,7 +68,7 @@ class GitCreatePackageManager
           key: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
       else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
-        pv.setTitle "上传ide公钥到gogs"
+        pv.setTitle "Upload IDE public key to gogs"
         console.log "TODO"
     .then (data) -> # 获取用户名
       # data：上传服务器的key，成功后返回的内容，由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
@@ -80,7 +80,7 @@ class GitCreatePackageManager
       else if info.repo is 'gogs'
         console.log('TODO')
     .then (obj) -> # 创建仓库
-      pv.setTitle "#{info.repo}创建仓库：#{info.packageName}"
+      pv.setTitle "#{info.repo} create package: #{info.packageName}"
       if obj.result and obj.type is 'github'
         info.username = obj.message.login # 添加github用户名
         github().createRepos
@@ -103,7 +103,7 @@ class GitCreatePackageManager
           AutoInit: false
           License: 'MIT License'
     .then (obj) -> # 开始同步仓库资源
-      pv.setTitle "同步仓库：#{info.repo}"
+      pv.setTitle "Synchronizer package :#{info.repo}"
       if obj.type is 'gogs'
         # git@try.gogs.io:heyanjiemao/test.git
         repoUrl = "git@#{gogsApi.replace('https://', '')}:#{info.username}/#{info.packageName}.git"
@@ -119,7 +119,7 @@ class GitCreatePackageManager
       # push资源到仓库
       gitApi_create info.gitPath, repoUrl, options, info.describe
     .then (repoUrl) ->
-      pv.setTitle "新增package：#{info.packageName}"
+      pv.setTitle "Add package：#{info.packageName}"
       info.repoUrl = repoUrl
       server = atom.config.get('atom-butterfly.puzzleServerAddress')
       Q.Promise (resolve, reject, notify) ->

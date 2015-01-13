@@ -108,7 +108,7 @@ class V extends View
       if packageHave
         wizard.nextStep()
       else
-        alert "对不起，数据库中已经存在该名称，请修改名称"
+        alert "Sorry,please change you Package Name!"
 
     .catch (err) ->
       console.trace err.stack

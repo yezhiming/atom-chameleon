@@ -19,7 +19,7 @@ class V extends View
           @button 'Close', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn'
         
   setValues: (obj) ->
-    @title.html("#{obj.package.name}创建成功")
+    @title.html("#{obj.package.name} Create sucess")
     @urlPath.html("#{obj.package.repository_url}")
     @urlPath.attr "href", obj.package.repository_url
 

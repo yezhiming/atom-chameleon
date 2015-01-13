@@ -96,7 +96,7 @@ class V extends View
         return false
 
       if e.which == 229
-        alert "密码不能为中文"
+        alert "Password is not Chinese!"
         editorView.text ""
         return false
       return true
