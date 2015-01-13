@@ -2,10 +2,10 @@ Q = require 'q'
 request = require 'request'
 GitHubApi = require 'github'
 {exec} = require 'child_process'
+{EOL} = require 'os'
 fse = require 'fs-extra'
 fs = require 'fs'
 github = null
-# require 'shelljs/global'
 
 # api.github.com
 github_init = ->
@@ -103,20 +103,21 @@ module.exports =
     Q.Promise (resolve, reject, notify) ->
       # 遵循ssh-kengen规范
       fse.ensureDirSync "#{options.home}/.ssh"
+      # 关闭确认公钥设置
+      data = fs.readFileSync "#{options.home}/.ssh/config", encoding: 'utf8'
+      if (!fs.existsSync "#{options.home}/.ssh/config") or (!data.contains 'StrictHostKeyChecking no')
+        fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
       msg =
         gitHubFlag: 'new'
         gogsFlag: 'new'
       if fs.existsSync "#{options.home}/.ssh/id_dsa.pub"
         console.log 'reset dsa KeyPair...'
-        pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
+        pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf8'
         msg.public = pubKey
         localStorage.installedSshKey = JSON.stringify msg
         return resolve(pubKey)
       # 生成默认的公、密钥到userhome/.ssh
       console.log 'generating dsa KeyPair...'
-      msg =
-        gitHubFlag: 'new'
-        gogsFlag: 'new'
       # 根据github规则，公钥名称暂时写死id_dsa
       cp = exec "ssh-keygen -t dsa -C chameleonIDE@github.com -f #{options.home}/.ssh/id_dsa -N ''", options.options, (error, stdout, stderr) ->
         if error
@@ -124,12 +125,9 @@ module.exports =
         else
           console.log stdout.toString()
           console.log stderr.toString()
-          pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
+          pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf8'
           msg.public = pubKey
           localStorage.installedSshKey = JSON.stringify msg
-          # 关闭确认公钥设置
-          if !fs.existsSync "#{options.home}/.ssh/config" and fs.readFileSync("#{options.home}/.ssh/config", options: 'utf8').indexOf 'StrictHostKeyChecking no' == -1
-            fs.appendFileSync "#{options.home}/.ssh/config", '\nStrictHostKeyChecking no\nUserKnownHostsFile /dev/null\n'
           resolve(pubKey)
 
   github: ->
@@ -144,7 +142,7 @@ module.exports =
             if err
               # eg：用户输错帐号密码重新验证 Etc.
               localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
-              reject(err)
+              return reject(err)
             resolve
               result: true
               message: data
@@ -171,7 +169,6 @@ module.exports =
                 result: true
                 message: data
                 type: 'github'
-              # # ssh -T git@github.com
               # exec 'ssh -T git@github.com', (code, output) ->
               #   console.log('Exit code:', code);
               #   console.log('Program output:', output);
