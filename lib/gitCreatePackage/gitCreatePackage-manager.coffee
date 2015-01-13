@@ -142,8 +142,18 @@ class GitCreatePackageManager
         form.append "description", info.describe || info.packageName
         form.append "previews", info.previews if info.previews
         form.append "tags", info.tags if info.tags
-    # .then (obj) ->
+    .then (obj) ->
     #   # TODO 是否更新此package # if obj.statusCode is 403
+      body =  eval("(" + obj.body + ")")
+      console.log body.repository_url
+      unless obj.result
+        alert body.message
+      else
+        ResultView = require './gitCreatePackage-result-view'
+        resultView = new ResultView()
+        resultView.setValues body
+        atom.workspaceView.append resultView
+        
     .catch (error) ->
       alert "#{error}"
       if error.message.indexOf('Permission denied (publickey)') != -1
