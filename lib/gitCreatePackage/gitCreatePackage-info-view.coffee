@@ -3,6 +3,10 @@ _s = require 'underscore.string'
 _ = require 'underscore'
 path = require 'path'
 
+
+request = require 'request'
+Q = require 'q'
+
 module.exports =
 class V extends View
   @content: ->
@@ -66,19 +70,50 @@ class V extends View
     else
       wizardView.disableNext()
     
-
   destroy: ->
     @remove()
 
   onNext: (wizard) ->
-    unless @privateSelect.isHidden()
-      selectGit = @selectPublicGit.val()
-    else
-      selectGit = @selectPublicGit.val()
+    @judgeTheName(wizard)
+
+  judgeTheName: (wizard)->
+    server = atom.config.get('atom-butterfly.puzzleServerAddress')
+    access_token = atom.config.get 'atom-butterfly.puzzleAccessToken'
+
+    url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
+    Q.Promise (resolve, reject, notify) =>
+      request url, (error, response, body) ->
+        if error
+          reject error
+        if response.statusCode == 200 and !error
+          console.log body
+          bodyJson =  $.parseJSON(body)
+          if bodyJson.code == 404
+            resolve true
+          else
+            resolve false
+        
+    .then (packageHave) =>
+      console.log packageHave
+      unless @privateSelect.isHidden()
+        selectGit = @selectPublicGit.val()
+      else
+        selectGit = @selectPublicGit.val()
+      
+      wizard.mergeOptions {
+        repo: selectGit
+        packageName: @packageName.getText()
+        describe: @describe.getText()
+      }
+      if packageHave
+        wizard.nextStep()
+      else
+        alert "对不起，数据库中已经存在该名称，请修改名称"
+
+    .catch (err) ->
+      console.trace err.stack
+      alert "#{err}"
+
+
+      
     
-    wizard.mergeOptions {
-      repo: selectGit
-      packageName: @packageName.getText()
-      describe: @describe.getText()
-    }
-    wizard.nextStep()

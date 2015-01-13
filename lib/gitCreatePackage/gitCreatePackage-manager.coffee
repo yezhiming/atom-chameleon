@@ -5,6 +5,8 @@ uuid = require 'uuid'
 request = require 'request'
 _ = require 'underscore'
 
+{$, $$} = require 'atom'
+
 ProgressView = require '../utils/progress-view'
 gitApi_create = require '../utils/gitApi_create'
 
@@ -144,14 +146,14 @@ class GitCreatePackageManager
         form.append "tags", info.tags if info.tags
     .then (obj) ->
     #   # TODO 是否更新此package # if obj.statusCode is 403
-      body =  eval("(" + obj.body + ")")
-      console.log body.repository_url
+      bodyJson = $.parseJSON(obj.body)
+      console.log bodyJson
       unless obj.result
         alert body.message
       else
         ResultView = require './gitCreatePackage-result-view'
         resultView = new ResultView()
-        resultView.setValues body
+        resultView.setValues bodyJson
         atom.workspaceView.append resultView
         
     .catch (error) ->

@@ -19,9 +19,9 @@ class V extends View
           @button 'Close', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn'
         
   setValues: (obj) ->
-    @title.html("#{obj.name}创建成功")
-    @urlPath.html("#{obj.repository_url}")
-    @urlPath.attr "href", obj.repository_url
+    @title.html("#{obj.package.name}创建成功")
+    @urlPath.html("#{obj.package.repository_url}")
+    @urlPath.attr "href", obj.package.repository_url
 
   copyUrlFun: ->
     atom.clipboard.write @urlPath.html()
