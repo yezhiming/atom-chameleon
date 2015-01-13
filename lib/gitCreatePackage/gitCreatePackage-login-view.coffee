@@ -36,7 +36,6 @@ class V extends View
 
   setOptions:(options) ->
     _.extend @options, options
-    console.log @options
 
   # 验证editor是否填写了内容
   editorOnDidChange:(editor) ->
@@ -58,8 +57,6 @@ class V extends View
 
   certainFun: ->
     console.log "CertainFun"
-    # _.extend @options, account: account.getText()
-    # _.extend @options, password: password.originalText
     @options.account = @account.getText()
     @options.password = @password.originalText
     @emit 'certain', @options
