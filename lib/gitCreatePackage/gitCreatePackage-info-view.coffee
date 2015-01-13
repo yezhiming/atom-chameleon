@@ -1,5 +1,7 @@
 {$, $$, View, EditorView} = require 'atom'
 _s = require 'underscore.string'
+_ = require 'underscore'
+path = require 'path'
 
 module.exports =
 class V extends View
@@ -12,14 +14,6 @@ class V extends View
         @select class:'gitCreatePackageSelect', outlet: 'selectGit', =>
           @option "github"
           @option "gogs"
-
-      @div class: "form-group", =>
-        @label 'Account:'
-        @subview 'account', new EditorView(mini: true)
-      @div class: "form-group", =>
-        @label 'Password:'
-        @subview 'password', new EditorView(mini: true)
-
       
       @div class: "form-group", =>
         @label 'Package Name:'
@@ -31,11 +25,10 @@ class V extends View
     
 
   initialize: (wizardView) ->
-    @passwordEditorView @password
-    
-    @editorOnDidChange @account, wizardView
-    @editorOnDidChange @password, wizardView
     @editorOnDidChange @packageName, wizardView
+
+    selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
+    @packageName.setText _.last(selectPath.split(path.sep))
 
   # 验证editor是否填写了内容
   editorOnDidChange:(editor, wizardView) ->
@@ -43,10 +36,7 @@ class V extends View
       @editorVerify wizardView
 
   editorVerify: (wizardView)->
-    unless  (@account.getText() is "") or
-            (@password.getText() is "") or
-            (@packageName.getText() is "")
-
+    unless  (@packageName.getText() is "")
       wizardView.enableNext()
     else
       wizardView.disableNext()
@@ -58,44 +48,7 @@ class V extends View
   onNext: (wizard) ->
     wizard.mergeOptions {
       repo: @selectGit.val()
-      account: @account.getText()
-      password: @password.originalText
       packageName: @packageName.getText()
       describe: @describe.getText()
     }
     wizard.nextStep()
-
-  passwordEditorView: (editorView)->
-    editorView.originalText = ''
-    editorView.hiddenInput.on 'keypress', (e) =>
-      editor = editorView.getEditor()
-      selection = editor.getSelectedBufferRange()
-      cursor = editor.getCursorBufferPosition()
-      if !selection.isEmpty()
-        editorView.originalText = _s.splice(editorView.originalText, selection.start.column, selection.end.column - selection.start.column, String.fromCharCode(e.which))
-      else
-        editorView.originalText = _s.splice(editorView.originalText, cursor.column, 0, String.fromCharCode(e.which))
-      editorView.insertText '*'
-
-      false
-  
-    editorView.hiddenInput.on 'keydown', (e) =>
-      if e.which == 8
-        editor = editorView.getEditor()
-        selection = editor.getSelectedBufferRange()
-        cursor = editor.getCursorBufferPosition()
-        if !selection.isEmpty()
-          editorView.originalText = _s.splice(editorView.originalText, selection.start.column, selection.end.column - selection.start.column)
-        else
-          editorView.originalText = _s.splice(editorView.originalText, cursor.column - 1, 1)
-          return true
-        editorView.backspace
-        return false
-
-      if e.which == 229
-        alert "密码不能为中文"
-        editorView.text ""
-        return false
-      return true
-
-  

@@ -22,20 +22,15 @@ class GitCreatePackageManager
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
     gitCreatePackageWizardView = new GitCreatePackageWizardView().attach()
 
+    LoginView = require './gitCreatePackage-login-view'
+    loginView = new LoginView()
+    
     pv = new ProgressView("Create git package...")
 
     info = null
     gitCreatePackageWizardView.finishPromise()
     .then (options) ->
       gitCreatePackageWizardView.destroy()
-
-      if true
-        LoginView = require './gitCreatePackage-login-view.coffee'
-        loginView = new LoginView().attach()
-        loginView.setOptions options
-
-    .then (options) ->
-      pv.attach()
 
       selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
       if require('fs').statSync(selectPath).isFile()
@@ -50,7 +45,16 @@ class GitCreatePackageManager
       fs.copySync selectPath, tmpDir
 
       _.extend(options, gitPath: tmpDir)
+    .then (options) -> # 判断是否需要输入账号密码
+      if true
+        loginView.setOptions options
+        atom.workspaceView.append loginView
+        loginView.finishPromise()
+        
+        
     .then (options) -> # upload ssh key
+      loginView.destroy()
+      pv.attach()
       info = options
       # ide保证installedSshKey一定会存在localStorage
       keyObj = JSON.parse localStorage.getItem 'installedSshKey'
