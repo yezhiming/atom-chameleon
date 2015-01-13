@@ -7,9 +7,9 @@ Q = require 'q'
 module.exports =
 class V extends View
   @content:->
-    @div class: 'loginView overlay from-top', =>
+    @div class: 'loginView overlay butterfly from-top', =>
       @div class: 'content', =>
-        @h1 'Input username and password:'
+        @h1 'Verify Account:'
 
         @div class: "form-group", =>
           @label 'Account:'
