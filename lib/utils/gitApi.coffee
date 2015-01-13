@@ -103,9 +103,8 @@ module.exports =
     Q.Promise (resolve, reject, notify) ->
       # 遵循ssh-kengen规范
       fse.ensureDirSync "#{options.home}/.ssh"
-      # 关闭确认公钥设置
-      data = fs.readFileSync "#{options.home}/.ssh/config", encoding: 'utf8'
-      if (!fs.existsSync "#{options.home}/.ssh/config") or (!data.contains 'StrictHostKeyChecking no')
+      # 关闭确认公钥设置 
+      if (!fs.existsSync "#{options.home}/.ssh/config") or (!fs.readFileSync "#{options.home}/.ssh/config", encoding: 'utf8'.contains 'StrictHostKeyChecking no')
         fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
       msg =
         gitHubFlag: 'new'
