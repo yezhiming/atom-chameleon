@@ -1,7 +1,9 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
-  '.tree-view': [
-    {label: 'Create git package', command: 'atom-butterfly:gitCreatePackage'}
+  '.tree-view.full-menu': [
+    {'type': 'separator'}
+    {label: 'Chameleon Package Manager', command: 'atom-butterfly:gitCreatePackage'}
+    {'type': 'separator'}
   ]
 
 'menu': [
