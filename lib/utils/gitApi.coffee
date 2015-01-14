@@ -16,9 +16,9 @@ github_init = ->
     debug: false
     timeout: 30000
     headers: 'user-agent': 'chameleon-ide'
+  # TODO 获取解密的密码重新认证 github_authenticate()
 
 github_authenticate = (options) ->
-  github_init() unless github
   console.log "#{options.username}: github is authenticating..."
   github.authenticate
     type: "basic"
@@ -29,7 +29,7 @@ github_authenticate = (options) ->
     username: options.username
     safe: true
   localStorage.github = githubStr
-
+  # 可以存储加密的密码
 
 # gogs模拟登入获取cookies
 gogs_login = (options) ->
@@ -103,7 +103,7 @@ module.exports =
     Q.Promise (resolve, reject, notify) ->
       # 遵循ssh-kengen规范
       fse.ensureDirSync "#{options.home}/.ssh"
-      # 关闭确认公钥设置 
+      # 关闭确认公钥设置
       if (!fs.existsSync "#{options.home}/.ssh/config") or (!fs.readFileSync "#{options.home}/.ssh/config", encoding: 'utf8'.contains 'StrictHostKeyChecking no')
         fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
       msg =
@@ -129,12 +129,15 @@ module.exports =
           localStorage.installedSshKey = JSON.stringify msg
           resolve(pubKey)
 
+
+
   github: ->
-    # 上传公钥到服务器
+    # 获取用户信息
     getUser: (msg) ->
       callMyself = arguments.callee
+      github_init() unless github
       githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库
-      if github and githubObj and msg.options.username is githubObj.username and githubObj.safe
+      if githubObj and githubObj.safe
         Q.Promise (resolve, reject, notify) ->
           console.log "github fetch user..."
           github.user.get msg, (err, data) ->
@@ -153,8 +156,9 @@ module.exports =
     # 上传公钥到服务器
     createSshKey: (msg) ->
       callMyself = arguments.callee
+      github_init() unless github
       githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库
-      if github and githubObj and msg.options.username is githubObj.username and githubObj.safe
+      if githubObj and githubObj.safe
         Q.Promise (resolve, reject, notify) ->
           unless msg.key or msg.title
             reject new Error 'params: title (String): Required and key (String): Required.'
@@ -189,8 +193,9 @@ module.exports =
     # 如果仓库已经存在，则返回错误
     createRepos: (msg) ->
       callMyself = arguments.callee
+      github_init() unless github
       githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库
-      if githubObj and msg.options.username is githubObj.username and githubObj.safe
+      if githubObj and githubObj.safe
         Q.Promise (resolve, reject, notify) ->
           unless msg.name
             reject new Error 'params: name (String): Required.'
@@ -203,7 +208,7 @@ module.exports =
                 type: 'github'
             else if err
               # eg：用户输错帐号密码重新验证 Etc.
-              localStorage.removeItem 'github' # localStorage 仅限制再atom上可以使用，因为是window属性
+              localStorage.removeItem 'github'
               reject(err)
             else
               resolve
@@ -213,6 +218,7 @@ module.exports =
       else
         github_authenticate msg.options
         callMyself(msg)
+
 
 
   gogs: ->

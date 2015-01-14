@@ -17,26 +17,8 @@ module.exports =
 class GitCreatePackageManager
 
   activate: ->
-    atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @testPackage()
+    atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
     console.log "GitCreatePackageManager activate"
-
-
-  testPackage: ->
-    bodyJson = {}
-  
-    bodyJson =
-      package:
-        https: "https://github.com/comeontom/atom-shell.git"
-        repository_url: "git@github.com:comeontom/gitCreatePackage4.git"
-        subversion: "https://github.com/comeontom/atom-shell"
-        name: "atom-shell"
-  
-    console.log bodyJson
-  
-    ResultView = require './gitCreatePackage-result-view'
-    resultView = new ResultView()
-    resultView.setValues bodyJson
-    atom.workspaceView.append resultView
 
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
@@ -44,19 +26,21 @@ class GitCreatePackageManager
 
     LoginView = require './gitCreatePackage-login-view'
     loginView = new LoginView()
-    
-    pv = new ProgressView("Create git package...")
+
+    pv = new ProgressView("Create a package...")
 
     info = null
 
     gitCreatePackageWizardView.attach()
     gitCreatePackageWizardView.finishPromise()
+
     .then (options) ->
       gitCreatePackageWizardView.destroy()
-      
+
       loginView.mergeOptions options
       atom.workspaceView.append loginView
       loginView.finishPromise()
+
     .then (options) ->
       loginView.destroy()
       pv.attach()
@@ -72,15 +56,14 @@ class GitCreatePackageManager
         fs.removeSync tmpDir
       console.log "tmpDir: #{tmpDir}"
       fs.copySync selectPath, tmpDir
-
       _.extend(options, gitPath: tmpDir)
+
     .then (options) -> # upload ssh key
       info = options
-      # ide保证installedSshKey一定会存在localStorage
-      keyObj = JSON.parse localStorage.getItem 'installedSshKey'
+      keyObj = JSON.parse localStorage.getItem 'installedSshKey' # ide保证installedSshKey一定会存在localStorage
       if keyObj.gitHubFlag is 'new' and info.repo is 'github'
         pv.setTitle "Upload IDE public key to github"
-        # TODO 由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
+        # 由于github只匹配key内容不匹配名字
         github().createSshKey
           options:
             username: options.account
@@ -90,8 +73,8 @@ class GitCreatePackageManager
       else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
         pv.setTitle "Upload IDE public key to gogs"
         console.log "TODO"
+
     .then (data) -> # 获取用户名
-      # data：上传服务器的key，成功后返回的内容，由于github只匹配key不匹配名字，所以每次上传都可以重复，可以考虑保存id先删除
       if info.repo is 'github'
         github().getUser
           options:
@@ -99,6 +82,7 @@ class GitCreatePackageManager
             password: info.password
       else if info.repo is 'gogs'
         console.log('TODO')
+
     .then (obj) -> # 创建仓库
       pv.setTitle "#{info.repo} create package: #{info.packageName}"
       if obj.result and obj.type is 'github'
@@ -122,6 +106,7 @@ class GitCreatePackageManager
           Private: false
           AutoInit: false
           License: 'MIT License'
+
     .then (obj) -> # 开始同步仓库资源
       pv.setTitle "Synchronizer package :#{info.repo}"
       if obj.type is 'gogs'
@@ -138,6 +123,7 @@ class GitCreatePackageManager
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
       gitApi_create info.gitPath, repoUrl, options, info.describe
+
     .then (repoUrl) ->
       pv.setTitle "Add package：#{info.packageName}"
       info.repoUrl = repoUrl
@@ -164,6 +150,7 @@ class GitCreatePackageManager
         form.append "description", info.describe || info.packageName
         form.append "previews", info.previews if info.previews
         form.append "tags", info.tags if info.tags
+
     .then (obj) ->
       # TODO 是否更新此package # if obj.statusCode is 403
       bodyJson = $.parseJSON(obj.body)
@@ -173,8 +160,7 @@ class GitCreatePackageManager
       else if info.repo is 'gogs'
         bodyJson.package.https = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
         bodyJson.package.subversion = "#{gogsApi}/#{info.username}/#{info.packageName}"
-      
-      console.log bodyJson
+
       unless obj.result
         alert body.message
       else
@@ -182,7 +168,7 @@ class GitCreatePackageManager
         resultView = new ResultView()
         resultView.setValues bodyJson
         atom.workspaceView.append resultView
-        
+
     .catch (error) ->
       alert "#{error}"
       if error.message.indexOf('Permission denied (publickey)') != -1

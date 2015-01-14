@@ -21,6 +21,7 @@ module.exports =
     gitCloneEnvironmentPath: ''
 
   activate: (state) ->
+    localStorage.removeItem 'github' # 重启就要github认证，不然会报错，暂时这样
     # git ssh 策略：ide每次检测不存在就默认生成keypair
     home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
     exist1 = fs.existsSync "#{home}/.ssh/id_dsa"
@@ -33,10 +34,10 @@ module.exports =
       generateKeyPair
         home: home
         options
-      #     if process.platform is 'win32' and process.env.Path.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
+      #     if process.platform is 'win32' and (!process.env.Path.contains "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}")
       #       # TODO 这里要重启windows，atom才能读取到系统变量 真是蛋碎 T^T
       #       command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}\""
-      #     else if process.platform != 'win32' and process.env.PATH.indexOf "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}" == -1
+      #     else if process.platform != 'win32' and (!process.env.PATH.contains "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}")
       #       command = "cat /etc/profile && echo \\nexport PATH=$PATH#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')} >> /etc/profile && source /etc/profile"
       #     cp = exec command, (error, stdout, stderr) ->
       #         if error
