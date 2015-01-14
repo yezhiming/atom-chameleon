@@ -23,7 +23,7 @@ class V extends View
           @button 'Cancel', click: 'destroy', class: 'inline-block-tight btn'
 
         @div class: 'pull-right block', =>
-          @button 'Certain', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn btn-primary'
+          @button 'Confirm', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn btn-primary'
   
   initialize: ->
     @passwordEditorView @password
