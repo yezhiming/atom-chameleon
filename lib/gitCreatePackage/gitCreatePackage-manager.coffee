@@ -17,8 +17,26 @@ module.exports =
 class GitCreatePackageManager
 
   activate: ->
-    atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
+    atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @testPackage()
     console.log "GitCreatePackageManager activate"
+
+
+  testPackage: ->
+    bodyJson = {}
+    
+    bodyJson =
+      package:
+        https: "https://github.com/comeontom/atom-shell.git"
+        repository_url: "git@github.com:comeontom/gitCreatePackage4.git"
+        subversion: "https://github.com/comeontom/atom-shell"
+        name: "atom-shell"
+    
+    console.log bodyJson
+  
+    ResultView = require './gitCreatePackage-result-view'
+    resultView = new ResultView()
+    resultView.setValues bodyJson
+    atom.workspaceView.append resultView
 
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
@@ -149,8 +167,10 @@ class GitCreatePackageManager
       bodyJson = $.parseJSON(obj.body)
       if info.repo is 'github'
         bodyJson.package.https = "https://github.com/#{info.username}/#{info.packageName}.git"
+        bodyJson.package.subversion = "https://github.com/#{info.username}/#{info.packageName}"
       else if info.repo is 'gogs'
         bodyJson.package.https = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
+        bodyJson.package.subversion = "#{gogsApi}/#{info.username}/#{info.packageName}"
       
       console.log bodyJson
       unless obj.result
