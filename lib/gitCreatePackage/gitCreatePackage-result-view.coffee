@@ -27,6 +27,7 @@ class V extends View
           @a "Subversion", style: "padding-left:5px", click: "subversionFun"
 
 
+
       @div class: 'actions', =>
         @div class: 'pull-right block', =>
           @button 'Close', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn btn-primary'

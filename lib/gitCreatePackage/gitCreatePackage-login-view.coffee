@@ -34,7 +34,7 @@ class V extends View
 
     _.extend this, EventEmitter.prototype
 
-  setOptions:(options) ->
+  mergeOptions:(options) ->
     _.extend @options, options
 
   # 验证editor是否填写了内容
