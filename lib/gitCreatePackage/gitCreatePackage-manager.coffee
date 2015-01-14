@@ -111,10 +111,14 @@ class GitCreatePackageManager
       pv.setTitle "Synchronizer package :#{info.repo}"
       if obj.type is 'gogs'
         # git@try.gogs.io:heyanjiemao/test.git
-        repoUrl = "git@#{gogsApi.replace('https://', '')}:#{info.username}/#{info.packageName}.git"
+        repoSshUrl = "git@#{gogsApi.replace('https://', '')}:#{info.username}/#{info.packageName}.git"
+        repohttpsUrl = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
       else if obj.type is 'github'
-        # repoUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
-        repoUrl = "git@github.com:#{info.username}/#{info.packageName}.git"
+        # repoSshUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
+        repoSshUrl = "git@github.com:#{info.username}/#{info.packageName}.git"
+        repohttpsUrl = "https://github.com/#{info.username}/#{info.packageName}.git"
+      info.repoSshUrl = repoSshUrl
+      info.repohttpsUrl = repohttpsUrl
       options =
         async: true
         timeout: 1000*60*10
@@ -122,11 +126,10 @@ class GitCreatePackageManager
       gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
-      gitApi_create info.gitPath, repoUrl, options, info.describe
+      gitApi_create info.gitPath, repoSshUrl, options, info.describe
 
-    .then (repoUrl) ->
+    .then ->
       pv.setTitle "Add package：#{info.packageName}"
-      info.repoUrl = repoUrl
       server = atom.config.get('atom-butterfly.puzzleServerAddress')
       Q.Promise (resolve, reject, notify) ->
         # 开始发布到chameleon packagesManager
@@ -146,7 +149,8 @@ class GitCreatePackageManager
         form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
         form.append "name", info.packageName
         form.append "author", info.username
-        form.append "repository_url", repoUrl
+        form.append "repository_url", info.repoSshUrl
+        form.append "home_url", info.repohttpsUrl
         form.append "description", info.describe || info.packageName
         form.append "previews", info.previews if info.previews
         form.append "tags", info.tags if info.tags
