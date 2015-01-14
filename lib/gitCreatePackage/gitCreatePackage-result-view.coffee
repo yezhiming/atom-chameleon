@@ -26,8 +26,6 @@ class V extends View
           @label ", or", style: "padding-left:1px"
           @a "Subversion", style: "padding-left:5px", click: "subversionFun"
 
-
-
       @div class: 'actions', =>
         @div class: 'pull-right block', =>
           @button 'Close', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn btn-primary'
@@ -37,11 +35,11 @@ class V extends View
     
     @selectWhich = "https"
 
-    @copyUrl.on "mouseover", =>
-      console.log "mouseover"
-
-    @copyUrl.on "mouseout", =>
-      console.log "mouseout"
+    # @copyUrl.on "mouseover", =>
+    #   console.log "mouseover"
+    #
+    # @copyUrl.on "mouseout", =>
+    #   console.log "mouseout"
       
   setValues: (obj) ->
     @obj = obj
