@@ -15,7 +15,7 @@ class V extends View
             @subview "filePath", new EditorView
               mini: true
               placeholderText: "Absolute path to file."
-          @button class: "btn btnResultView", click: "copyUrlFun", outlet: "copyUrl", =>
+          @button class: "btn btnResultView", click: "copyUrlFun", outlet: "copyUrl", title: "Copy to clipboard", =>
             @span class: "glyphicon glyphicon-list-alt"
 
         @div class: 'form-group', =>
@@ -34,6 +34,9 @@ class V extends View
     @obj = {}
 
     @selectWhich = "https"
+
+    @copyUrl.on "mouseout", =>
+      @copyUrl.attr "title", "Copy to clipboard"
 
 
   setValues: (obj) ->
