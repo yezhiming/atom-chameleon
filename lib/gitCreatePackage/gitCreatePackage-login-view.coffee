@@ -24,7 +24,7 @@ class V extends View
 
         @div class: 'pull-right block', =>
           @button 'Certain', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn btn-primary'
-  
+
   initialize: ->
     @passwordEditorView @password
     @editorOnDidChange @account
@@ -67,6 +67,10 @@ class V extends View
   finishPromise: ->
     Q.Promise (resolve, reject, notify) =>
       @on 'certain', (result) -> resolve(result)
+      # 保存用户认证，但不保存用户密码
+      github = JSON.parse localStorage.getItem 'github'
+      if @options.repo is 'github' and github and github.safe
+        resolve(@options)
 
   passwordEditorView: (editorView)->
     editorView.originalText = ''
@@ -81,7 +85,7 @@ class V extends View
       editorView.insertText '*'
 
       false
-  
+
     editorView.hiddenInput.on 'keydown', (e) =>
       if e.which == 8
         editor = editorView.getEditor()
@@ -100,5 +104,3 @@ class V extends View
         editorView.text ""
         return false
       return true
-    
-    

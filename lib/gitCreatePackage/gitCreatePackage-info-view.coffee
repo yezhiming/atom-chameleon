@@ -12,12 +12,12 @@ class V extends View
   @content: ->
     @div id: 'gitCreatePackage-info-view', =>
       @h1 'Create a git package:'
-    
+
       @div class: "form-group", =>
         @div class:"optional-radio", =>
           @input name: "gitSelect", type: "radio", id: 'publicPackageRadio', checked: "checked", outlet: "publicPackageRadio", click: "radioSelectPublicFun"
           @label "You will open your source to everyone!", class: 'radioLabel'
-        
+
         @div outlet: 'publicSelect', =>
           @select class:'gitCreatePackageSelect', outlet: 'selectPublicGit', =>
             @option "github"
@@ -30,7 +30,7 @@ class V extends View
         @div outlet: 'privateSelect', =>
           @select class:'gitCreatePackageSelect', outlet: 'selectPrivateGit', =>
             @option "gogs"
-      
+
       @div class: "form-group", =>
         @label 'Package Name:'
         @subview 'packageName', new EditorView(mini: true)
@@ -38,14 +38,14 @@ class V extends View
       @div class: "form-group", =>
         @label 'Describe:'
         @subview 'describe', new EditorView(mini: true, placeholderText: 'optional' )
-    
+
 
   initialize: (wizardView) ->
     @editorOnDidChange @packageName, wizardView
 
     selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
     @packageName.setText _.last(selectPath.split(path.sep))
-    
+
   attached: ->
     @privateSelect.hide()
 
@@ -53,7 +53,7 @@ class V extends View
     if @publicSelect.isHidden()
       @publicSelect.show()
       @privateSelect.hide()
-      
+
   radioSelectPrivateFun: ->
     if @privateSelect.isHidden()
       @privateSelect.show()
@@ -69,7 +69,7 @@ class V extends View
       wizardView.enableNext()
     else
       wizardView.disableNext()
-    
+
   destroy: ->
     @remove()
 
@@ -83,23 +83,22 @@ class V extends View
     url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
-        if error
-          reject error
-        if response.statusCode == 200 and !error
+        return reject error if error
+        if response.statusCode is 200
           console.log body
           bodyJson =  $.parseJSON(body)
-          if bodyJson.code == 404
+          if bodyJson.code is 404 # 没有package
             resolve true
           else
             resolve false
-        
+
     .then (packageHave) =>
-      console.log packageHave
+      # console.log packageHave
       unless @privateSelect.isHidden()
         selectGit = @selectPublicGit.val()
       else
         selectGit = @selectPublicGit.val()
-      
+
       wizard.mergeOptions {
         repo: selectGit
         packageName: @packageName.getText()
@@ -113,7 +112,3 @@ class V extends View
     .catch (err) ->
       console.trace err.stack
       alert "#{err}"
-
-
-      
-    

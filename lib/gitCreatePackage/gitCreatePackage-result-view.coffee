@@ -17,7 +17,7 @@ class V extends View
               placeholderText: "Absolute path to file."
           @button class: "btn btnResultView", click: "copyUrlFun", outlet: "copyUrl", =>
             @span class: "glyphicon glyphicon-list-alt"
-    
+
         @div class: 'form-group', =>
           @label "You can clone with"
           @a "HTTPS", style: "padding-left:5px", click: "httpsFun"
@@ -31,18 +31,18 @@ class V extends View
       @div class: 'actions', =>
         @div class: 'pull-right block', =>
           @button 'Close', click: 'certainFun', outlet: 'certain', class: 'inline-block-tight btn btn-primary'
-        
+
   initialize: ->
     @obj = {}
-    
+
     @selectWhich = "https"
 
-    @copyUrl.on "mouseover", =>
-      console.log "mouseover"
+    # @copyUrl.on "mouseover", =>
+    #   console.log "mouseover"
+    #
+    # @copyUrl.on "mouseout", =>
+    #   console.log "mouseout"
 
-    @copyUrl.on "mouseout", =>
-      console.log "mouseout"
-      
   setValues: (obj) ->
     @obj = obj
 
@@ -59,7 +59,7 @@ class V extends View
       atom.clipboard.write @obj.package.repository_url
     else
       atom.clipboard.write @obj.package.subversion
-    
+
   certainFun: ->
     @remove()
 
@@ -67,7 +67,7 @@ class V extends View
     @filePath.setText @obj.package.https
     @labelTitle.html "HTTPS"
     @labelDeputyTitle.html "clone URL"
-    
+
     @selectWhich = "https"
 
   sshFun: ->
