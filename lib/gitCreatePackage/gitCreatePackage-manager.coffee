@@ -54,9 +54,15 @@ class GitCreatePackageManager
       tmpDir = path.resolve tmpfile, path.basename(selectPath)
       if fs.existsSync tmpDir
         fs.removeSync tmpDir
-      console.log "tmpDir: #{tmpDir}"
+
       fs.copySync selectPath, tmpDir
-      _.extend(options, gitPath: tmpDir)
+      
+      if require('fs').statSync(selectPath).isFile()
+        gitPath = tmpfile
+      else
+        gitPath = tmpDir
+      
+      _.extend(options, gitPath: gitPath)
 
     .then (options) -> # upload ssh key
       info = options
