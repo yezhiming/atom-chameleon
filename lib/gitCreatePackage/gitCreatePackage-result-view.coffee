@@ -35,11 +35,7 @@ class V extends View
     
     @selectWhich = "https"
 
-    # @copyUrl.on "mouseover", =>
-    #   console.log "mouseover"
-    #
-    # @copyUrl.on "mouseout", =>
-    #   console.log "mouseout"
+    # disposable = atom.tooltips.add(@copyUrl, {title: 'This is a tooltip'})
       
   setValues: (obj) ->
     @obj = obj

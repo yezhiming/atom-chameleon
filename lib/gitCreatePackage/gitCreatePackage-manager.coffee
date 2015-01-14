@@ -17,26 +17,26 @@ module.exports =
 class GitCreatePackageManager
 
   activate: ->
-    atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
+    atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @testPackage()
     console.log "GitCreatePackageManager activate"
 
 
-  # testPackage: ->
-  #   bodyJson = {}
-  #
-  #   bodyJson =
-  #     package:
-  #       https: "https://github.com/comeontom/atom-shell.git"
-  #       repository_url: "git@github.com:comeontom/gitCreatePackage4.git"
-  #       subversion: "https://github.com/comeontom/atom-shell"
-  #       name: "atom-shell"
-  #
-  #   console.log bodyJson
-  #
-  #   ResultView = require './gitCreatePackage-result-view'
-  #   resultView = new ResultView()
-  #   resultView.setValues bodyJson
-  #   atom.workspaceView.append resultView
+  testPackage: ->
+    bodyJson = {}
+  
+    bodyJson =
+      package:
+        https: "https://github.com/comeontom/atom-shell.git"
+        repository_url: "git@github.com:comeontom/gitCreatePackage4.git"
+        subversion: "https://github.com/comeontom/atom-shell"
+        name: "atom-shell"
+  
+    console.log bodyJson
+  
+    ResultView = require './gitCreatePackage-result-view'
+    resultView = new ResultView()
+    resultView.setValues bodyJson
+    atom.workspaceView.append resultView
 
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
