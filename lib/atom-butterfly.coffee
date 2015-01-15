@@ -71,6 +71,9 @@ module.exports =
     @gitCreatePackageManager = new (require './gitCreatePackage/gitCreatePackage-manager')()
     @gitCreatePackageManager.activate()
 
+    @packageCenter = new (require './package/package-center')
+    @packageCenter.activate()
+
     atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
     atom.workspaceView.command "atom-butterfly:debug-emulator", => @cmdDebugEmulator()
 

@@ -3,6 +3,7 @@
   '.tree-view.full-menu': [
     {'type': 'separator'}
     {label: 'Chameleon Package Manager', command: 'atom-butterfly:gitCreatePackage'}
+    {label: 'Install Chameleon Package', command: 'atom-butterfly:installChameleonPackage'}
     {'type': 'separator'}
   ]
 
@@ -95,6 +96,10 @@
           {
             'label': 'Build List'
             'command': 'atom-chameleon:build-list'
+          }
+          {
+            'label': 'Chameleon Center',
+            'command': 'atom-chameleon:package-center'
           }
         ]
       }
