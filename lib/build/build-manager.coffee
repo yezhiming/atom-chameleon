@@ -50,9 +50,10 @@ class BuildManager
 
       require('../../utils/zip')(atom.project.path,removeZipPath).then (zip_path) ->_.extend(result, asset: zip_path)
     .then (result) ->
-      console.log "结束压缩...#{result}"
+      console.log "结束压缩..."
+
       Q.Promise (resolve, reject, notify) ->
-        buildStateView.socket.on "resSocketId",(sid)->
+        buildStateView.socket.on "resSocketId", (sid) ->
           console.log "resSocketId:#{sid}"
           resolve(_.extend(result, socketId: sid))
         buildStateView.socket.emit "reqSocketId"
@@ -71,7 +72,9 @@ class BuildManager
       alert "err occur! #{err}"
 
   sendBuildRequest: (options) ->
-    console.log "options:#{options}"
+    console.log "options:"
+    console.log options
+
     if options.platform == "android"
 
       Q.Promise (resolve, reject, notify) =>

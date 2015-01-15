@@ -19,7 +19,7 @@ class GitCreatePackageManager
 
   activate: ->
     atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
-    console.log "GitCreatePackageManager activate"
+    # console.log "GitCreatePackageManager activate"
 
 
   gitCreatePackage: ->

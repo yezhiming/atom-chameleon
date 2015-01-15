@@ -58,7 +58,9 @@ class BuildStatusView extends View
 
     # puzzleClient.server: http://bsl.foreveross.com/puzzle/socketio 服务器默认的path为/
     hostName = puzzleClient.server.substr 0, puzzleClient.server.lastIndexOf('/')
-    @socket = io "#{hostName}/socketio",
+    console.log 'hostName: %s', hostName
+
+    @socket = io "http://115.28.1.109:8000/socketio",
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
@@ -117,8 +119,6 @@ class BuildStatusView extends View
         @find('.glyphicon-remove').removeClass('hidden')
         @cancelbutton.disable()
         @refreshbutton.disable()
-
-
 
 
   refreshTaskState: ->
