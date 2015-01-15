@@ -1,5 +1,9 @@
 require 'shelljs/global'
+{config} = require 'shelljs'
+config.silent = true;
+
 Q = require 'q'
+{EOL} = require 'os'
 
 module.exports = (path, url, options, describe)->
 
@@ -90,7 +94,7 @@ module.exports = (path, url, options, describe)->
       console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git push -u origin master'
-      exec 'git push -u origin master', options, (code, output) ->
+      exec "git push -u origin master#{EOL}#{EOL}", options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
         if code != 0
