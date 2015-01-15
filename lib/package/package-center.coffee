@@ -83,10 +83,6 @@ module.exports =
       @installPathEditor.on 'click', => @choosePath()
       @installPathEditor.setText options.path if options.path
 
-    activate: ->
-      # @toggle()
-      atom.workspaceView.command "atom-butterfly:package-center", => @toggle()
-
     attach: ->
       aPane = atom.workspaceView.getActivePane()
       item = aPane.addItem this
