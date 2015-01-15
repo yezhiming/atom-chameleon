@@ -85,8 +85,11 @@ class V extends View
       request url, (error, response, body) ->
         return reject error if error
         if response.statusCode is 200
-          console.log body
-          bodyJson =  $.parseJSON(body)
+          try
+            bodyJson =  $.parseJSON(body)
+          catch
+            bodyJson = {}
+
           if bodyJson.code is 404 # 没有package
             resolve true
           else
