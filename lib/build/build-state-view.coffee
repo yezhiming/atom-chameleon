@@ -57,7 +57,7 @@ class BuildStatusView extends View
     console.log "try to connect."
 
     # puzzleClient.server: http://bsl.foreveross.com/puzzle/socketio 服务器默认的path为/
-    @socket = "#{io puzzleClient.server}/socketio",
+    @socket = io "#{puzzleClient.server}/socketio",
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
