@@ -7,6 +7,7 @@ _ = require 'underscore'
 
 {$, $$} = require 'atom'
 
+
 ProgressView = require '../utils/progress-view'
 gitApi_create = require '../utils/gitApi_create'
 
@@ -57,12 +58,12 @@ class GitCreatePackageManager
         fs.removeSync tmpDir
 
       fs.copySync selectPath, tmpDir
-      
+
       if require('fs').statSync(selectPath).isFile()
         gitPath = tmpfile
       else
         gitPath = tmpDir
-      
+
       _.extend(options, gitPath: gitPath)
 
     .then (options) -> # upload ssh key
