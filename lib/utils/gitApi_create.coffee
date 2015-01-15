@@ -1,4 +1,5 @@
 require 'shelljs/global'
+# 修改shelljs内部的common.config，只是为了兼容window platform，不然windows会报BDADF, bad descriptor
 {config} = require 'shelljs'
 config.silent = true;
 

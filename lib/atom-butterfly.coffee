@@ -15,8 +15,8 @@ module.exports =
     chameleonServerAddress: 'http://bsl.foreveross.com'
     chameleonTanant: 'cube'
     chameleonUsername: 'cube'
-    puzzleServerAddress: 'http://localhost:8080'
-    puzzleServerAddressSecured: 'https://localhost:8443'
+    puzzleServerAddress: 'http://bsl.foreveross.com/puzzle' # http://localhost:8000
+    puzzleServerAddressSecured: 'https://bsl.foreveross.com/puzzle' # https://localhost:8443
     puzzleAccessToken: ''
     gitCloneEnvironmentPath: ''
 
