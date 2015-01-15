@@ -94,6 +94,8 @@ class V extends View
             resolve true
           else
             resolve false
+        else
+          reject $.parseJSON(response.body).message
 
     .then (packageHave) =>
       # console.log packageHave
