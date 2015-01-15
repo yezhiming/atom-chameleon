@@ -16,7 +16,7 @@ class V extends View
       @div class: "form-group", =>
         @div class:"optional-radio", =>
           @input name: "gitSelect", type: "radio", id: 'publicPackageRadio', checked: "checked", outlet: "publicPackageRadio", click: "radioSelectPublicFun"
-          @label "You will open your source to everyone!", class: 'radioLabel'
+          @label "You will open your source to everyone.", class: 'radioLabel'
 
         @div outlet: 'publicSelect', =>
           @select class:'gitCreatePackageSelect', outlet: 'selectPublicGit', =>
