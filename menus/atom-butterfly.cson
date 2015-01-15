@@ -1,7 +1,10 @@
 # See https://atom.io/docs/latest/creating-a-package#menus for more details
 'context-menu':
-  '.tree-view': [
-    {label: 'Publish Puzzle Package', command: 'atom-butterfly:gitCreatePackage'}
+  '.tree-view.full-menu': [
+    {'type': 'separator'}
+    {label: 'Chameleon Package Manager', command: 'atom-butterfly:gitCreatePackage'}
+    {label: 'Install Chameleon Package', command: 'atom-butterfly:installChameleonPackage'}
+    {'type': 'separator'}
   ]
 
 'menu': [
@@ -82,11 +85,7 @@
             'command': 'atom-chameleon:publish-application'
           }
           {
-            'label': 'Chameleon Package'
-            'command': 'atom-chameleon:publish-package'
-          }
-          {
-            'label': 'Puzzle Package'
+            'label': 'Package'
             'command': 'atom-chameleon:publish-package'
           }
         ]
@@ -97,6 +96,10 @@
           {
             'label': 'Build List'
             'command': 'atom-chameleon:build-list'
+          }
+          {
+            'label': 'Chameleon Center',
+            'command': 'atom-chameleon:package-center'
           }
         ]
       }

@@ -1,26 +1,36 @@
 {$, $$, View, EditorView} = require 'atom'
 _s = require 'underscore.string'
+_ = require 'underscore'
+path = require 'path'
+
+
+request = require 'request'
+Q = require 'q'
 
 module.exports =
 class V extends View
   @content: ->
     @div id: 'gitCreatePackage-info-view', =>
       @h1 'Create a git package:'
-  
-      @div class: "form-group", =>
-        @label 'Select:'
-        @select class:'gitCreatePackageSelect', outlet: 'selectGit', =>
-          @option "github"
-          @option "gogs"
 
       @div class: "form-group", =>
-        @label 'Account:'
-        @subview 'account', new EditorView(mini: true)
-      @div class: "form-group", =>
-        @label 'Password:'
-        @subview 'password', new EditorView(mini: true)
+        @div class:"optional-radio", =>
+          @input name: "gitSelect", type: "radio", id: 'publicPackageRadio', checked: "checked", outlet: "publicPackageRadio", click: "radioSelectPublicFun"
+          @label "You will open your source to everyone.", class: 'radioLabel'
 
-      
+        @div outlet: 'publicSelect', =>
+          @select class:'gitCreatePackageSelect', outlet: 'selectPublicGit', =>
+            @option "github"
+
+      @div class: "form-group", =>
+        @div class:"optional-radio", =>
+          @input name: "gitSelect", type: "radio", id: 'privatePackageRadio', outlet: "privatePackageRadio", click: "radioSelectPrivateFun"
+          @label 'You only open your source to your company.', class: 'radioLabel'
+
+        @div outlet: 'privateSelect', =>
+          @select class:'gitCreatePackageSelect', outlet: 'selectPrivateGit', =>
+            @option "gogs"
+
       @div class: "form-group", =>
         @label 'Package Name:'
         @subview 'packageName', new EditorView(mini: true)
@@ -28,14 +38,26 @@ class V extends View
       @div class: "form-group", =>
         @label 'Describe:'
         @subview 'describe', new EditorView(mini: true, placeholderText: 'optional' )
-    
+
 
   initialize: (wizardView) ->
-    @passwordEditorView @password
-    
-    @editorOnDidChange @account, wizardView
-    @editorOnDidChange @password, wizardView
     @editorOnDidChange @packageName, wizardView
+
+    selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
+    @packageName.setText _.last(selectPath.split(path.sep))
+
+  attached: ->
+    @privateSelect.hide()
+
+  radioSelectPublicFun: ->
+    if @publicSelect.isHidden()
+      @publicSelect.show()
+      @privateSelect.hide()
+
+  radioSelectPrivateFun: ->
+    if @privateSelect.isHidden()
+      @privateSelect.show()
+      @publicSelect.hide()
 
   # 验证editor是否填写了内容
   editorOnDidChange:(editor, wizardView) ->
@@ -43,59 +65,53 @@ class V extends View
       @editorVerify wizardView
 
   editorVerify: (wizardView)->
-    unless  (@account.getText() is "") or
-            (@password.getText() is "") or
-            (@packageName.getText() is "")
-
+    unless  (@packageName.getText() is "")
       wizardView.enableNext()
     else
       wizardView.disableNext()
-    
 
   destroy: ->
     @remove()
 
   onNext: (wizard) ->
-    wizard.mergeOptions {
-      repo: @selectGit.val()
-      account: @account.getText()
-      password: @password.originalText
-      packageName: @packageName.getText()
-      describe: @describe.getText()
-    }
-    wizard.nextStep()
+    @judgeTheName(wizard)
 
-  passwordEditorView: (editorView)->
-    editorView.originalText = ''
-    editorView.hiddenInput.on 'keypress', (e) =>
-      editor = editorView.getEditor()
-      selection = editor.getSelectedBufferRange()
-      cursor = editor.getCursorBufferPosition()
-      if !selection.isEmpty()
-        editorView.originalText = _s.splice(editorView.originalText, selection.start.column, selection.end.column - selection.start.column, String.fromCharCode(e.which))
+  judgeTheName: (wizard)->
+    server = atom.config.get('atom-butterfly.puzzleServerAddress')
+    access_token = atom.config.get 'atom-butterfly.puzzleAccessToken'
+
+    url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
+    Q.Promise (resolve, reject, notify) =>
+      request url, (error, response, body) ->
+        return reject error if error
+        if response.statusCode is 200
+          try
+            bodyJson =  $.parseJSON(body)
+          catch
+            bodyJson = {}
+
+          if bodyJson.code is 404 # 没有package
+            resolve true
+          else
+            resolve false
+
+    .then (packageHave) =>
+      # console.log packageHave
+      unless @privateSelect.isHidden()
+        selectGit = @selectPublicGit.val()
       else
-        editorView.originalText = _s.splice(editorView.originalText, cursor.column, 0, String.fromCharCode(e.which))
-      editorView.insertText '*'
+        selectGit = @selectPublicGit.val()
 
-      false
-  
-    editorView.hiddenInput.on 'keydown', (e) =>
-      if e.which == 8
-        editor = editorView.getEditor()
-        selection = editor.getSelectedBufferRange()
-        cursor = editor.getCursorBufferPosition()
-        if !selection.isEmpty()
-          editorView.originalText = _s.splice(editorView.originalText, selection.start.column, selection.end.column - selection.start.column)
-        else
-          editorView.originalText = _s.splice(editorView.originalText, cursor.column - 1, 1)
-          return true
-        editorView.backspace
-        return false
+      wizard.mergeOptions {
+        repo: selectGit
+        packageName: @packageName.getText()
+        describe: @describe.getText()
+      }
+      if packageHave
+        wizard.nextStep()
+      else
+        alert "Sorry,please change you Package Name!"
 
-      if e.which == 229
-        alert "密码不能为中文"
-        editorView.text ""
-        return false
-      return true
-
-  
+    .catch (err) ->
+      console.trace err.stack
+      alert "#{err}"

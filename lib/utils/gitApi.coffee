@@ -2,9 +2,11 @@ Q = require 'q'
 request = require 'request'
 GitHubApi = require 'github'
 {exec} = require 'child_process'
+{EOL} = require 'os'
 fse = require 'fs-extra'
 fs = require 'fs'
 github = null
+gogs = {}
 
 # api.github.com
 github_init = ->
@@ -15,9 +17,9 @@ github_init = ->
     debug: false
     timeout: 30000
     headers: 'user-agent': 'chameleon-ide'
+  # TODO 获取解密的密码重新认证 github_authenticate()
 
 github_authenticate = (options) ->
-  github_init() unless github
   console.log "#{options.username}: github is authenticating..."
   github.authenticate
     type: "basic"
@@ -28,10 +30,13 @@ github_authenticate = (options) ->
     username: options.username
     safe: true
   localStorage.github = githubStr
-
+  # 可以存储加密的密码
 
 # gogs模拟登入获取cookies
 gogs_login = (options) ->
+  if gogs.username and gogs.password
+    options.username = gogs.username
+    options.password = gogs.password
   Q.Promise (resolve, reject, notify) ->
     console.log "gogs authenticate: POST #{module.exports.gogsApi}/user/login}"
     request.post
@@ -102,20 +107,20 @@ module.exports =
     Q.Promise (resolve, reject, notify) ->
       # 遵循ssh-kengen规范
       fse.ensureDirSync "#{options.home}/.ssh"
+      # 关闭确认公钥设置
+      if (!fs.existsSync "#{options.home}/.ssh/config") or (!fs.readFileSync "#{options.home}/.ssh/config", encoding: 'utf8'.contains 'StrictHostKeyChecking no')
+        fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
       msg =
         gitHubFlag: 'new'
         gogsFlag: 'new'
       if fs.existsSync "#{options.home}/.ssh/id_dsa.pub"
         console.log 'reset dsa KeyPair...'
-        pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
+        pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf8'
         msg.public = pubKey
         localStorage.installedSshKey = JSON.stringify msg
         return resolve(pubKey)
       # 生成默认的公、密钥到userhome/.ssh
       console.log 'generating dsa KeyPair...'
-      msg =
-        gitHubFlag: 'new'
-        gogsFlag: 'new'
       # 根据github规则，公钥名称暂时写死id_dsa
       cp = exec "ssh-keygen -t dsa -C chameleonIDE@github.com -f #{options.home}/.ssh/id_dsa -N ''", options.options, (error, stdout, stderr) ->
         if error
@@ -123,24 +128,27 @@ module.exports =
         else
           console.log stdout.toString()
           console.log stderr.toString()
-          pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf-8'
+          pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf8'
           msg.public = pubKey
           localStorage.installedSshKey = JSON.stringify msg
           resolve(pubKey)
 
+
+
   github: ->
-    # 上传公钥到服务器
+    # 获取用户信息
     getUser: (msg) ->
       callMyself = arguments.callee
+      github_init() unless github
       githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库
-      if github and githubObj and msg.options.username is githubObj.username and githubObj.safe
+      if githubObj and githubObj.safe
         Q.Promise (resolve, reject, notify) ->
           console.log "github fetch user..."
           github.user.get msg, (err, data) ->
             if err
               # eg：用户输错帐号密码重新验证 Etc.
               localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
-              reject(err)
+              return reject(err)
             resolve
               result: true
               message: data
@@ -152,19 +160,15 @@ module.exports =
     # 上传公钥到服务器
     createSshKey: (msg) ->
       callMyself = arguments.callee
+      github_init() unless github
       githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库
-      if github and githubObj and msg.options.username is githubObj.username and githubObj.safe
+      if githubObj and githubObj.safe
         Q.Promise (resolve, reject, notify) ->
           unless msg.key or msg.title
             reject new Error 'params: title (String): Required and key (String): Required.'
           console.log "github creates ssh key..."
           github.user.createKey msg, (err, data) ->
-            if err
-              # eg：用户输错帐号密码重新验证 Etc.
-              localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
-              reject(err)
-            else
-              # 更新sshkey标识
+            if (err and err.message.indexOf 'key is already in use' != -1) or !err
               keyObj = JSON.parse localStorage.getItem 'installedSshKey'
               keyObj['gitHubFlag'] = 'old'
               localStorage.installedSshKey = JSON.stringify keyObj
@@ -172,6 +176,20 @@ module.exports =
                 result: true
                 message: data
                 type: 'github'
+              # exec 'ssh -T git@github.com', (code, output) ->
+              #   console.log('Exit code:', code);
+              #   console.log('Program output:', output);
+              #   if code != 0
+              #     reject("ssh -T git@github.com. failed:#{output}")
+              #   else
+              #     resolve
+              #       result: true
+              #       message: data
+              #       type: 'github'
+            else if err
+              # eg：用户输错帐号密码重新验证 Etc.
+              localStorage.removeItem('github') # localStorage 仅限制再atom上可以使用，因为是window属性
+              reject(err)
       else
         github_authenticate msg.options
         callMyself(msg)
@@ -179,8 +197,9 @@ module.exports =
     # 如果仓库已经存在，则返回错误
     createRepos: (msg) ->
       callMyself = arguments.callee
+      github_init() unless github
       githubObj = JSON.parse localStorage.getItem 'github' # 匹配是否同一个用户的token后开始创建仓库
-      if githubObj and msg.options.username is githubObj.username and githubObj.safe
+      if githubObj and githubObj.safe
         Q.Promise (resolve, reject, notify) ->
           unless msg.name
             reject new Error 'params: name (String): Required.'
@@ -191,17 +210,19 @@ module.exports =
                 result: false
                 message: err.toJSON()
                 type: 'github'
-            if err
+            else if err
               # eg：用户输错帐号密码重新验证 Etc.
-              localStorage.removeItem 'github' # localStorage 仅限制再atom上可以使用，因为是window属性
+              localStorage.removeItem 'github'
               reject(err)
-            resolve
-              result: true
-              message: data
-              type: 'github'
+            else
+              resolve
+                result: true
+                message: data
+                type: 'github'
       else
         github_authenticate msg.options
         callMyself(msg)
+
 
 
   gogs: ->
@@ -225,12 +246,12 @@ module.exports =
                 if httpResponse.statusCode is 403
                   localStorage.removeItem('gogs') # localStorage 仅限制再atom上可以使用，因为是window属性
                   reject new Error 'code: 422 , message: Invalid token.'
-                if httpResponse.statusCode is 422
+                else if httpResponse.statusCode is 422
                   resolve
                     result: false
                     message: body
                     type: 'gogs'
-                if httpResponse.statusCode is 200
+                else if httpResponse.statusCode is 200
                   resolve
                     result: true
                     message: body

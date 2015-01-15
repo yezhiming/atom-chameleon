@@ -1,5 +1,10 @@
 require 'shelljs/global'
+# 修改shelljs内部的common.config，只是为了兼容window platform，不然windows会报BDADF, bad descriptor
+{config} = require 'shelljs'
+config.silent = true;
+
 Q = require 'q'
+{EOL} = require 'os'
 
 module.exports = (path, url, options, describe)->
 
@@ -32,6 +37,7 @@ module.exports = (path, url, options, describe)->
           reject("Error: Git init failed:#{output}")
         else
           resolve()
+          
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options2"
@@ -90,10 +96,10 @@ module.exports = (path, url, options, describe)->
       console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git push -u origin master'
-      exec 'git push -u origin master', options, (code, output) ->
+      exec "git push -u origin master#{EOL}#{EOL}", options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
         if code != 0
           reject("Error: git push -u origin master failed: #{output}")
         else
-          resolve(url)
+          resolve()
