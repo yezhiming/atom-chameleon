@@ -5,6 +5,8 @@ _ = require 'underscore'
 
 uuid = require 'uuid'
 
+os = require 'os'
+
 fsIsDirectorySync = (path) ->
   try
     stat = fs.statSync(path)
@@ -33,7 +35,7 @@ class BuildManager
     buildStateView = new (require './build-state-view')()
 
     # 这样就可以可以不仅在windows还是mac都可以获取到.atom路径
-    decs = "#{atom.getConfigDirPath()}/atom-butterfly"
+    decs = "#{os.tmpdir()}/atom-butterfly"
     zipFile = "#{uuid.v1()}.zip"
     unless fsIsDirectorySync(decs)
       console.log "新建文件夹：#{decs}"
