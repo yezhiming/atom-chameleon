@@ -188,7 +188,7 @@ module.exports =
                 result: true
                 message: data
                 type: 'github'
-              # exec 'ssh -T git@github.com', (code, output) ->
+              # exec 'ssh -T git@github.com{EOL}', (code, output) ->
               #   console.log('Exit code:', code);
               #   console.log('Program output:', output);
               #   if code != 0
