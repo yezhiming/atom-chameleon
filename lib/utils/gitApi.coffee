@@ -32,11 +32,16 @@ github_authenticate = (options) ->
   localStorage.github = githubStr
   # 可以存储加密的密码
 
+
 # gogs模拟登入获取cookies
 gogs_login = (options) ->
   if gogs.username and gogs.password
     options.username = gogs.username
     options.password = gogs.password
+  else
+    gogs.username = options.username
+    gogs.password = options.password
+    
   Q.Promise (resolve, reject, notify) ->
     console.log "gogs authenticate: POST #{module.exports.gogsApi}/user/login}"
     request.post
@@ -92,7 +97,7 @@ gogs_authenticate = (msg) ->
             macaron_flash = decodeURIComponent httpResponse.toJSON().headers['set-cookie'][1]
             token = macaron_flash.split('&success')[0].replace 'macaron_flash=info=', ''
             console.log "token: #{token}"
-            # 缓存token，不必每次都去生成
+            # 缓存token，不必每次都去获取
             gogs['token'] = token
             localStorage.setItem('gogs', JSON.stringify gogs)
             resolve(token)

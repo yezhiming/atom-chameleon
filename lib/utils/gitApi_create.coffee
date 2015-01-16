@@ -24,6 +24,7 @@ module.exports = (path, url, options, describe)->
 
     cd "#{path}"
     return resolve()
+    
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options1"
@@ -37,7 +38,7 @@ module.exports = (path, url, options, describe)->
           reject("Error: Git init failed:#{output}")
         else
           resolve()
-          
+
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options2"
