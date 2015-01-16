@@ -48,6 +48,8 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'refreshTaskState',outlet:'refreshbutton', class: 'inline-block-tight btn'
 
   initialize: ->
+    @cancelbutton.disable()
+    @refreshbutton.disable()
 
   attach: ->
     atom.workspaceView.append(this)
@@ -173,3 +175,7 @@ class BuildStatusView extends View
           console.log "task #{@task.id} deleted."
         .catch ->
           console.error "failed to delete task #{@task.id}"
+
+  buttonAbled: ->
+    @refreshbutton.attr("disabled",false)
+    @cancelbutton.attr("disabled",false)

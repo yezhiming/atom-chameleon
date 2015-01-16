@@ -60,6 +60,7 @@ class BuildManager
     .then (result) =>
       @sendBuildRequest(result)
     .then (result) ->
+      buildStateView.buttonAbled()
       console.log "删除文件：#{removeZipPath}"
       if fs.existsSync removeZipPath
         fs.unlinkSync(removeZipPath)
