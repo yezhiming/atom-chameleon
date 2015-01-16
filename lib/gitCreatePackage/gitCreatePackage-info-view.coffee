@@ -37,15 +37,17 @@ class V extends View
 
       @div class: "form-group", =>
         @label 'Describe:'
-        @subview 'describe', new EditorView(mini: true, placeholderText: 'optional' )
+        @subview 'describe', new EditorView( placeholderText: 'optional' )
 
 
   initialize: (wizardView) ->
     @editorOnDidChange @packageName, wizardView
 
+    @describe.attr("style","height:200px")
+
     selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
     @packageName.setText _.last(selectPath.split(path.sep))
-
+    
   attached: ->
     @privateSelect.hide()
 
