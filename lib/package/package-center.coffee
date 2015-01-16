@@ -58,10 +58,6 @@ module.exports =
                 @div class: 'text native-key-bindings', tabindex: '-1', =>
                   @span class: "icon icon-question"
                   @span 'The Chameleon package are installed to your selected path'
-                  # @div class: 'controls', =>
-                  #   @label class: 'congtrol-label', =>
-                  #     @div class: 'setting-title', 'Install Path'
-                  #     @div class: 'setting-description'
                   @div class: 'controls', =>
                     @div class: 'editor-container', =>
                       @subview 'installPathEditor', new EditorView mini:true, placeholderText: 'Package Install Path'
@@ -104,6 +100,8 @@ module.exports =
         @isFetching = no
         @serverPackages = result
         done @serverPackages, keyword
+      .catch (error)=>
+        @showTip "Sorry, can not connect to chameleon puzzle's server temporary."
 
     #从服务器拉取所有安装包信息
     fetchAllPackageFormServer:() ->
@@ -121,10 +119,9 @@ module.exports =
 
 
       if !filter or filter.length is 0
-        @searchTip.text "No package result for #{keyword}"
-        @searchTip.css 'display', 'block'
+        @showTip "No package result for #{keyword}"
       else
-        @searchTip.css 'display', 'none'
+        @hideTip()
         filter = filter.slice 0, 10
 
       console.log "search finished,total:#{filter.length}"
@@ -144,6 +141,13 @@ module.exports =
           )
 
         @packageList.append cell
+
+    showTip: (text)->
+      @searchTip.text text
+      @searchTip.css 'display', 'block'
+
+    hideTip: ->
+      @searchTip.css 'display', 'none'
 
     choosePath: ()->
       installPathEditor = @installPathEditor;

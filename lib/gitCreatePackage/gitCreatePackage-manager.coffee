@@ -21,7 +21,6 @@ class GitCreatePackageManager
     atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
     # console.log "GitCreatePackageManager activate"
 
-
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
     gitCreatePackageWizardView = new GitCreatePackageWizardView()
@@ -35,7 +34,6 @@ class GitCreatePackageManager
 
     gitCreatePackageWizardView.attach()
     gitCreatePackageWizardView.finishPromise()
-
     .then (options) ->
       gitCreatePackageWizardView.destroy()
 
@@ -68,9 +66,9 @@ class GitCreatePackageManager
 
     .then (options) -> # upload ssh key
       info = options
-      keyObj = JSON.parse localStorage.getItem 'installedSshKey' # ide保证installedSshKey一定会存在localStorage
+      keyObj = JSON.parse localStorage.getItem 'installedSshKey' # installedSshKey一定会在localStorage
       if keyObj.gitHubFlag is 'new' and info.repo is 'github'
-        pv.setTitle "Upload IDE public key to github"
+        pv.setTitle "Upload chameleonIDE public key to github"
         # 由于github只匹配key内容不匹配名字
         github().createSshKey
           options:
@@ -79,8 +77,8 @@ class GitCreatePackageManager
           key: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
       else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
-        pv.setTitle "Upload IDE public key to gogs"
-        console.log "TODO"
+        pv.setTitle "Upload chameleonIDE public key to gogs"
+        
 
     .then (data) -> # 获取用户名
       if info.repo is 'github'
