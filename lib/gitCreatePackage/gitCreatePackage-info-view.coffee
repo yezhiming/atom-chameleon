@@ -19,7 +19,7 @@ class V extends View
           @label "You will open your source to everyone.", class: 'radioLabel'
 
         @div outlet: 'publicSelect', =>
-          @select class:'gitCreatePackageSelect', outlet: 'selectPublicGit', =>
+          @select class:'form-control', outlet: 'selectPublicGit', =>
             @option "github"
 
       @div class: "form-group", =>
@@ -28,7 +28,7 @@ class V extends View
           @label 'You only open your source to your company.', class: 'radioLabel'
 
         @div outlet: 'privateSelect', =>
-          @select class:'gitCreatePackageSelect', outlet: 'selectPrivateGit', =>
+          @select class:'form-control', outlet: 'selectPrivateGit', =>
             @option "gogs"
 
       @div class: "form-group", =>
