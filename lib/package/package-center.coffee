@@ -32,7 +32,7 @@ class PackageListCell extends View
     @title.attr 'href', @data.home_url
     @author.text @data.author or 'no package author'
     @description.text @data.description or 'no package description'
-    @rating.text @data.rating
+    @rating.text @data.rating.toString().substring(0,3)
     @callback = params.callback
 
   onInstallButtonClick: ->
@@ -70,7 +70,8 @@ module.exports =
                 @div class: 'container package-container', outlet: 'packageList'
             @div class: 'section packages' , =>
               @div class: 'section-container', =>
-                @h1 class: 'section-heading icon icon-star', 'Featured Packages'
+                @h1 class: 'section-heading icon icon-star', 'Featured Packages', style: 'margin-bottom:10px;'
+                @div class: 'container package-container', outlet: 'popularList'
 
 
     initialize: (options = {})->
@@ -78,6 +79,13 @@ module.exports =
       @editor.on 'keyup', => @onSearchEnter()
       @installPathEditor.on 'click', => @choosePath()
       @installPathEditor.setText options.path if options.path
+
+      @fetchAllPackageFormServer().then (result)=>
+        console.log "fetch all packages info finished,total:#{result.length}"
+        @serverPackages = result
+        @showPopularPackage result
+      .catch (error)=>
+        @showTip "Sorry, can not connect to chameleon puzzle's server temporary."
 
     attach: ->
       aPane = atom.workspaceView.getActivePane()
@@ -90,23 +98,13 @@ module.exports =
 
     #根据关键字搜索包
     searchPackage: (keyword, done)->
-
       return done @serverPackages, keyword if @serverPackages
 
-      return if @isFetching
-      @isFetching = yes
-      @fetchAllPackageFormServer().then (result)=>
-        console.log "fetch all packages info finished,total:#{result.length}"
-        @isFetching = no
-        @serverPackages = result
-        done @serverPackages, keyword
-      .catch (error)=>
-        @showTip "Sorry, can not connect to chameleon puzzle's server temporary."
 
     #从服务器拉取所有安装包信息
     fetchAllPackageFormServer:() ->
         Q.promise (resolve, reject, notify) =>
-          r = request.get "#{PuzzleServer}/api/packages?access_token=#{PuzzleAccessToken}&sequence=1", (err, res, body) =>
+          r = request.get "#{PuzzleServer}/api/packages?access_token=#{PuzzleAccessToken}&sequence=rating", (err, res, body) =>
             reject err if err
             data = JSON.parse(body)
             resolve data.packages
@@ -141,6 +139,26 @@ module.exports =
           )
 
         @packageList.append cell
+
+    showPopularPackage: (packages)->
+      if !packages or packages.length is 0
+        @showTip "No package on the server!"
+      else
+        @hideTip()
+        packages = packages.slice 0, 10
+
+      _.each packages, (pack, index)=>
+        cell = new PackageListCell(
+          info: pack
+          callback: (view, repo)=>
+            iPath = @installPathEditor.getText()
+            return @choosePath() if !iPath
+            view.setInstalling yes
+            @installPackage iPath, pack.name, repo, ->
+              view.setInstalling no
+          )
+
+        @popularList.append cell
 
     showTip: (text)->
       @searchTip.text text
