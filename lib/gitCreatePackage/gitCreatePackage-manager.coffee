@@ -78,7 +78,13 @@ class GitCreatePackageManager
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
       else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
         pv.setTitle "Upload chameleonIDE public key to gogs"
-        
+        # 由于github只匹配key内容不匹配名字
+        gogs().createSshKey
+          options:
+            username: options.account
+            password: options.password
+          content: keyObj.public
+          title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
 
     .then (data) -> # 获取用户名
       if info.repo is 'github'
@@ -87,7 +93,10 @@ class GitCreatePackageManager
             username: info.account
             password: info.password
       else if info.repo is 'gogs'
-        console.log('TODO')
+        gogs().getUser
+          options:
+            username: info.account
+            password: info.password
 
     .then (obj) -> # 创建仓库
       pv.setTitle "#{info.repo} create package: #{info.packageName}"
@@ -102,7 +111,7 @@ class GitCreatePackageManager
           private: false
           auto_init: false
       else if obj.result and obj.type is 'gogs'
-        info.username = obj.message.name # 添加gogs用户名
+        info.username = obj.message # 添加gogs用户名
         gogs().createRepos
           options:
             username: info.account

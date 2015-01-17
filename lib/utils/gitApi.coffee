@@ -41,9 +41,9 @@ gogs_login = (options) ->
   else
     gogs.username = options.username
     gogs.password = options.password
-    
+
   Q.Promise (resolve, reject, notify) ->
-    console.log "gogs authenticate: POST #{module.exports.gogsApi}/user/login}"
+    console.log "gogs authenticate: POST #{module.exports.gogsApi}/user/login"
     request.post
       url: "#{module.exports.gogsApi}/user/login"
       form:
@@ -58,7 +58,7 @@ gogs_login = (options) ->
 # gogs模拟登入获取csrf
 gogs_csrf = (cookies) ->
   Q.Promise (resolve, reject, notify) ->
-    console.log "gogs fetch csrf: GET #{module.exports.gogsApi}/}"
+    console.log "gogs fetch csrf: GET #{module.exports.gogsApi}/"
     request.get
       headers:
           Cookie: cookies
@@ -66,8 +66,14 @@ gogs_csrf = (cookies) ->
       , (err, httpResponse, body) ->
           reject(err) if err
           try
+            uname = httpResponse.toJSON().body
+            uname = uname.substr uname.indexOf '<li class=\"right\" id=\"header-nav-user\">'
+            uname = uname.substring uname.indexOf('<a href=\"\/') + '<a href=\"\/'.length, uname.indexOf('\" class=\"text-bold\">')
+            console.log "截取html用户名：#{uname}"
+
             csrf = httpResponse.toJSON().headers['set-cookie'][0].split(';')[0].split('=')[1].replace(/%3D/g, '=')
             resolve
+              login: uname
               cookies: cookies
               csrf: csrf
           catch e
@@ -80,7 +86,7 @@ gogs_authenticate = (msg) ->
     if gogs.token
       resolve(gogs.token)
     else
-      console.log "gogs create token: POST #{module.exports.gogsApi}/user/settings/applications}"
+      console.log "gogs create token: POST #{module.exports.gogsApi}/user/settings/applications"
       # console.log msg
       request.post
         url: "#{module.exports.gogsApi}/user/settings/applications"
@@ -99,12 +105,14 @@ gogs_authenticate = (msg) ->
             console.log "token: #{token}"
             # 缓存token，不必每次都去获取
             gogs['token'] = token
+            gogs['login'] = msg.login
             localStorage.setItem('gogs', JSON.stringify gogs)
             resolve(token)
 
 
 module.exports =
 
+  # https://bsl.foreveross.com/gogs(8001)
   gogsApi: 'https://try.gogs.io',
 
   # 生成默认的公、密钥到userhome/.ssh
@@ -137,7 +145,6 @@ module.exports =
           msg.public = pubKey
           localStorage.installedSshKey = JSON.stringify msg
           resolve(pubKey)
-
 
 
   github: ->
@@ -181,7 +188,7 @@ module.exports =
                 result: true
                 message: data
                 type: 'github'
-              # exec 'ssh -T git@github.com', (code, output) ->
+              # exec 'ssh -T git@github.com{EOL}', (code, output) ->
               #   console.log('Exit code:', code);
               #   console.log('Program output:', output);
               #   if code != 0
@@ -229,14 +236,75 @@ module.exports =
         callMyself(msg)
 
 
-
   gogs: ->
+      # 获取用户信息
+      getUser: (msg)->
+        callMyself = arguments.callee
+        gogs = JSON.parse localStorage.getItem 'gogs'
+        if gogs
+          Q.Promise (resolve, reject, notify) ->
+            resolve
+              result: true
+              message: gogs.login
+              type: 'gogs'
+        else
+          gogs_login(msg.options)
+          .then (cookies) ->
+            gogs_csrf cookies
+          .then (obj) ->
+            gogs_authenticate obj
+          .then (token) ->
+            callMyself(msg)
+
+
+    # 上传公钥到服务器
+    createSshKey: (msg) ->
+      callMyself = arguments.callee
+      gogs = JSON.parse localStorage.getItem 'gogs' # 匹配是否同一个用户的token后开始创建仓库
+      if gogs and gogs.token
+        console.log "gogs creates ssh key: POST #{module.exports.gogsApi}/user/settings/ssh"
+        Q.Promise (resolve, reject, notify) ->
+          request
+            method: 'POST'
+            url: "#{module.exports.gogsApi}/user/settings/ssh"
+            headers:
+                Cookie: msg.cookies
+            form:
+              title: msg.title
+              content: msg.content
+              _csrf: msg.csrf
+            , (err, httpResponse, body) ->
+                reject(err) if err
+                # 不管服务器是否存在key则只要用户不删除本地的公钥密钥对即可
+                keyObj = JSON.parse localStorage.getItem 'installedSshKey'
+                keyObj['gogsFlag'] = 'old'
+                localStorage.installedSshKey = JSON.stringify keyObj
+                if httpResponse.statusCode is 302
+                  resolve
+                    result: true
+                    message: body
+                    type: 'gogs'
+                else if httpResponse.statusCode is 200 or body.contains 'SSH 密钥已经被使用。'
+                  resolve
+                    result: false
+                    message: body
+                    type: 'gogs'
+      else
+        gogs_login(msg.options)
+        .then (cookies) ->
+          gogs_csrf cookies
+        .then (obj) ->
+          msg.cookie = obj.cookie
+          msg.csrf = obj.csrf
+          callMyself msg
+
+
     # 如果仓库已经存在，则api自动提示
     createRepos: (msg) ->
       callMyself = arguments.callee
       gogs = JSON.parse localStorage.getItem 'gogs' # 匹配是否同一个用户的token后开始创建仓库
-      if gogs and msg.options.username is gogs.username and gogs.token
-        console.log "gogs create repos: POST #{module.exports.gogsApi}/api/v1/user/repos"
+      if gogs and gogs.token
+        console.log "gogs creates repos: POST #{module.exports.gogsApi}/api/v1/user/repos"
         Q.Promise (resolve, reject, notify) ->
           request
             method: 'POST'
