@@ -36,7 +36,7 @@ class PackageListCell extends View
     @callback = params.callback
 
   onInstallButtonClick: ->
-    @callback this, @data.repo if @callback
+    @callback this, @data.repository_url if @callback
   #标识正在下载
   setInstalling: (install) ->
     @installButton.attr('class', 'btn btn-info icon icon-cloud-download install-button ' + if install then 'is-installing disabled')
@@ -181,6 +181,8 @@ module.exports =
         }).then (destPath)->
           console.log 'package pull finished'
           callback(destPath) if callback
+      .catch (error)->
+       callback(destPath) if callback
 
 
     getTitle: ->
