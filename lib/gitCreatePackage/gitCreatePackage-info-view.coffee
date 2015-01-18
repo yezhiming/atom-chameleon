@@ -10,8 +10,8 @@ Q = require 'q'
 module.exports =
 class V extends View
   @content: ->
-    @div id: 'gitCreatePackage-info-view', =>
-      @h1 'Create a git package:'
+    @div id: 'gitCreatePackage-info-view', class: 'gitCreatePackage-info-view', =>
+      @h1 'Create a package:'
 
       @div class: "form-group", =>
         @div class:"optional-radio", =>
@@ -19,7 +19,7 @@ class V extends View
           @label "You will open your source to everyone.", class: 'radioLabel'
 
         @div outlet: 'publicSelect', =>
-          @select class:'gitCreatePackageSelect', outlet: 'selectPublicGit', =>
+          @select class:'form-control', outlet: 'selectPublicGit', =>
             @option "github"
 
       @div class: "form-group", =>
@@ -28,8 +28,15 @@ class V extends View
           @label 'You only open your source to your company.', class: 'radioLabel'
 
         @div outlet: 'privateSelect', =>
-          @select class:'gitCreatePackageSelect', outlet: 'selectPrivateGit', =>
+          @select class:'form-control', outlet: 'selectPrivateGit', =>
             @option "gogs"
+
+      @div outlet: "userAccount", =>
+        @div class: 'form-group', =>
+          @label "Account:"
+          @div class: 'accountSetting', =>
+            @label class: 'account', outlet: 'account'
+            @div class: 'glyphicon glyphicon-log-out accountIcon', click: "logOutFun"
 
       @div class: "form-group", =>
         @label 'Package Name:'
@@ -37,27 +44,58 @@ class V extends View
 
       @div class: "form-group", =>
         @label 'Describe:'
-        @subview 'describe', new EditorView(mini: true, placeholderText: 'optional' )
+        @subview 'describe', new EditorView( placeholderText: 'optional' )
 
 
   initialize: (wizardView) ->
     @editorOnDidChange @packageName, wizardView
 
+    @describe.attr("style","height:200px")
+
+
     selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
     @packageName.setText _.last(selectPath.split(path.sep))
+  
+    @selectPublicGit.change =>
+      @userAccountAttached()
 
+    @selectPrivateGit.change =>
+      @userAccountAttached()
+    
   attached: ->
     @privateSelect.hide()
+    @userAccountAttached()
+    
+  userAccountAttached: ->
+    unless @privateSelect.isHidden()
+      @selectGit = @selectPrivateGit.val()
+    else
+      @selectGit = @selectPublicGit.val()
+    
+    username = localStorage.getItem @selectGit
+    username = JSON.parse(username)
+    
+    if username is null
+      @userAccount.hide()
+    else
+      @userAccount.show()
+      @account.html username.username
+      
+  logOutFun: ->
+    localStorage.removeItem @selectGit
+    @userAccountAttached()
 
   radioSelectPublicFun: ->
     if @publicSelect.isHidden()
       @publicSelect.show()
       @privateSelect.hide()
+      @userAccountAttached()
 
   radioSelectPrivateFun: ->
     if @privateSelect.isHidden()
       @privateSelect.show()
       @publicSelect.hide()
+      @userAccountAttached()
 
   # 验证editor是否填写了内容
   editorOnDidChange:(editor, wizardView) ->
@@ -94,16 +132,13 @@ class V extends View
             resolve true
           else
             resolve false
+        else
+          reject $.parseJSON(response.body).message
 
     .then (packageHave) =>
       # console.log packageHave
-      unless @privateSelect.isHidden()
-        selectGit = @selectPublicGit.val()
-      else
-        selectGit = @selectPublicGit.val()
-
       wizard.mergeOptions {
-        repo: selectGit
+        repo: @selectGit
         packageName: @packageName.getText()
         describe: @describe.getText()
       }

@@ -48,6 +48,8 @@ class BuildStatusView extends View
           @button 'Refresh', click: 'refreshTaskState',outlet:'refreshbutton', class: 'inline-block-tight btn'
 
   initialize: ->
+    @cancelbutton.disable()
+    @refreshbutton.disable()
 
   attach: ->
     atom.workspaceView.append(this)
@@ -56,7 +58,11 @@ class BuildStatusView extends View
 
     console.log "try to connect."
 
-    @socket = io puzzleClient.server,
+    # puzzleClient.server: http://bsl.foreveross.com/puzzle/socketio 服务器默认的path为/
+    hostName = puzzleClient.server.substr 0, puzzleClient.server.lastIndexOf('/')
+    console.log 'hostName: %s', hostName
+
+    @socket = io "http://115.28.1.109:8000/socketio",
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
@@ -116,8 +122,6 @@ class BuildStatusView extends View
         @cancelbutton.disable()
         @refreshbutton.disable()
 
-  
-
 
   refreshTaskState: ->
 
@@ -171,4 +175,7 @@ class BuildStatusView extends View
           console.log "task #{@task.id} deleted."
         .catch ->
           console.error "failed to delete task #{@task.id}"
-    
+
+  buttonAbled: ->
+    @refreshbutton.attr("disabled",false)
+    @cancelbutton.attr("disabled",false)

@@ -70,7 +70,8 @@ class V extends View
       @on 'certain', (result) -> resolve(result)
       # 保存用户认证，但不保存用户密码
       github = JSON.parse localStorage.getItem 'github'
-      if @options.repo is 'github' and github and github.safe
+      gogs = JSON.parse localStorage.getItem 'gogs'
+      if (@options.repo is 'github' and github and github.safe) or (@options.repo is 'gogs' and gogs and gogs.token)
         resolve(@options)
 
   passwordEditorView: (editorView)->

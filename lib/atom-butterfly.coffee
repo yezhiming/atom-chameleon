@@ -22,6 +22,7 @@ module.exports =
 
   activate: (state) ->
     localStorage.removeItem 'github' # 重启就要github认证，不然会报错，暂时这样
+    localStorage.removeItem 'gogs' # 重启就要gogs认证，不然会报错，暂时这样
     # git ssh 策略：ide每次检测不存在就默认生成keypair
     home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
     exist1 = fs.existsSync "#{home}/.ssh/id_dsa"

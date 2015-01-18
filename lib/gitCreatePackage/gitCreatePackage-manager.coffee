@@ -19,8 +19,7 @@ class GitCreatePackageManager
 
   activate: ->
     atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
-    console.log "GitCreatePackageManager activate"
-
+    # console.log "GitCreatePackageManager activate"
 
   gitCreatePackage: ->
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
@@ -35,7 +34,6 @@ class GitCreatePackageManager
 
     gitCreatePackageWizardView.attach()
     gitCreatePackageWizardView.finishPromise()
-
     .then (options) ->
       gitCreatePackageWizardView.destroy()
 
@@ -68,9 +66,9 @@ class GitCreatePackageManager
 
     .then (options) -> # upload ssh key
       info = options
-      keyObj = JSON.parse localStorage.getItem 'installedSshKey' # ide保证installedSshKey一定会存在localStorage
+      keyObj = JSON.parse localStorage.getItem 'installedSshKey' # installedSshKey一定会在localStorage
       if keyObj.gitHubFlag is 'new' and info.repo is 'github'
-        pv.setTitle "Upload IDE public key to github"
+        pv.setTitle "Upload chameleonIDE public key to github"
         # 由于github只匹配key内容不匹配名字
         github().createSshKey
           options:
@@ -79,8 +77,14 @@ class GitCreatePackageManager
           key: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
       else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
-        pv.setTitle "Upload IDE public key to gogs"
-        console.log "TODO"
+        pv.setTitle "Upload chameleonIDE public key to gogs"
+        # 由于github只匹配key内容不匹配名字
+        gogs().createSshKey
+          options:
+            username: options.account
+            password: options.password
+          content: keyObj.public
+          title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
 
     .then (data) -> # 获取用户名
       if info.repo is 'github'
@@ -89,7 +93,10 @@ class GitCreatePackageManager
             username: info.account
             password: info.password
       else if info.repo is 'gogs'
-        console.log('TODO')
+        gogs().getUser
+          options:
+            username: info.account
+            password: info.password
 
     .then (obj) -> # 创建仓库
       pv.setTitle "#{info.repo} create package: #{info.packageName}"
@@ -104,7 +111,7 @@ class GitCreatePackageManager
           private: false
           auto_init: false
       else if obj.result and obj.type is 'gogs'
-        info.username = obj.message.name # 添加gogs用户名
+        info.username = obj.message # 添加gogs用户名
         gogs().createRepos
           options:
             username: info.account
