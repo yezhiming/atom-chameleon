@@ -1,7 +1,7 @@
 {
   "name": "atom-chameleon",
   "main": "./lib/atom-chameleon",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Atom package for Chameleon Development",
   "repository": "https://github.com/yezhiming/atom-chameleon",
   "license": "MIT",
