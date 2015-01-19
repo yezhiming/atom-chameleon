@@ -11,7 +11,7 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'Butterfly.js'
+      'label': 'Chameleon'
       'submenu': [
         {
           'label': 'Create Project',

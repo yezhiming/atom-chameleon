@@ -92,7 +92,11 @@ module.exports =
     @gitCreatePackageManager.deactivate?()
 
   cmdDebugEmulator: ->
-    document.querySelector('webview').openDevTools()
+    try
+      document.querySelector('webview').openDevTools()
+    catch
+      console.log "webview not open"
+    
 
   cmdDebug: ->
     # BowerView = require './scaffold/bower-view'

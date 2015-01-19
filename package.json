@@ -1,8 +1,8 @@
 {
-  "name": "atom-butterfly",
+  "name": "atom-chameleon",
   "main": "./lib/atom-butterfly",
   "version": "0.1.0",
-  "description": "Atom package for Butterfly.js Development",
+  "description": "Atom package for Chameleon Development",
   "repository": "https://github.com/yezhiming/atom-butterfly",
   "license": "MIT",
   "engines": {
