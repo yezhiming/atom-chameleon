@@ -25,7 +25,7 @@ module.exports = (options) ->
         path: req.url
         method: req.method
         headers: {
-          'content-type': req.headers['content-type']
+          'content-type': req.headers['content-type'] || 'text/html;charset=UTF-8'
         }
       , (response) ->
         res.writeHead response.statusCode, response.headers
