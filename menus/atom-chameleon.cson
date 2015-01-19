@@ -2,7 +2,7 @@
 'context-menu':
   '.tree-view.full-menu': [
     {'type': 'separator'}
-    {label: 'Chameleon Package Manager', command: 'atom-chameleon:gitCreatePackage'}
+    {label: 'Share Chameleon Package', command: 'atom-chameleon:gitCreatePackage'}
     {label: 'Install Chameleon Package', command: 'atom-chameleon:installChameleonPackage'}
     {'type': 'separator'}
   ]
