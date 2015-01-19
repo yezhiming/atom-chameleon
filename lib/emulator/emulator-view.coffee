@@ -59,7 +59,10 @@ class EmulatorView extends View
   onClickRefresh: ->
     console.log "refresh"
     @setTargetUrl(@url.text())
-    # @webview[0].reload()
+    try
+      @webview[0].reload()
+    catch
+      console.log "webview is not open"
 
   onClickDebug: ->
     webview = document.querySelector('webview')
