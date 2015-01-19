@@ -62,3 +62,26 @@ module.exports = (router, buildPath) ->
         # 删除zip
         fs.unlink zipPath, (err) ->
           console.log if err then err else '删除成功'
+
+
+  # as same as rm -rf /folder
+  router.get '/fs/rmdir', (req, res, next) ->
+    deleteFolderRecursive = (path) ->
+      console.log path
+      files = []
+      if fs.existsSync path
+        files = fs.readdirSync path
+
+        files.forEach (file, index) ->
+          curPath = "#{path}/#{file}"
+          if fs.statSync(curPath).isDirectory() # recurse
+            deleteFolderRecursive curPath
+          else # delete file
+            fs.unlinkSync curPath
+
+        fs.rmdirSync path
+
+    deleteFolderRecursive req.rpath
+    res.status(200).json
+      err: null
+      result: true
