@@ -43,8 +43,10 @@ class DebugServer extends EventEmitter
       api = allowUnsafeEval -> require options.api
       api(app)
 
-    # 2333resolve NOTE1 express static middleware default active.  -> "/" mapping index.html
+    # 2333 resolve NOTE1 express static middleware default active.  -> "/" mapping index.html
     app.use express.static path.resolve options.rootPath
+
+    # proxy to chameloen-paas
     app.use HttpProxy {
       "^\/mam\/": {host: "115.28.1.119", port: 18860},
       "^\/system\/api\/": {host: "115.28.1.119", port: 18860}
@@ -56,7 +58,7 @@ class DebugServer extends EventEmitter
     # 如果不注释，windows系统会报错［第一次点击时，系统会报错，第二次后就没问题］
     # app.use(bodyParser.urlencoded())
     router = express.Router()
-    (require './cordova-emulate')(router, options.rootPath) #TODO: copy一份
+    (require './cordova-emulate')(router, options.rootPath)
     app.use(router)
 
     @server = app.listen options.httpPort

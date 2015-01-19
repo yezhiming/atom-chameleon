@@ -15,12 +15,13 @@ module.exports =
     chameleonServerAddress: 'http://bsl.foreveross.com'
     chameleonTanant: 'cube'
     chameleonUsername: 'cube'
-    puzzleServerAddress: 'http://bsl.foreveross.com/puzzle' # http://localhost:8000
-    puzzleServerAddressSecured: 'https://bsl.foreveross.com/puzzle' # https://localhost:8443
+    puzzleServerAddress: 'http://bsl.foreveross.com/puzzle' # http://localhost:8000/puzzle
+    puzzleServerAddressSecured: 'https://bsl.foreveross.com/puzzle' # https://localhost:8443/puzzle
     puzzleAccessToken: ''
     gitCloneEnvironmentPath: ''
 
   activate: (state) ->
+
     localStorage.removeItem 'github' # 重启就要github认证，不然会报错，暂时这样
     localStorage.removeItem 'gogs' # 重启就要gogs认证，不然会报错，暂时这样
     # git ssh 策略：ide每次检测不存在就默认生成keypair
