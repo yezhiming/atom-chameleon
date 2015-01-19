@@ -13,7 +13,7 @@ module.exports = (pathDir,zipFile,cb)->
   # exec
     
     if process.platform is "win32"
-      commands = "#{atom.getConfigDirPath()}/packages/atom-butterfly/utils/zip.exe -r #{zipFile} ./"
+      commands = "#{atom.getConfigDirPath()}/packages/atom-chameleon/utils/zip.exe -r #{zipFile} ./"
     else
       commands = "zip -r #{zipFile} ./"
 

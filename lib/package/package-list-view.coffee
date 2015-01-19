@@ -44,7 +44,7 @@ request_post = (options) ->
       else
         reject(err)
 
-C_Server = atom.config.get 'atom-butterfly.chameleonServerAddress'
+C_Server = atom.config.get 'atom-chameleon.chameleonServerAddress'
 
 module.exports =
 class PackageListView extends View

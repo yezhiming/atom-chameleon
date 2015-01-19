@@ -8,8 +8,8 @@
 # For more detailed documentation see
 # https://atom.io/docs/latest/advanced/keymaps
 '.workspace':
-  'ctrl-alt-o': 'atom-butterfly:toggle'
-  'ctrl-alt-e': 'atom-butterfly:emulator'
-  'ctrl-alt-r': 'atom-butterfly:run-on-server'
-  'ctrl-alt-p': 'atom-butterfly:list-package'
-  'ctrl-alt-t': 'atom-butterfly:debug-emulator'
+  'ctrl-alt-o': 'atom-chameleon:toggle'
+  'ctrl-alt-e': 'atom-chameleon:emulator'
+  'ctrl-alt-r': 'atom-chameleon:run-on-server'
+  'ctrl-alt-p': 'atom-chameleon:list-package'
+  'ctrl-alt-t': 'atom-chameleon:debug-emulator'

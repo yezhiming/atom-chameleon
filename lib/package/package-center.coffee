@@ -42,8 +42,8 @@ class PackageListCell extends View
     @installButton.attr('class', 'btn btn-info icon icon-cloud-download install-button ' + if install then 'is-installing disabled')
 
 
-PuzzleServer = atom.config.get 'atom-butterfly.puzzleServerAddress'
-PuzzleAccessToken = atom.config.get 'atom-butterfly.puzzleAccessToken'
+PuzzleServer = atom.config.get 'atom-chameleon.puzzleServerAddress'
+PuzzleAccessToken = atom.config.get 'atom-chameleon.puzzleAccessToken'
 
 module.exports =
   class Center extends View

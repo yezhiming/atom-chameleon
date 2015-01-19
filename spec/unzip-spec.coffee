@@ -9,11 +9,11 @@ describe "utils.unzip", ->
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
-    activationPromise = atom.packages.activatePackage('atom-butterfly')
+    activationPromise = atom.packages.activatePackage('atom-chameleon')
 
     waitsForPromise ->
       activationPromise.then ->
-        packagePath = atom.packages.getActivePackage('atom-butterfly').path
+        packagePath = atom.packages.getActivePackage('atom-chameleon').path
         expect(packagePath).not.toBe(null)
 
         testZipPackagePath = "#{packagePath}/sandbox/archive.zip"

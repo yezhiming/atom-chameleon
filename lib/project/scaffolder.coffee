@@ -16,9 +16,9 @@ execute = (command) ->
 
   Q.Promise (resolve, reject, notify) ->
     options = null
-    if atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
+    if atom.config.get('atom-chameleon.gitCloneEnvironmentPath')
       options =
-        env: path:atom.config.get('atom-butterfly.gitCloneEnvironmentPath')
+        env: path:atom.config.get('atom-chameleon.gitCloneEnvironmentPath')
 
     cp = exec command, options, (error) ->
       if error then reject(error) else resolve()

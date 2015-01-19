@@ -18,7 +18,7 @@ module.exports =
 class GitCreatePackageManager
 
   activate: ->
-    atom.workspaceView.command "atom-butterfly:gitCreatePackage", => @gitCreatePackage()
+    atom.workspaceView.command "atom-chameleon:gitCreatePackage", => @gitCreatePackage()
     # console.log "GitCreatePackageManager activate"
 
   gitCreatePackage: ->
@@ -75,7 +75,7 @@ class GitCreatePackageManager
             username: options.account
             password: options.password
           key: keyObj.public
-          title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
+          title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-chameleon.puzzleAccessToken')})"
       else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
         pv.setTitle "Upload chameleonIDE public key to gogs"
         # 由于github只匹配key内容不匹配名字
@@ -84,7 +84,7 @@ class GitCreatePackageManager
             username: options.account
             password: options.password
           content: keyObj.public
-          title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-butterfly.puzzleAccessToken')})"
+          title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-chameleon.puzzleAccessToken')})"
 
     .then (data) -> # 获取用户名
       if info.repo is 'github'
@@ -138,14 +138,14 @@ class GitCreatePackageManager
         async: true
         timeout: 1000*60*10
         maxBuffer: 1024*1024*10
-      gitPath = atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 设置git环境变量
+      gitPath = atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 设置git环境变量
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
       gitApi_create info.gitPath, repoSshUrl, options, info.describe
 
     .then ->
       pv.setTitle "Add package：#{info.packageName}"
-      server = atom.config.get('atom-butterfly.puzzleServerAddress')
+      server = atom.config.get('atom-chameleon.puzzleServerAddress')
       Q.Promise (resolve, reject, notify) ->
         # 开始发布到chameleon packagesManager
         r = request.post {url:"#{server}/api/packages", timeout: 1000*60*10}, (err, httpResponse, body) ->
@@ -161,7 +161,7 @@ class GitCreatePackageManager
               statusCode: 403
               body: body
         form = r.form()
-        form.append "access_token", "#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+        form.append "access_token", "#{atom.config.get('atom-chameleon.puzzleAccessToken')}"
         form.append "name", info.packageName
         form.append "author", info.username
         form.append "repository_url", info.repoSshUrl

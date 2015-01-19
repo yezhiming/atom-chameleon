@@ -2,8 +2,8 @@
 'context-menu':
   '.tree-view.full-menu': [
     {'type': 'separator'}
-    {label: 'Chameleon Package Manager', command: 'atom-butterfly:gitCreatePackage'}
-    {label: 'Install Chameleon Package', command: 'atom-butterfly:installChameleonPackage'}
+    {label: 'Chameleon Package Manager', command: 'atom-chameleon:gitCreatePackage'}
+    {label: 'Install Chameleon Package', command: 'atom-chameleon:installChameleonPackage'}
     {'type': 'separator'}
   ]
 
@@ -15,23 +15,23 @@
       'submenu': [
         {
           'label': 'Create Project',
-          'command': 'atom-butterfly:create-project'
+          'command': 'atom-chameleon:create-project'
         }
         {
           'label': 'Framework Install/Upgrade'
-          'command': 'atom-butterfly:install'
+          'command': 'atom-chameleon:install'
         }
         {
           'label': 'Start Debug Server'
-          'command': 'atom-butterfly:run-on-server'
+          'command': 'atom-chameleon:run-on-server'
         }
         {
           'label': 'Launch Emulator'
-          'command': 'atom-butterfly:emulator'
+          'command': 'atom-chameleon:emulator'
         }
         {
           'label': 'Package'
-          'command': 'atom-butterfly:list-package'
+          'command': 'atom-chameleon:list-package'
         }
       ]
     ]
@@ -44,15 +44,15 @@
         'submenu': [
           {
             'label': 'Project...'
-            'command': 'atom-butterfly:create-project'
+            'command': 'atom-chameleon:create-project'
           }
           {
             'label': 'Package...'
-            'command': 'atom-butterfly:create-package'
+            'command': 'atom-chameleon:create-package'
           }
           {
             'label': 'File...'
-            'command': 'atom-butterfly:create-file'
+            'command': 'atom-chameleon:create-file'
           }
         ]
       }
@@ -61,19 +61,19 @@
         'submenu': [
           {
             'label': 'Run on debug server'
-            'command': 'atom-butterfly:run-on-server'
+            'command': 'atom-chameleon:run-on-server'
           }
           {
             'label': 'Launch Emulator'
-            'command': 'atom-butterfly:emulator'
+            'command': 'atom-chameleon:emulator'
           }
           {
             'label': 'Debug Emulator'
-            'command': 'atom-butterfly:debug-emulator'
+            'command': 'atom-chameleon:debug-emulator'
           }
           {
             'label': 'Install/Upgrade Butterfly.js'
-            'command': 'atom-butterfly:install'
+            'command': 'atom-chameleon:install'
           }
         ]
       }

@@ -1,5 +1,5 @@
 {WorkspaceView} = require 'atom'
-AtomButterfly = require '../lib/atom-butterfly'
+AtomButterfly = require '../lib/atom-chameleon'
 
 # Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
 #
@@ -11,20 +11,20 @@ describe "AtomButterfly", ->
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
-    activationPromise = atom.packages.activatePackage('atom-butterfly')
+    activationPromise = atom.packages.activatePackage('atom-chameleon')
 
-  describe "when the atom-butterfly:toggle event is triggered", ->
+  describe "when the atom-chameleon:toggle event is triggered", ->
     it "attaches and then detaches the view", ->
-      expect(atom.workspaceView.find('.atom-butterfly')).not.toExist()
+      expect(atom.workspaceView.find('.atom-chameleon')).not.toExist()
 
       # This is an activation event, triggering it will cause the package to be
       # activated.
-      atom.commands.dispatch atom.workspaceView.element, 'atom-butterfly:toggle'
+      atom.commands.dispatch atom.workspaceView.element, 'atom-chameleon:toggle'
 
       waitsForPromise ->
         activationPromise
 
       runs ->
-        expect(atom.workspaceView.find('.atom-butterfly')).toExist()
-        atom.commands.dispatch atom.workspaceView.element, 'atom-butterfly:toggle'
-        expect(atom.workspaceView.find('.atom-butterfly')).not.toExist()
+        expect(atom.workspaceView.find('.atom-chameleon')).toExist()
+        atom.commands.dispatch atom.workspaceView.element, 'atom-chameleon:toggle'
+        expect(atom.workspaceView.find('.atom-chameleon')).not.toExist()

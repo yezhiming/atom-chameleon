@@ -6,8 +6,8 @@ module.exports =
 class BuildManager
 
   activate: ->
-    atom.workspaceView.command "atom-butterfly:run-on-server", => @cmdRunOnServer()
-    atom.workspaceView.command "atom-butterfly:emulator", => @cmdLaunchEmulator()
+    atom.workspaceView.command "atom-chameleon:run-on-server", => @cmdRunOnServer()
+    atom.workspaceView.command "atom-chameleon:emulator", => @cmdLaunchEmulator()
 
   deactivate: ->
     @runOnServerView?.destroy()

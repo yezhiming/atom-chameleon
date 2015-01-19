@@ -115,8 +115,8 @@ class V extends View
     @judgeTheName(wizard)
 
   judgeTheName: (wizard)->
-    server = atom.config.get('atom-butterfly.puzzleServerAddress')
-    access_token = atom.config.get 'atom-butterfly.puzzleAccessToken'
+    server = atom.config.get('atom-chameleon.puzzleServerAddress')
+    access_token = atom.config.get 'atom-chameleon.puzzleAccessToken'
 
     url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>

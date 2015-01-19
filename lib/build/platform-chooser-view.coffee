@@ -6,19 +6,19 @@ items = [
   {
     id:     'ios'
     name:   'iOS'
-    image:  'atom://atom-butterfly/images/apple.png'
+    image:  'atom://atom-chameleon/images/apple.png'
     description: 'iOS Application'
   }
   {
     id: 'android'
     name: 'Android'
-    image: 'atom://atom-butterfly/images/android.png'
+    image: 'atom://atom-chameleon/images/android.png'
     description: 'Android Application'
   }
   {
     id: 'windows'
     name: 'Windows Mobile'
-    image: 'atom://atom-butterfly/images/windows.png'
+    image: 'atom://atom-chameleon/images/windows.png'
     description: 'Windows Application'
   }
 ]

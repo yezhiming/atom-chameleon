@@ -6,8 +6,8 @@ module.exports =
 class PackageManager
 
   activate: ->
-    atom.workspaceView.command "atom-butterfly:create-package", => @cmdCreatePackage()
-    atom.workspaceView.command "atom-butterfly:list-package", => @cmdPublishPackage()
+    atom.workspaceView.command "atom-chameleon:create-package", => @cmdCreatePackage()
+    atom.workspaceView.command "atom-chameleon:list-package", => @cmdPublishPackage()
     atom.workspaceView.command "atom-chameleon:publish-package", => @cmdPublishPackage()
 
   deactivate: ->

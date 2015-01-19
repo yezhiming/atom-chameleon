@@ -19,7 +19,7 @@ class BuildManager
 
   activate: ->
     atom.workspaceView.command "atom-chameleon:publish-application", => @cmdPublishApplication()
-    @server = atom.config.get('atom-butterfly.puzzleServerAddress')
+    @server = atom.config.get('atom-chameleon.puzzleServerAddress')
 
     atom.workspaceView.command "atom-chameleon:build-list", => @cmdBuildList()
 
@@ -35,7 +35,7 @@ class BuildManager
     buildStateView = new (require './build-state-view')()
 
     # 这样就可以可以不仅在windows还是mac都可以获取到.atom路径
-    decs = "#{os.tmpdir()}/atom-butterfly"
+    decs = "#{os.tmpdir()}/atom-chameleon"
     zipFile = "#{uuid.v1()}.zip"
     unless fsIsDirectorySync(decs)
       console.log "新建文件夹：#{decs}"
@@ -83,7 +83,7 @@ class BuildManager
           if err then reject(err) else resolve(body)
 
         form = r.form()
-        form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+        form.append "access_token","#{atom.config.get('atom-chameleon.puzzleAccessToken')}"
         form.append "builder","cordova-android"
         form.append "platform","android"
         form.append "asset",fs.createReadStream(options.asset)
@@ -120,7 +120,7 @@ class BuildManager
           if err then reject(err) else resolve(body)
 
         form = r.form()
-        form.append "access_token","#{atom.config.get('atom-butterfly.puzzleAccessToken')}"
+        form.append "access_token","#{atom.config.get('atom-chameleon.puzzleAccessToken')}"
         form.append "builder","cordova-ios"
         form.append "platform","ios"
 

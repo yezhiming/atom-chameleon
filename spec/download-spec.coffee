@@ -8,14 +8,14 @@ describe "utils.download", ->
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
-    activationPromise = atom.packages.activatePackage('atom-butterfly')
+    activationPromise = atom.packages.activatePackage('atom-chameleon')
 
     waitsForPromise ->
       activationPromise
 
   it "can download", ->
 
-    packagePath = atom.packages.getActivePackage('atom-butterfly').path
+    packagePath = atom.packages.getActivePackage('atom-chameleon').path
     console.log "packagePath: #{packagePath}"
     expect(packagePath).not.toBe(null)
 

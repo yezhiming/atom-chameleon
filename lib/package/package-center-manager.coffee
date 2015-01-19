@@ -7,7 +7,7 @@ class PackageManager
 
   activate: ->
     # @toggle()
-    atom.workspaceView.command "atom-butterfly:installChameleonPackage", => @createCenter()
+    atom.workspaceView.command "atom-chameleon:installChameleonPackage", => @createCenter()
     
   createCenter: ->
     selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath

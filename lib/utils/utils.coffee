@@ -3,5 +3,5 @@ _ = require 'underscore'
 
 module.exports =
   getResourcePath: ->
-    packagePath = atom.packages.getActivePackage('atom-butterfly').path
+    packagePath = atom.packages.getActivePackage('atom-chameleon').path
     path.resolve.apply _, _.union([packagePath], arguments)

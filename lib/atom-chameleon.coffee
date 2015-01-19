@@ -30,16 +30,16 @@ module.exports =
     if (!localStorage.getItem 'installedSshKey') or (!exist1) or (!exist2)
       options =
         maxBuffer: 1024*1024*10
-      options.env = path: atom.config.get('atom-butterfly.gitCloneEnvironmentPath') if atom.config.get('atom-butterfly.gitCloneEnvironmentPath') # 一般mac不需要配置
+      options.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
       # 生成默认的公、密钥到userhome/.ssh
       generateKeyPair
         home: home
         options
-      #     if process.platform is 'win32' and (!process.env.Path.contains "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}")
+      #     if process.platform is 'win32' and (!process.env.Path.contains "#{atom.config.get('atom-chameleon.gitCloneEnvironmentPath')}")
       #       # TODO 这里要重启windows，atom才能读取到系统变量 真是蛋碎 T^T
-      #       command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}\""
-      #     else if process.platform != 'win32' and (!process.env.PATH.contains "#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')}")
-      #       command = "cat /etc/profile && echo \\nexport PATH=$PATH#{path.delimiter}#{atom.config.get('atom-butterfly.gitCloneEnvironmentPath')} >> /etc/profile && source /etc/profile"
+      #       command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-chameleon.gitCloneEnvironmentPath')}\""
+      #     else if process.platform != 'win32' and (!process.env.PATH.contains "#{atom.config.get('atom-chameleon.gitCloneEnvironmentPath')}")
+      #       command = "cat /etc/profile && echo \\nexport PATH=$PATH#{path.delimiter}#{atom.config.get('atom-chameleon.gitCloneEnvironmentPath')} >> /etc/profile && source /etc/profile"
       #     cp = exec command, (error, stdout, stderr) ->
       #         if error
       #           reject(error)
@@ -51,8 +51,8 @@ module.exports =
       #   generateKeyPair(home)
 
     # create access_token if necessary
-    token = atom.config.get('atom-butterfly.puzzleAccessToken')
-    atom.config.set('atom-butterfly.puzzleAccessToken', UUID.v4()) unless token
+    token = atom.config.get('atom-chameleon.puzzleAccessToken')
+    atom.config.set('atom-chameleon.puzzleAccessToken', UUID.v4()) unless token
 
     @projectManager = new (require './project/project-manager')()
     @projectManager.activate()
@@ -75,12 +75,12 @@ module.exports =
     @packageCenterManager = new (require './package/package-center-manager')
     @packageCenterManager.activate()
 
-    atom.workspaceView.command "atom-butterfly:debug", => @cmdDebug()
-    atom.workspaceView.command "atom-butterfly:debug-emulator", => @cmdDebugEmulator()
+    atom.workspaceView.command "atom-chameleon:debug", => @cmdDebug()
+    atom.workspaceView.command "atom-chameleon:debug-emulator", => @cmdDebugEmulator()
 
     #New
-    atom.workspaceView.command "atom-butterfly:create-project", => @cmdCreateProject()
-    atom.workspaceView.command "atom-butterfly:create-file", => @cmdCreateFile()
+    atom.workspaceView.command "atom-chameleon:create-project", => @cmdCreateProject()
+    atom.workspaceView.command "atom-chameleon:create-file", => @cmdCreateFile()
 
   deactivate: ->
     @projectManager.deactivate?()
