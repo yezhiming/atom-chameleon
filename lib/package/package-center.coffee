@@ -113,7 +113,7 @@ module.exports =
     onSearchDone: (packages, keyword)->
 
       filter = _.filter packages, (pack)->
-        -1 != pack.name.toLowerCase().indexOf keyword
+        -1 != pack.name.toLowerCase().indexOf keyword.toLowerCase()
 
 
       if !filter or filter.length is 0
