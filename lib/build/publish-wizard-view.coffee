@@ -17,6 +17,8 @@ class CreateProjectWizardView extends WizardView
         require './ios-build-view'
       else if previous.platform == 'android'
         require './android-build-view'
+      else if previous.platform == 'ios-fastbuild'
+        require './ios-fastBuild-view'
       else
-        null
+        return null
   ]

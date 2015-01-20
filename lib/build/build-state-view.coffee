@@ -62,7 +62,8 @@ class BuildStatusView extends View
     hostName = puzzleClient.server.substr 0, puzzleClient.server.lastIndexOf('/')
     console.log 'hostName: %s', hostName
 
-    @socket = io "http://115.28.1.109:8000/socketio",
+    # @socket = io "http://115.28.1.109:8000/socketio",
+    @socket = io "http://localhost:8080/socketio",
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
@@ -132,7 +133,7 @@ class BuildStatusView extends View
   updateQRCode: (platform) ->
     console.log "update qrcode for platform: #{platform}"
     qr = qrcode(4, 'M')
-    if platform == 'ios'
+    if platform == 'ios' or platform == "ios-fastbuild"
       # @devicebtn.show()
       qr.addData("#{puzzleClient.serverSecured}/archives/#{@task.id}/install/ios")
     else if platform == 'android'

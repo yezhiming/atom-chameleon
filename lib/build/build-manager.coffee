@@ -75,7 +75,6 @@ class BuildManager
   sendBuildRequest: (options) ->
     console.log "options:"
     console.log options
-
     if options.platform == "android"
 
       Q.Promise (resolve, reject, notify) =>
@@ -114,7 +113,7 @@ class BuildManager
         form.append "title","#{options.title}"
         form.append "socketId","#{options.socketId}"
 
-    else
+    else if options.platform == "ios"
       Q.Promise (resolve, reject, notify) =>
         r = request.post {url:"#{@server}/api/tasks",timeout: 1000*60*10}, (err, httpResponse, body)->
           if err then reject(err) else resolve(body)
@@ -150,6 +149,33 @@ class BuildManager
         if options.pushp12 && options.pushp12password
           form.append "pushp12",fs.createReadStream(options.pushp12)
           form.append "pushp12password",options.pushp12password
+
+        form.append "title","#{options.title}"
+        form.append "version","#{options.version}"
+        form.append "build","#{options.build}"
+
+        form.append "asset",fs.createReadStream(options.asset)
+        form.append "socketId","#{options.socketId}"
+  
+    else if options.platform == "ios-fastbuild"
+
+      Q.Promise (resolve, reject, notify) =>
+        r = request.post {url:"#{@server}/api/tasks",timeout: 1000*60*10}, (err, httpResponse, body)->
+          if err then reject(err) else resolve(body)
+
+        form = r.form()
+        form.append "access_token","#{atom.config.get('atom-chameleon.puzzleAccessToken')}"
+        form.append "builder","cordova-ios-fastBuild"
+        form.append "platform","ios-fastbuild"
+        
+        form.append "bundleIdentifier","#{options.bundleIdentifier}"
+
+        form.append "icon",fs.createReadStream(options.icon)
+
+        form.append "scheme","#{options.scheme}"
+
+        unless (options.content_src is "")
+          form.append "content_src","#{options.content_src}"
 
         form.append "title","#{options.title}"
         form.append "version","#{options.version}"
