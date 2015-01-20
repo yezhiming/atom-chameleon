@@ -62,8 +62,8 @@ class BuildStatusView extends View
     hostName = puzzleClient.server.substr 0, puzzleClient.server.lastIndexOf('/')
     console.log 'hostName: %s', hostName
 
-    # @socket = io "http://115.28.1.109:8000/socketio",
-    @socket = io "http://localhost:8080/socketio",
+    @socket = io "http://115.28.1.109:8000/socketio",
+    # @socket = io "http://localhost:8080/socketio",
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
