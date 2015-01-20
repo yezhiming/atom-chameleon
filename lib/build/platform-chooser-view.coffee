@@ -10,9 +10,9 @@ items = [
     description: 'iOS Application'
   }
   {
-    id: 'android'
-    name: 'Android'
-    image: 'atom://atom-chameleon/images/android.png'
+    id:     'android'
+    name:   'Android'
+    image:  'atom://atom-chameleon/images/android.png'
     description: 'Android Application'
   }
   {
@@ -22,10 +22,10 @@ items = [
     description: 'iOS Application fast build'
   }
   {
-    id: 'windows'
-    name: 'Windows Mobile'
-    image: 'atom://atom-chameleon/images/windows.png'
-    description: 'Windows Application'
+    id:     'android-fastbuild'
+    name:   'Android Fast Build'
+    image:  'atom://atom-chameleon/images/android.png'
+    description: 'Android Application fast build'
   }
 ]
 

@@ -86,6 +86,7 @@ class BuildManager
         form.append "builder","cordova-android"
         form.append "platform","android"
         form.append "asset",fs.createReadStream(options.asset)
+        form.append "socketId","#{options.socketId}"
 
         # 若不填写，使用默认图标
         unless options.icon is ""
@@ -111,7 +112,7 @@ class BuildManager
         form.append "version","#{options.version}"
         form.append "build","#{options.build}"
         form.append "title","#{options.title}"
-        form.append "socketId","#{options.socketId}"
+        
 
     else if options.platform == "ios"
       Q.Promise (resolve, reject, notify) =>
@@ -183,3 +184,17 @@ class BuildManager
 
         form.append "asset",fs.createReadStream(options.asset)
         form.append "socketId","#{options.socketId}"
+
+    else if options.platform == "android-fastbuild"
+      Q.Promise (resolve, reject, notify) =>
+        r = request.post {url:"#{@server}/api/tasks",timeout: 1000*60*10}, (err, httpResponse, body)=>
+          if err then reject(err) else resolve(body)
+
+        form = r.form()
+        form.append "access_token","#{atom.config.get('atom-chameleon.puzzleAccessToken')}"
+        form.append "builder","cordova-android-fastbuild"
+        form.append "platform","android-fastbuild"
+        form.append "asset",fs.createReadStream(options.asset)
+        form.append "socketId","#{options.socketId}"
+
+        form.append "scheme","#{options.scheme}"

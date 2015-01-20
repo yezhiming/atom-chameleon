@@ -38,6 +38,8 @@ class V extends View
     @copyUrl.on "mouseout", =>
       @copyUrl.attr "title", "Copy to clipboard"
 
+    @readOnlyEditorView @filePath
+
 
   setValues: (obj) ->
     @obj = obj
@@ -79,3 +81,9 @@ class V extends View
     @labelDeputyTitle.html "checkout URL"
 
     @selectWhich = "subversion"
+
+  readOnlyEditorView: (editorView)->
+    editorView.setInputEnabled false
+    editorView.hiddenInput.on 'keydown', (e) =>
+      if e.which == 8
+        return false
