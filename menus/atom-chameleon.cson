@@ -85,7 +85,7 @@
             'command': 'atom-chameleon:publish-application'
           }
           {
-            'label': 'Package'
+            'label': 'Html5 Package'
             'command': 'atom-chameleon:publish-package'
           }
         ]
