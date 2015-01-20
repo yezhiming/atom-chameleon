@@ -18,7 +18,7 @@ class V extends View
 
       @div class: 'row', =>
         @div class: 'col-xs-3', =>
-          @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
+          @img class: 'icon', outlet: 'icon'
     
         @div class: 'col-xs-9', =>
 
@@ -60,6 +60,7 @@ class V extends View
     # result = _.extend result, scheme: "#{@scheme.val()}"
     result = scheme: "#{@scheme.val()}"
     return result
+
 
   iconSrcPath:->
     if process.platform is "win32"
