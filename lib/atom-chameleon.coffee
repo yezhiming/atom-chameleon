@@ -93,10 +93,15 @@ module.exports =
 
   cmdDebugEmulator: ->
     try
-      document.querySelector('webview').openDevTools()
+      webview = document.querySelector('webview')
+      # console.log "webview.isDevToolsOpened(): #{webview.isDevToolsOpened()}"
+      if webview.isDevToolsOpened()
+        webview.closeDevTools()
+      else
+        webview.openDevTools()
     catch
       console.log "webview not open"
-    
+
 
   cmdDebug: ->
     # BowerView = require './scaffold/bower-view'
