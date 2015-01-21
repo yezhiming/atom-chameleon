@@ -46,10 +46,10 @@ class BuildManager
     if typeof @debugServer.offline() is 'undefined'
       return alert "please launch debug server."
 
-    if typeof @emulatorView is 'undefined' and @debugServer.offline() == false
+    if typeof @emulatorView is 'undefined' and (!@debugServer.offline())
       EmulatorView = require './emulator-view'
       @emulatorView = new EmulatorView()
-    else if @debugServer.offline() == true and @emulatorView.isHidden() == true
+    else if @debugServer.offline() and @emulatorView.isHidden()
       if @debugServer.closeServer is "after"
         alert "please launch debug server."
     else
