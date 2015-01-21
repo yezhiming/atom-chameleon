@@ -30,12 +30,12 @@ class BuildManager
       }
 
   _setupDebugServer: ->
-    unless @serverStatusView
+    unless @serverStatusView and @debugServer
       ServerStatusView = require './server-status-view'
       @serverStatusView = new ServerStatusView()
       @serverStatusView.on 'stopServer', => @debugServer.stop()
 
-    unless @debugServer
+      
       DebugServer = require './debug-server'
       @debugServer = new DebugServer()
       @debugServer.on 'start', => @serverStatusView.attach()
