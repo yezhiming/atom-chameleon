@@ -43,8 +43,12 @@ class BuildManager
   cmdLaunchEmulator: ->
     if typeof @debugServer.offline() is 'undefined'
       return alert "please launch debug server."
-    unless @emulatorView?
+
+    if typeof @emulatorView is 'undefined' and @debugServer.offline() == false
       EmulatorView = require './emulator-view'
       @emulatorView = new EmulatorView()
-    else unless @debugServer.offline() and @emulatorView.isHidden()
+    else if @debugServer.offline() == true and @emulatorView.isHidden() == true
+      if @debugServer.closeServer is "after"
+        alert "please launch debug server."
+    else
       @emulatorView.toggle()

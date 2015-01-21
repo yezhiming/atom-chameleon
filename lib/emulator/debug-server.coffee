@@ -92,7 +92,9 @@ class DebugServer extends EventEmitter
     @server?.close =>
       console.log "server closed."
       @lineoff = true
+      @closeServer = "before"
       atom.workspaceView.trigger("atom-chameleon:emulator")
+      @closeServer = "after"
     @emit 'stop'
 
   offline: ->
