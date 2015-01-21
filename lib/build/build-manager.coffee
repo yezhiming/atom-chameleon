@@ -198,3 +198,8 @@ class BuildManager
         form.append "socketId","#{options.socketId}"
 
         form.append "scheme","#{options.scheme}"
+        form.append "icon",fs.createReadStream(options.icon)
+        form.append "content_src","#{options.content_src}"
+        form.append "version","#{options.version}"
+        form.append "build","#{options.build}"
+        form.append "title","#{options.title}"
