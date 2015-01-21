@@ -63,8 +63,8 @@ class DebugServer extends EventEmitter
 
     @server = app.listen options.httpPort
 
+    # 开启debug webview
     atom.workspaceView.trigger("atom-chameleon:emulator")
-
 
     #socket management, useful for graceful shutdown
     #ref: http://stackoverflow.com/questions/14626636/how-do-i-shutdown-a-node-js-https-server-immediately
@@ -92,6 +92,7 @@ class DebugServer extends EventEmitter
     @server?.close =>
       console.log "server closed."
       @lineoff = true
+      # 关闭debug webview
       atom.workspaceView.trigger("atom-chameleon:emulator")
     @emit 'stop'
 

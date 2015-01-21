@@ -33,12 +33,12 @@ class BuildManager
 
   _setupDebugServer: ->
 
-    unless @serverStatusView and @debugServer
-
+    unless @serverStatusView
       ServerStatusView = require './server-status-view'
       @serverStatusView = new ServerStatusView()
       @serverStatusView.on 'stopServer', => @debugServer.stop()
 
+    unless @debugServer
       DebugServer = require './debug-server'
       @debugServer = new DebugServer()
       @debugServer.on 'start', => @serverStatusView.attach()
@@ -48,10 +48,19 @@ class BuildManager
     unless @debugServer
       DebugServer = require './debug-server'
       @debugServer = new DebugServer()
+      @debugServer.on 'start', => @serverStatusView.attach()
+      @debugServer.on 'stop', => @serverStatusView.detach()
+
     if typeof @debugServer.offline() is 'undefined'
       return alert "please launch debug server."
+
     unless @emulatorView?
       EmulatorView = require './emulator-view'
       @emulatorView = new EmulatorView()
-    else unless @debugServer.offline() and @emulatorView.isHidden()
+    # 如果webview没有隐藏 或 debug server开启
+    unless @debugServer.offline() and @emulatorView.isHidden()
       @emulatorView.toggle()
+
+    if @debugServer.offline()
+      console.log '回收debugServer.'
+      @debugServer = null
