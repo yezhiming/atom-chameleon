@@ -45,9 +45,11 @@ class BuildManager
       @debugServer.on 'stop', => @serverStatusView.detach()
 
   cmdLaunchEmulator: ->
-
+    console.log typeof @debugServer.offline() is 'undefined'
     unless @emulatorView?
       EmulatorView = require './emulator-view'
       @emulatorView = new EmulatorView()
-    else
+    else if typeof @debugServer.offline()
+      alert "please launch debug server."
+    else unless @debugServer.offline() and @emulatorView.isHidden()
       @emulatorView.toggle()

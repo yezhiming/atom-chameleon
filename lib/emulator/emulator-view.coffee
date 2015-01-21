@@ -32,14 +32,14 @@ class EmulatorView extends View
       @element.dataset.showOnLeftSide = newValue
 
     @url.text('http://localhost:3000')
+    @onClickRefresh()
 
   attach: ->
     if atom.config.get('tree-view.showOnRightSide')
       atom.workspaceView.appendToLeft(this)
     else
       atom.workspaceView.appendToRight(this)
-
-    @setTargetUrl()
+    # @setTargetUrl()
 
   destroy: ->
     @detach()
