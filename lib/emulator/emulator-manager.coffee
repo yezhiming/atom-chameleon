@@ -30,17 +30,19 @@ class BuildManager
       }
 
   _setupDebugServer: ->
-    unless @serverStatusView and @debugServer
+    unless @serverStatusView
       ServerStatusView = require './server-status-view'
       @serverStatusView = new ServerStatusView()
       @serverStatusView.on 'stopServer', => @debugServer.stop()
 
+    unless @debugServer
       DebugServer = require './debug-server'
       @debugServer = new DebugServer()
       @debugServer.on 'start', => @serverStatusView.attach()
       @debugServer.on 'stop', => @serverStatusView.detach()
 
   cmdLaunchEmulator: ->
+
     if typeof @debugServer.offline() is 'undefined'
       return alert "please launch debug server."
 
