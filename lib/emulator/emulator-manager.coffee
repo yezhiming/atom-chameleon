@@ -8,6 +8,7 @@ class BuildManager
   activate: ->
     atom.workspaceView.command "atom-chameleon:run-on-server", => @cmdRunOnServer()
     atom.workspaceView.command "atom-chameleon:emulator", => @cmdLaunchEmulator()
+    @_setupDebugServer()
 
   deactivate: ->
     @runOnServerView?.destroy()
@@ -16,9 +17,6 @@ class BuildManager
     @debugServer?.stop()
 
   cmdRunOnServer: ->
-
-    @_setupDebugServer()
-
     RunOnServerView = require './run-on-server-view'
     @runOnServerView = new RunOnServerView()
     @runOnServerView.attach()
@@ -32,7 +30,6 @@ class BuildManager
       }
 
   _setupDebugServer: ->
-
     unless @serverStatusView
       ServerStatusView = require './server-status-view'
       @serverStatusView = new ServerStatusView()
