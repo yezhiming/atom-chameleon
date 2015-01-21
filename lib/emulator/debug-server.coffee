@@ -20,7 +20,7 @@ class DebugServer extends EventEmitter
   #   defaultPage
   #   httpPort
   #
-  start: (options)->
+  start: (options) ->
     @lineoff = false
     app = express()
     # app.use logger('dev')
@@ -62,10 +62,10 @@ class DebugServer extends EventEmitter
     app.use(router)
 
     @server = app.listen options.httpPort
-    
+
     atom.workspaceView.trigger("atom-chameleon:emulator")
-    
-  
+
+
     #socket management, useful for graceful shutdown
     #ref: http://stackoverflow.com/questions/14626636/how-do-i-shutdown-a-node-js-https-server-immediately
     @sockets = {}
@@ -88,13 +88,13 @@ class DebugServer extends EventEmitter
     _.each @sockets, (v, k, l)=>
       console.log "socket #{k} destroyed."
       v.destroy()
-      
+
     @server?.close =>
       console.log "server closed."
       @lineoff = true
       atom.workspaceView.trigger("atom-chameleon:emulator")
     @emit 'stop'
-  
+
   offline: ->
     console.log "offline: #{@lineoff}"
     @lineoff
