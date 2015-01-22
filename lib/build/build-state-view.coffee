@@ -23,7 +23,10 @@ class BuildStatusView extends View
       @div style: 'text-align: center', =>
         @span outlet: 'loading', class: 'loading loading-spinner-large inline-block'
 
-      @div =>
+      @div style: 'text-align:center; font-size: 15px; font-weight: bold;', =>
+        @span outlet: 'uploadHtml5', "Uploading project files, please wait a moment."
+    
+      @div outlet:'showViewContent', =>
         @div class: "form-group", =>
           @label 'ID:'
           @span class: 'task-id'
@@ -50,6 +53,8 @@ class BuildStatusView extends View
   initialize: ->
     @cancelbutton.disable()
     @refreshbutton.disable()
+    
+    @showViewContent.hide()
 
   attach: ->
     atom.workspaceView.append(this)
@@ -62,8 +67,12 @@ class BuildStatusView extends View
     hostName = puzzleClient.server.substr 0, puzzleClient.server.lastIndexOf('/')
     console.log 'hostName: %s', hostName
 
-    @socket = io "http://115.28.1.109:8000/socketio",
-    # @socket = io "http://localhost:8080/socketio",
+    if atom.config.get('atom-chameleon.puzzleServerAddress') is "http://localhost:8080/puzzle"
+      ioHttp = "http://localhost:8080/socketio"
+    else
+      ioHttp = "http://115.28.1.109:8000/socketio"
+  
+    @socket = io ioHttp,
       reconnection: true
       reconnectionDelay: 50
       reconnectionDelayMax: 12000
@@ -178,5 +187,12 @@ class BuildStatusView extends View
           console.error "failed to delete task #{@task.id}"
 
   buttonAbled: ->
+    @uploadHtml5.hide()
+    @showViewContent.show()
     @refreshbutton.attr("disabled",false)
     @cancelbutton.attr("disabled",false)
+
+  listViewInput: ->
+    @uploadHtml5.hide()
+    @showViewContent.show()
+    @console.hide()

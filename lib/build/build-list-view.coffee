@@ -22,6 +22,7 @@ class BuildTaskListView extends SelectListView
   confirmed: (item) ->
     buildStateView = new (require './build-state-view')()
     buildStateView.attach()
+    buildStateView.listViewInput()
     buildStateView.setTask(item)
 
 module.exports =
