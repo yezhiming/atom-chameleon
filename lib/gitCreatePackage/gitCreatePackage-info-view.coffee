@@ -3,6 +3,7 @@ _s = require 'underscore.string'
 _ = require 'underscore'
 path = require 'path'
 
+LoginView = require './gitCreatePackage-login-view'
 
 request = require 'request'
 Q = require 'q'
@@ -48,6 +49,11 @@ class V extends View
 
 
   initialize: (wizardView) ->
+    
+    @loginView = new LoginView()
+    atom.workspaceView.append @loginView
+    @loginView.hide()
+
     @editorOnDidChange @packageName, wizardView
 
     @describe.attr("style","height:200px")
@@ -118,6 +124,11 @@ class V extends View
     server = atom.config.get('atom-chameleon.puzzleServerAddress')
     access_token = atom.config.get 'atom-chameleon.puzzleAccessToken'
 
+    unless @loginView.isHidden()
+      return
+    
+    console.log "loginView"
+
     url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
@@ -136,17 +147,29 @@ class V extends View
           reject $.parseJSON(response.body).message
 
     .then (packageHave) =>
-      # console.log packageHave
-      wizard.mergeOptions {
-        repo: @selectGit
-        packageName: @packageName.getText()
-        describe: @describe.getText()
-      }
-      if packageHave
-        wizard.nextStep()
-      else
-        alert "Sorry,please change you Package Name!"
+      Q.Promise (resolve, reject, notify) =>
+        # console.log packageHave
+        options =
+          repo: @selectGit
+          packageName: @packageName.getText()
+          describe: @describe.getText()
 
+        unless packageHave
+          reject "Sorry,please change you Package Name!"
+        else
+          # 保存用户认证，但不保存用户密码
+          unless @userAccount.isHidden()
+            resolve(options)
+          else
+            @loginView.mergeOptions options
+            @loginView.show()
+            @loginView.editorVerify()
+            @loginView.on 'certain', (result) -> resolve(result)
+            # @loginView.finishPromise()
+    .then (options) =>
+      @loginView.destroy()
+      wizard.mergeOptions options
+      wizard.nextStep()
     .catch (err) ->
       console.trace err.stack
       alert "#{err}"

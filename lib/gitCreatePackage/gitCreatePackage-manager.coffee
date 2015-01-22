@@ -25,9 +25,6 @@ class GitCreatePackageManager
     GitCreatePackageWizardView = require './gitCreatePackage-wizard-view'
     gitCreatePackageWizardView = new GitCreatePackageWizardView()
 
-    LoginView = require './gitCreatePackage-login-view'
-    loginView = new LoginView()
-
     pv = new ProgressView("Create a package...")
 
     info = null
@@ -36,15 +33,7 @@ class GitCreatePackageManager
     gitCreatePackageWizardView.finishPromise()
     .then (options) ->
       gitCreatePackageWizardView.destroy()
-
-      loginView.mergeOptions options
-      atom.workspaceView.append loginView
-      loginView.finishPromise()
-
-    .then (options) ->
-      loginView.destroy()
       pv.attach()
-
       selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
       if require('fs').statSync(selectPath).isFile()
         tmpfile = path.resolve os.tmpdir(), uuid.v1()

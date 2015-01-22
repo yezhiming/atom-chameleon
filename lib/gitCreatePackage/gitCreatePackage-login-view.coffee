@@ -37,6 +37,7 @@ class V extends View
 
   mergeOptions:(options) ->
     _.extend @options, options
+    console.log @options
 
   # 验证editor是否填写了内容
   editorOnDidChange:(editor) ->
@@ -63,16 +64,11 @@ class V extends View
     @emit 'certain', @options
 
   destroy: ->
-    @remove()
+    @hide()
 
-  finishPromise: ->
-    Q.Promise (resolve, reject, notify) =>
-      @on 'certain', (result) -> resolve(result)
-      # 保存用户认证，但不保存用户密码
-      github = JSON.parse localStorage.getItem 'github'
-      gogs = JSON.parse localStorage.getItem 'gogs'
-      if (@options.repo is 'github' and github and github.safe) or (@options.repo is 'gogs' and gogs and gogs.token)
-        resolve(@options)
+  # finishPromise: ->
+    # Q.Promise (resolve, reject, notify) =>
+      
 
   passwordEditorView: (editorView)->
     editorView.originalText = ''
