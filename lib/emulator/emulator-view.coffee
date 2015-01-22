@@ -26,9 +26,10 @@ class EmulatorView extends View
 
   initialize: (serializeState) ->
     @url.text('http://localhost:3000')
-    @onClickRefresh()
+    
 
   attach: ->
+    @onClickRefresh()
     if atom.config.get('tree-view.showOnRightSide')
       atom.workspaceView.appendToLeft(this)
     else
@@ -41,6 +42,7 @@ class EmulatorView extends View
   toggle: ->
     unless @oneInput?
       @oneInput = "oneInput"
+      @onClickRefresh()
       @subscribe atom.config.observe 'tree-view.showOnRightSide', callNow: false, (newValue) =>
         @detach()
         @attach()
