@@ -74,9 +74,10 @@ class DebugServer extends EventEmitter
     # 开启debug webview
     if (@server.listeners 'listening').length is 0
       console.log 'bind [listening] event...'
-      @server.on 'listening', ->
+      @server.on 'listening', =>
         console.log "Debug Server listening..."
-        atom.workspaceView.trigger("atom-chameleon:emulator")
+        @server.httpPort = options.httpPort # holeway
+        atom.workspaceView.trigger("atom-chameleon:emulator", options.httpPort)
 
 
     #socket management, useful for graceful shutdown
@@ -97,8 +98,8 @@ class DebugServer extends EventEmitter
     console.log 'server run'
     @emit 'start'
 
-  stop: ->
-    _.each @sockets, (v, k, l)=>
+  stop: (cb) ->
+    _.each @sockets, (v, k, l) =>
       console.log "socket #{k} destroyed."
       v.destroy()
 
@@ -107,8 +108,10 @@ class DebugServer extends EventEmitter
       @lineoff = true
       @closeServer = "before"
       # 关闭debug webview
-      atom.workspaceView.trigger("atom-chameleon:emulator")
+      atom.workspaceView.trigger("atom-chameleon:emulator", @server.httpPort)
       @closeServer = "after"
+
+      cb(@server.httpPort)
     # 关闭状态栏
     @emit 'stop'
 
