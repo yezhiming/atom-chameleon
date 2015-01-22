@@ -63,8 +63,21 @@ class DebugServer extends EventEmitter
 
     @server = app.listen options.httpPort
 
+    # # 端口被占用 TODO 只要再次监听后，会报错，前一次再点击关闭时，不能回收端口，正常情况下是没问题的
+    # if (@server.listeners 'error').length is 0
+    #   console.log 'bind [error] event...'
+    #   @server.on 'error', (e) =>
+    #     if e.code is 'EADDRINUSE'
+    #       # @stop()
+    #       alert 'Address in use, retrying...'
+
     # 开启debug webview
-    atom.workspaceView.trigger("atom-chameleon:emulator")
+    if (@server.listeners 'listening').length is 0
+      console.log 'bind [listening] event...'
+      @server.on 'listening', ->
+        console.log "Debug Server listening..."
+        atom.workspaceView.trigger("atom-chameleon:emulator")
+
 
     #socket management, useful for graceful shutdown
     #ref: http://stackoverflow.com/questions/14626636/how-do-i-shutdown-a-node-js-https-server-immediately
@@ -96,6 +109,7 @@ class DebugServer extends EventEmitter
       # 关闭debug webview
       atom.workspaceView.trigger("atom-chameleon:emulator")
       @closeServer = "after"
+    # 关闭状态栏
     @emit 'stop'
 
   offline: ->

@@ -1,6 +1,8 @@
 fs = require 'fs'
 request = require 'request'
 Q = require 'q'
+localPort = require 'local-port'
+
 
 module.exports =
 class BuildManager
@@ -20,26 +22,33 @@ class BuildManager
     RunOnServerView = require './run-on-server-view'
     @runOnServerView = new RunOnServerView()
     @runOnServerView.attach()
-    @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState, api)=>
-      @debugServer.start {
-        rootPath: rootPath
-        defaultPage: destPath
-        httpPort: httpPort
-        pushState: pushState
-        api: api
-      }
-
+    @runOnServerView.on 'createServer', (event, rootPath, destPath, httpPort, pushState, api) =>
+      # 开启debug server
+      localPort.isPortTaken httpPort, (err, taken) =>
+        if err
+          console.error err
+        else if taken
+          alert 'Address in use, retrying...'
+        else
+          @debugServer.start
+            rootPath: rootPath
+            defaultPage: destPath
+            httpPort: httpPort
+            pushState: pushState
+            api: api
+        
   _setupDebugServer: ->
     unless @serverStatusView and @debugServer
       ServerStatusView = require './server-status-view'
       @serverStatusView = new ServerStatusView()
       @serverStatusView.on 'stopServer', => @debugServer.stop()
 
-      
+
       DebugServer = require './debug-server'
       @debugServer = new DebugServer()
       @debugServer.on 'start', => @serverStatusView.attach()
-      @debugServer.on 'stop', => @serverStatusView.detach()
+      @debugServer.on 'stop', => @serverStatusView.destroy()
+
 
   cmdLaunchEmulator: ->
 
