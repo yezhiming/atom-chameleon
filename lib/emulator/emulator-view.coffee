@@ -25,12 +25,6 @@ class EmulatorView extends View
       #       @button 'Debug', class: 'btn btn-primary inline-block-tight', click: 'onClickDebug'
 
   initialize: (serializeState) ->
-    #observe tree-view side toggle event
-    @subscribe atom.config.observe 'tree-view.showOnRightSide', callNow: false, (newValue) =>
-      @detach()
-      @attach()
-      @element.dataset.showOnLeftSide = newValue
-
     @url.text('http://localhost:3000')
     @onClickRefresh()
 
@@ -45,7 +39,14 @@ class EmulatorView extends View
     @detach()
 
   toggle: ->
-    if @hasParent() then @detach() else @attach()
+    unless @oneInput?
+      @oneInput = "oneInput"
+      @subscribe atom.config.observe 'tree-view.showOnRightSide', callNow: false, (newValue) =>
+        @detach()
+        @attach()
+        @element.dataset.showOnLeftSide = newValue
+    else
+      if @hasParent() then @detach() else @attach()
 
   getTargetUrl: ->
     @url.text()
