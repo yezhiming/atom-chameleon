@@ -6,17 +6,19 @@ config.silent = true;
 Q = require 'q'
 {EOL} = require 'os'
 
-module.exports = (path, url, options, describe)->
+module.exports = (path, url, options, describe, home, username) ->
+  console.log "path: #{path}, url: #{url}, home: #{home}, username: #{username}"
+  console.log options
 
   Q.Promise (resolve, reject, notify) =>
     if not which 'git'
-      return reject 'Sorry, this script requires git'
+      return reject new Error 'Sorry, this script requires git'
 
     unless path?
-      return reject "请输入path地址"
+      return reject new Error "请输入path地址"
 
     unless url?
-      return reject "请输入URL地址"
+      return reject new Error "请输入URL地址"
 
     if describe is ""
       describe = "init"
@@ -24,7 +26,7 @@ module.exports = (path, url, options, describe)->
 
     cd "#{path}"
     return resolve()
-    
+
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options1"
@@ -34,8 +36,10 @@ module.exports = (path, url, options, describe)->
       exec 'git init', options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
-        if code !=0
-          reject("Error: Git init failed:#{output}")
+        if code != 0
+          e = new Error "Error: Git init failed:#{output}"
+          e.code = code
+          reject e
         else
           resolve()
 
@@ -48,8 +52,10 @@ module.exports = (path, url, options, describe)->
       exec 'git add .', options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
-        if code !=0
-          reject("Error: Git add . failed:#{output}")
+        if code != 0
+          e = new Error "Error: Git add . failed:#{output}"
+          e.code = code
+          reject e
         else
           resolve()
   .then =>
@@ -58,11 +64,13 @@ module.exports = (path, url, options, describe)->
       console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git commit -m "'+ describe+'"'
-      exec 'git commit -m "'+ describe+'"', options, (code, output) ->
+      exec 'git commit -m "' + describe + '"', options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
-        if code !=0
-          reject('git commit -m "'+ describe+'"'+"failed: #{output}")
+        if code != 0
+          e = new Error 'git commit -m "' + describe + '"' + "failed: #{output}"
+          e.code = code
+          reject e
         else
           resolve()
   .then =>
@@ -75,7 +83,9 @@ module.exports = (path, url, options, describe)->
         console.log('Exit code:', code);
         console.log('Program output:', output);
         if code != 0
-          reject("Error: git remote add origin #{url} failed: #{output}")
+          e = new Error "Error: git remote add origin #{url} failed: #{output}"
+          e.code = code
+          reject e
         else
           resolve()
   # .then =>
@@ -97,10 +107,13 @@ module.exports = (path, url, options, describe)->
       console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git push -u origin master'
-      exec "git push -u origin master#{EOL}#{EOL}", options, (code, output) ->
+      # ssh-add 清除客户端公钥缓存
+      exec "eval \"$(ssh-agent -s)\" && ssh-add #{home}/.ssh/id_rsa_#{username} && git push -u origin master#{EOL}#{EOL}#{EOL}#{EOL}", options, (code, output) ->
         console.log('Exit code:', code);
         console.log('Program output:', output);
         if code != 0
-          reject("Error: git push -u origin master failed: #{output}")
+          e = new Error "Error: git push -u origin master failed: #{output}"
+          e.code = code
+          reject e
         else
           resolve()

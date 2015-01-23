@@ -123,27 +123,25 @@ module.exports =
       # 关闭确认公钥设置
       if (!fs.existsSync "#{options.home}/.ssh/config") or (!fs.readFileSync "#{options.home}/.ssh/config", encoding: 'utf8'.contains 'StrictHostKeyChecking no')
         fs.appendFileSync "#{options.home}/.ssh/config", "#{EOL}StrictHostKeyChecking no#{EOL}UserKnownHostsFile /dev/null#{EOL}"
-      msg =
-        gitHubFlag: 'new'
-        gogsFlag: 'new'
-      if fs.existsSync "#{options.home}/.ssh/id_dsa.pub"
-        console.log 'reset dsa KeyPair...'
-        pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf8'
+      msg = {}
+      if fs.existsSync "#{options.home}/.ssh/id_rsa_#{options.username}.pub"
+        console.log 'reset rsa KeyPair...'
+        pubKey = fs.readFileSync "#{options.home}/.ssh/id_rsa_#{options.username}.pub", encoding:'utf8'
         msg.public = pubKey
-        localStorage.installedSshKey = JSON.stringify msg
+        localStorage["#{options.username}_installedSshKey"] = JSON.stringify msg
         return resolve(pubKey)
       # 生成默认的公、密钥到userhome/.ssh
-      console.log 'generating dsa KeyPair...'
-      # 根据github规则，公钥名称暂时写死id_dsa
-      cp = exec "ssh-keygen -t dsa -C chameleonIDE@github.com -f #{options.home}/.ssh/id_dsa -N ''", options.options, (error, stdout, stderr) ->
+      console.log 'generating rsa KeyPair...'
+      # 根据github规则，公钥名称暂时写死id_rsa
+      cp = exec "ssh-keygen -t rsa -C #{options.username}@github.com -f #{options.home}/.ssh/id_rsa_#{options.username} -N ''", options.options, (error, stdout, stderr) ->
         if error
           reject(error)
         else
           console.log stdout.toString()
           console.log stderr.toString()
-          pubKey = fs.readFileSync "#{options.home}/.ssh/id_dsa.pub", encoding:'utf8'
+          pubKey = fs.readFileSync "#{options.home}/.ssh/id_rsa_#{options.username}.pub", encoding:'utf8'
           msg.public = pubKey
-          localStorage.installedSshKey = JSON.stringify msg
+          localStorage["#{options.username}_installedSshKey"] = JSON.stringify msg
           resolve(pubKey)
 
 
@@ -181,22 +179,30 @@ module.exports =
           console.log "github creates ssh key..."
           github.user.createKey msg, (err, data) ->
             if (err and err.message.indexOf 'key is already in use' != -1) or !err
-              keyObj = JSON.parse localStorage.getItem 'installedSshKey'
-              keyObj['gitHubFlag'] = 'old'
-              localStorage.installedSshKey = JSON.stringify keyObj
+              keyObj = JSON.parse localStorage.getItem "#{msg.options.username}_installedSshKey"
+              keyObj["#{msg.options.username}_gitHubFlag"] = true
+              localStorage["#{msg.options.username}_installedSshKey"] = JSON.stringify keyObj
               resolve
                 result: true
                 message: data
                 type: 'github'
-              # exec 'ssh -T git@github.com{EOL}', (code, output) ->
-              #   console.log('Exit code:', code);
-              #   console.log('Program output:', output);
-              #   if code != 0
-              #     reject("ssh -T git@github.com. failed:#{output}")
+              # 校验keypair
+              # home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
+              # option =
+              #   maxBuffer: 1024*1024*1
+              # option.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
+              # exec "eval \"$(ssh-agent -s)\" && ssh-add #{home}/.ssh/id_rsa_#{msg.options.username} && ssh -T git@github.com", option, (error, stdout, stderr) ->
+              #   console.log('Program stdout: %s', stdout.toString())
+              #   console.log('Program stderr: %s', stderr.toString())
+              #   if error
+              #     resolve
+              #       result: false
+              #       message: stderr.toString()
+              #       type: 'github'
               #   else
               #     resolve
               #       result: true
-              #       message: data
+              #       message: stdout.toString()
               #       type: 'github'
             else if err
               # eg：用户输错帐号密码重新验证 Etc.
@@ -241,6 +247,7 @@ module.exports =
       getUser: (msg)->
         callMyself = arguments.callee
         gogs = JSON.parse localStorage.getItem 'gogs'
+
         if gogs
           Q.Promise (resolve, reject, notify) ->
             resolve
@@ -274,11 +281,11 @@ module.exports =
               content: msg.content
               _csrf: msg.csrf
             , (err, httpResponse, body) ->
-                reject(err) if err
+                return reject(err) if err
                 # 不管服务器是否存在key则只要用户不删除本地的公钥密钥对即可
-                keyObj = JSON.parse localStorage.getItem 'installedSshKey'
-                keyObj['gogsFlag'] = 'old'
-                localStorage.installedSshKey = JSON.stringify keyObj
+                keyObj = JSON.parse localStorage.getItem "#{msg.options.username}_installedSshKey"
+                keyObj["#{msg.options.username}_gogsFlag"] = true
+                localStorage["#{msg.options.username}_installedSshKey"] = JSON.stringify keyObj
                 if httpResponse.statusCode is 302
                   resolve
                     result: true
@@ -289,6 +296,24 @@ module.exports =
                     result: false
                     message: body
                     type: 'gogs'
+                # 校验keypair
+                # home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
+                # option =
+                #   maxBuffer: 1024*1024*1
+                # option.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
+                # exec "eval \"$(ssh-agent -s)\" && ssh-add #{home}/.ssh/id_rsa_#{msg.options.username} && ssh -T git@#{module.exports.gogsApi.replace('https://', '')}", option, (error, stdout, stderr) ->
+                #   console.log('Program stdout: %s', stdout.toString())
+                #   console.log('Program stderr: %s', stderr.toString())
+                #   if error
+                #     resolve
+                #       result: false
+                #       message: stderr.toString()
+                #       type: 'gogs'
+                #   else
+                #     resolve
+                #       result: true
+                #       message: stdout.toString()
+                #       type: 'gogs'
       else
         gogs_login(msg.options)
         .then (cookies) ->

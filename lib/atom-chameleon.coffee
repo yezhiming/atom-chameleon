@@ -25,17 +25,17 @@ module.exports =
     localStorage.removeItem 'github' # 重启就要github认证，不然会报错，暂时这样
     localStorage.removeItem 'gogs' # 重启就要gogs认证，不然会报错，暂时这样
     # git ssh 策略：ide每次检测不存在就默认生成keypair
-    home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
-    exist1 = fs.existsSync "#{home}/.ssh/id_dsa"
-    exist2 = fs.existsSync "#{home}/.ssh/id_dsa.pub"
-    if (!localStorage.getItem 'installedSshKey') or (!exist1) or (!exist2)
-      options =
-        maxBuffer: 1024*1024*10
-      options.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
-      # 生成默认的公、密钥到userhome/.ssh
-      generateKeyPair
-        home: home
-        options
+    # home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
+    # exist1 = fs.existsSync "#{home}/.ssh/id_dsa"
+    # exist2 = fs.existsSync "#{home}/.ssh/id_dsa.pub"
+    # if (!localStorage.getItem 'installedSshKey') or (!exist1) or (!exist2)
+    #   options =
+    #     maxBuffer: 1024*1024*10
+    #   options.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
+    #   # 生成默认的公、密钥到userhome/.ssh
+    #   generateKeyPair
+    #     home: home
+    #     options
       #     if process.platform is 'win32' and (!process.env.Path.contains "#{atom.config.get('atom-chameleon.gitCloneEnvironmentPath')}")
       #       # TODO 这里要重启windows，atom才能读取到系统变量 真是蛋碎 T^T
       #       command = "setx PATH \"%PATH%#{path.delimiter}#{atom.config.get('atom-chameleon.gitCloneEnvironmentPath')}\""

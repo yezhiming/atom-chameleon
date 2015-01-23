@@ -43,39 +43,55 @@ class GitCreatePackageManager
       tmpDir = path.resolve tmpfile, path.basename(selectPath)
       if fs.existsSync tmpDir
         fs.removeSync tmpDir
-
       fs.copySync selectPath, tmpDir
 
       if require('fs').statSync(selectPath).isFile()
         gitPath = tmpfile
       else
         gitPath = tmpDir
-
       _.extend(options, gitPath: gitPath)
 
-    .then (options) -> # upload ssh key
+    .then (options) -> # generateKeyPair? 每个帐号有自己的keypair
       info = options
-      keyObj = JSON.parse localStorage.getItem 'installedSshKey' # installedSshKey一定会在localStorage
-      if keyObj.gitHubFlag is 'new' and info.repo is 'github'
-        pv.setTitle "Upload chameleonIDE public key to github"
+      home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
+      info.home = home
+      option =
+        maxBuffer: 1024*1024*5
+      option.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
+      info.option = option
+
+      keyObj = JSON.parse localStorage.getItem "#{info.account}_installedSshKey"
+      unless keyObj and keyObj.public
+        # 生成默认的公、密钥到userhome/.ssh
+        generateKeyPair
+          home: info.home
+          username: info.account
+          info.option
+
+    .then (options) -> # upload ssh key
+      # {info.account}_gitHubFlag = true 表示此用户成功上传过publickey
+      keyObj = JSON.parse localStorage.getItem "#{info.account}_installedSshKey"
+      if info.repo is 'github' and (!keyObj["#{info.account}_gitHubFlag"])
+        pv.setTitle "Upload chameleonIDE public key to github."
         # 由于github只匹配key内容不匹配名字
         github().createSshKey
           options:
-            username: options.account
-            password: options.password
+            username: info.account
+            password: info.password
           key: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-chameleon.puzzleAccessToken')})"
-      else if keyObj.gogsFlag is 'new' and info.repo is 'gogs'
-        pv.setTitle "Upload chameleonIDE public key to gogs"
+      else if info.repo is 'gogs' and (!keyObj["#{info.account}_gogsFlag"])
+        pv.setTitle "Upload chameleonIDE public key to gogs."
         # 由于github只匹配key内容不匹配名字
         gogs().createSshKey
           options:
-            username: options.account
-            password: options.password
+            username: info.account
+            password: info.password
           content: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-chameleon.puzzleAccessToken')})"
 
     .then (data) -> # 获取用户名
+      # TODO data对象来判断keypair校验成功
       if info.repo is 'github'
         github().getUser
           options:
@@ -130,7 +146,7 @@ class GitCreatePackageManager
       gitPath = atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 设置git环境变量
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
-      gitApi_create info.gitPath, repoSshUrl, options, info.describe
+      gitApi_create info.gitPath, repoSshUrl, options, info.describe, info.home, info.account
 
     .then ->
       pv.setTitle "Add package：#{info.packageName}"
@@ -178,11 +194,14 @@ class GitCreatePackageManager
         atom.workspaceView.append resultView
 
     .catch (error) ->
-      alert "#{error}"
-      if error.message.indexOf('Permission denied (publickey)') != -1
-        home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
-        generateKeyPair(home) # 重新上传key
+      if error.message.indexOf('Permission denied (publickey)') != -1 or (error.code = 128 and error.message.indexOf('Permission'))
+        generateKeyPair
+          home: info.home # 重新上传key
+          username: info.account
+          info.options
+        alert "reset chameleon IDE publickey, please try again..."
       else
+        alert "#{error}"
         console.trace error.stack
         done(error)
     .finally ->
