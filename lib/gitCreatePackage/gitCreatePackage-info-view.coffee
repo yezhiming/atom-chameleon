@@ -137,7 +137,7 @@ class V extends View
     unless @loginView.isHidden()
       return
     
-    url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
+    url = "#{server}/api/packages/findOne/#{@packageName.originalText}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
         return reject error if error
