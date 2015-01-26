@@ -123,6 +123,8 @@ class V extends View
       wizardView.disableNext()
 
   destroy: ->
+    unless @loginView.isHidden()
+      @loginView.hide()
     @remove()
 
   onNext: (wizard) ->
@@ -135,8 +137,6 @@ class V extends View
     unless @loginView.isHidden()
       return
     
-    console.log "loginView"
-
     url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
