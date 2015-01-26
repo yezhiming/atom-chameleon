@@ -51,7 +51,7 @@ class V extends View
 
 
   initialize: (wizardView) ->
-    
+
     @loginView = new LoginView()
     atom.workspaceView.append @loginView
     @loginView.hide()
@@ -63,7 +63,7 @@ class V extends View
 
     selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
     @packageName.setText _.last(selectPath.split(path.sep))
-  
+
     @selectPublicGit.change =>
       @userAccountAttached()
 
@@ -72,29 +72,29 @@ class V extends View
 
     @checkNameEditorView @packageName
     @warnPackageText.hide()
-    
-    
+
+
   attached: ->
     @privateSelect.hide()
     @userAccountAttached()
 
     @packageName.focus()
-    
+
   userAccountAttached: ->
     unless @privateSelect.isHidden()
       @selectGit = @selectPrivateGit.val()
     else
       @selectGit = @selectPublicGit.val()
-    
+
     loginInfo = localStorage.getItem @selectGit
     loginInfo = JSON.parse(loginInfo)
-    
+
     if loginInfo is null
       @userAccount.hide()
     else
       @userAccount.show()
       @account.html loginInfo.username
-      
+
   logOutFun: ->
     localStorage.removeItem @selectGit
     @userAccountAttached()
@@ -136,7 +136,7 @@ class V extends View
 
     unless @loginView.isHidden()
       return
-    
+
     url = "#{server}/api/packages/findOne/#{@packageName.originalText}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
@@ -198,7 +198,7 @@ class V extends View
 
   checkName: (editorView)->
     str = editorView.getText()
-    regEx = /[\`\~\!\@\#\$\%\^\&\*\(\)\+\=\|\{\}\'\:\;\,\\\[\]\<\>\/\?\~\！\@\#\￥\%\…\…\&\*\（\）\—\—\+\|\{\}\【\】\‘\；\：\”\“\’\。\，\、\？]/g
+    regEx = /[\`\~\!\@\#\$\%\^\&\*\(\)\+\=\|\{\}\'\:\;\,\.\·\\\[\]\<\>\/\?\~\！\@\#\￥\%\…\…\&\*\（\）\—\—\+\|\{\}\【\】\‘\；\：\”\“\’\。\，\、\？]/g
     strcheck = str.replace(/[^\x00-\xff]/g,"-")
     strcheck = strcheck.replace(regEx,"-")
     strcheck = strcheck.replace(/-+/g, '-')
@@ -210,6 +210,3 @@ class V extends View
       @warnPackageText.hide()
     else
       @warnPackageText.show()
-  
-    
-    

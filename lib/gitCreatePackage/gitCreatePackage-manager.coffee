@@ -142,7 +142,6 @@ class GitCreatePackageManager
       options =
         async: true
         timeout: 1000*60*10
-        maxBuffer: 1024*1024*10
       gitPath = atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 设置git环境变量
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
@@ -194,16 +193,22 @@ class GitCreatePackageManager
         atom.workspaceView.append resultView
 
     .catch (error) ->
-      if error.message.indexOf('Permission denied (publickey)') != -1 or (error.code = 128 and error.message.indexOf('Permission'))
+      if error.message.indexOf('Permission denied (publickey)') != -1 # 清除git客户端ssh交互缓存
         generateKeyPair
           home: info.home # 重新上传key
           username: info.account
           info.options
         alert "reset chameleon IDE publickey, please try again..."
+      else if error.code = 128 and error.message.indexOf('Permission to ') != -1 and error.message.indexOf(' denied to ') != -1
+        # 这种情况是由于git提供商帐号（eg: github帐号）后台已经手动上传默认id_ras.pub 等默认公钥类型，导致了ssh-add不能清除ssh交互缓存，一直会与此帐号同步资源，导致错误发生。
+        # 参考：https://help.github.com/articles/generating-ssh-keys/
+        alert "This kind of situation is due to the git provider the user (eg: github's user) are manually upload id_ras.pub etc.
+          the default public key types such as pub, led to the SSH-add tools don't remove the SSH interaction cache, have been with this account will be resources, lead to errors.
+          Reference: https://help.github.com/articles/generating-ssh-keys/"
       else
         alert "#{error}"
-        console.trace error.stack
-        done(error)
+      console.trace error.stack
+      done(error)
     .finally ->
       console.log "publish package finally."
       pv.destroy()
