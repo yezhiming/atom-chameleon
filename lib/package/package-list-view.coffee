@@ -51,6 +51,7 @@ class PackageListView extends View
 
   @content: ->
     @div class: 'overlay from-top select-list', =>
+      @div class: 'alert alert-info featured-message icon icon-info', style:'display:none', outlet: 'tips', "No module's packages in your chameleon project.The package you create must contain a version and build tag"
       @ol outlet: 'list', class: 'list-group package-list'
       @button 'Cancel', click: 'destroy', class: "btn btn-lg"
       @span class: "loading loading-spinner-small inline-block pull-right",outlet: 'loading'
@@ -104,6 +105,10 @@ class PackageListView extends View
     console.log 'showPackageList'
     @list.html ''
     PackageCell = require './package-cell-template'
+
+    if (modules.length == 0)
+      @tips.css "display", "block"
+
     for module in modules
       _package = module.package
       if(_package && _package.build && _package.version)

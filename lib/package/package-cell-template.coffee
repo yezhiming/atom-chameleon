@@ -9,7 +9,8 @@ module.exports =
 
     @content: ->
       @li class: 'two-line package-list-item', =>
-        @div class: 'package-icon'
+        @div class: 'package-icon', =>
+          @img src: 'atom://atom-chameleon/images/icon.png'
         @div class: 'info', =>
           @div outlet: 'baseInfo', =>
             @div outlet: 'name'
