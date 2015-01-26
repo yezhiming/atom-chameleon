@@ -2,6 +2,7 @@
 _s = require 'underscore.string'
 _ = require 'underscore'
 path = require 'path'
+{checkProjectName} = require '../utils/utils'
 
 LoginView = require './gitCreatePackage-login-view'
 
@@ -189,22 +190,14 @@ class V extends View
       console.trace err.stack
       alert "#{err}"
 
-
   checkNameEditorView: (editorView)->
     editorView.originalText = ''
     editorView.hiddenInput.on 'focusout', (e) =>
       @checkName editorView
 
-
   checkName: (editorView)->
     str = editorView.getText()
-    regEx = /[\`\~\!\@\#\$\%\^\&\*\(\)\+\=\|\{\}\'\:\;\,\·\\\[\]\<\>\/\?\~\！\@\#\￥\%\…\…\&\*\（\）\—\—\+\|\{\}\【\】\‘\；\：\”\“\’\。\，\、\？]/g
-    strcheck = str.replace(/[^\x00-\xff]/g,"-")
-    strcheck = strcheck.replace(regEx,"-")
-    strcheck = strcheck.replace(/-+/g, '-')
-    # 特殊处理
-    strcheck = '...' if strcheck is '.' or strcheck is '..'
-
+    strcheck = checkProjectName str
     editorView.originalText = strcheck
     @warnPackageTextLabel.html("Will be created as #{strcheck}")
 
