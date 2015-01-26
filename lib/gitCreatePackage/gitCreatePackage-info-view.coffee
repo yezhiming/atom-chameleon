@@ -78,14 +78,14 @@ class V extends View
     else
       @selectGit = @selectPublicGit.val()
     
-    username = localStorage.getItem @selectGit
-    username = JSON.parse(username)
+    loginInfo = localStorage.getItem @selectGit
+    loginInfo = JSON.parse(loginInfo)
     
-    if username is null
+    if loginInfo is null
       @userAccount.hide()
     else
       @userAccount.show()
-      @account.html username.username
+      @account.html loginInfo.username
       
   logOutFun: ->
     localStorage.removeItem @selectGit
@@ -159,6 +159,10 @@ class V extends View
         else
           # 保存用户认证，但不保存用户密码
           unless @userAccount.isHidden()
+            loginInfo = localStorage.getItem @selectGit
+            loginInfo = JSON.parse(loginInfo)
+            account = loginInfo.username
+            _.extend(options, account: account)
             resolve(options)
           else
             @loginView.mergeOptions options
