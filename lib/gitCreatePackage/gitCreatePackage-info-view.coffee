@@ -42,6 +42,8 @@ class V extends View
       @div class: "form-group", =>
         @label 'Package Name:'
         @subview 'packageName', new EditorView(mini: true)
+        @div style: "background-color: #f7ea57;", outlet: "warnPackageText", =>
+          @label style: "font-weight: bolder; color: black;",outlet: "warnPackageTextLabel"
 
       @div class: "form-group", =>
         @label 'Describe:'
@@ -67,6 +69,9 @@ class V extends View
 
     @selectPrivateGit.change =>
       @userAccountAttached()
+
+    @checkNameEditorView @packageName
+    @warnPackageText.hide()
     
   attached: ->
     @privateSelect.hide()
@@ -151,7 +156,7 @@ class V extends View
         # console.log packageHave
         options =
           repo: @selectGit
-          packageName: @packageName.getText()
+          packageName: @packageName.originalText
           describe: @describe.getText()
 
         unless packageHave
@@ -177,3 +182,28 @@ class V extends View
     .catch (err) ->
       console.trace err.stack
       alert "#{err}"
+
+
+  checkNameEditorView: (editorView)->
+    editorView.originalText = ''
+    editorView.hiddenInput.on 'focusout', (e) =>
+      @checkName editorView
+
+
+  checkName: (editorView)->
+    str = editorView.getText()
+    regEx = /[\`\~\!\@\#\$\%\^\&\*\(\)\+\=\|\{\}\'\:\;\,\\\[\]\<\>\/\?\~\！\@\#\￥\%\…\…\&\*\（\）\—\—\+\|\{\}\【\】\‘\；\：\”\“\’\。\，\、\？]/g
+    strcheck = str.replace(/[^\x00-\xff]/g,"-")
+    strcheck = strcheck.replace(regEx,"-")
+    strcheck = strcheck.replace(/-+/g, '-')
+
+    editorView.originalText = strcheck
+    @warnPackageTextLabel.html("Will be created as #{strcheck}")
+
+    if strcheck is str
+      @warnPackageText.hide()
+    else
+      @warnPackageText.show()
+  
+    
+    
