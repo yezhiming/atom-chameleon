@@ -73,9 +73,12 @@ class V extends View
     @checkNameEditorView @packageName
     @warnPackageText.hide()
     
+    
   attached: ->
     @privateSelect.hide()
     @userAccountAttached()
+
+    @packageName.focus()
     
   userAccountAttached: ->
     unless @privateSelect.isHidden()
@@ -160,6 +163,7 @@ class V extends View
           describe: @describe.getText()
 
         unless packageHave
+          @packageName.focus()
           reject "Sorry,please change you Package Name!"
         else
           # 保存用户认证，但不保存用户密码
@@ -173,8 +177,10 @@ class V extends View
             @loginView.mergeOptions options
             @loginView.show()
             @loginView.editorVerify()
-            @loginView.on 'certain', (result) -> resolve(result)
-            # @loginView.finishPromise()
+            @loginView.account.focus()
+            @loginView.on 'certain', (result) => resolve(result)
+            @loginView.on 'destroy', => @packageName.focus()
+
     .then (options) =>
       @loginView.destroy()
       wizard.mergeOptions options
