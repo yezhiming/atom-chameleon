@@ -43,7 +43,7 @@ class V extends View
         @label 'Package Name:'
         @subview 'packageName', new EditorView(mini: true)
         @div style: "background-color: #f7ea57;", outlet: "warnPackageText", =>
-          @label style: "font-weight: bolder; color: black;",outlet: "warnPackageTextLabel"
+          @label style: "font-weight: bolder; color: black;padding-left: 5px;padding-top: 5px;",outlet: "warnPackageTextLabel"
 
       @div class: "form-group", =>
         @label 'Describe:'
