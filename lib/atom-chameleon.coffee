@@ -151,6 +151,9 @@ module.exports =
     .then (projectPath)->
       atom.open {pathsToOpen: [projectPath]}
 
+      if atom.packages.getActivePackage('tree-view').mainModule.treeView.isHidden()
+        atom.workspaceView.trigger "tree-view:toggle"
+
     .progress (progress)->
       pv.setTitle(progress.message) if progress.message
       pv.setProgress(progress.progress) if progress.progress
