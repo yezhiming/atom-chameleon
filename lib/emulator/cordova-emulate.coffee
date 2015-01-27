@@ -1,4 +1,5 @@
 fs = require 'fs'
+fse = require 'fs-extra'
 path = require 'path'
 request = require 'request'
 Decompress = require 'decompress'
@@ -66,22 +67,13 @@ module.exports = (router, buildPath) ->
 
   # as same as rm -rf /folder
   router.get '/fs/rmdir', (req, res, next) ->
-    deleteFolderRecursive = (path) ->
-      console.log path
-      files = []
-      if fs.existsSync path
-        files = fs.readdirSync path
 
-        files.forEach (file, index) ->
-          curPath = "#{path}/#{file}"
-          if fs.statSync(curPath).isDirectory() # recurse
-            deleteFolderRecursive curPath
-          else # delete file
-            fs.unlinkSync curPath
-
-        fs.rmdirSync path
-
-    deleteFolderRecursive req.rpath
-    res.status(200).json
-      err: null
-      result: true
+    fse.remove req.rpath, (err) ->
+      if err
+        res.status(500).json
+          err: err
+          result: false
+      else
+        res.status(200).json
+          err: null
+          result: true
