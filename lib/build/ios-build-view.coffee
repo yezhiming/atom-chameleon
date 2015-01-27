@@ -41,7 +41,7 @@ class V extends View
             @subview 'repository_url', new EditorView(mini: true, placeholderText: 'Click to choose your Application URL')
           @div class: 'form-group', =>
             @label 'Scheme:'
-            @subview 'scheme', new EditorView(mini: true, placeholderText: 'Please input chameleon-bundled or chameleon-sandbox')
+            @subview 'scheme', new EditorView(mini: true, placeholderText: 'chameleon-bundled or chameleon-sandbox')
           @div class: 'form-group', =>
             @label 'Content Src:'
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'Click here to select your content-src')
