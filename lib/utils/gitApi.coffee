@@ -243,25 +243,25 @@ module.exports =
 
 
   gogs: ->
-      # 获取用户信息
-      getUser: (msg)->
-        callMyself = arguments.callee
-        gogs = JSON.parse localStorage.getItem 'gogs'
+    # 获取用户信息
+    getUser: (msg)->
+      callMyself = arguments.callee
+      gogs = JSON.parse localStorage.getItem 'gogs'
 
-        if gogs
-          Q.Promise (resolve, reject, notify) ->
-            resolve
-              result: true
-              message: gogs.login
-              type: 'gogs'
-        else
-          gogs_login(msg.options)
-          .then (cookies) ->
-            gogs_csrf cookies
-          .then (obj) ->
-            gogs_authenticate obj
-          .then (token) ->
-            callMyself(msg)
+      if gogs
+        Q.Promise (resolve, reject, notify) ->
+          resolve
+            result: true
+            message: gogs.login
+            type: 'gogs'
+      else
+        gogs_login(msg.options)
+        .then (cookies) ->
+          gogs_csrf cookies
+        .then (obj) ->
+          gogs_authenticate obj
+        .then (token) ->
+          callMyself(msg)
 
 
     # 上传公钥到服务器
