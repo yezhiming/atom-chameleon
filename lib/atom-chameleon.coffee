@@ -119,23 +119,26 @@ module.exports =
     pv = new ProgressView("Create Project...")
 
     Q.Promise (resolve, reject, notify) =>
+      isOpenDialog = false
       projectWizardView.on 'finish', (result) ->
+        if isOpenDialog
+          return
+        isOpenDialog = true
         # composite promise combine result with previous result
         openDirectory(title: 'Select Path')
         .then (destPath) ->
           resolve _.extend(result, path: destPath[0])
+        .finally ->
+          isOpenDialog = false
 
     # do UI stuffs
     .then (options)->
-      console.log "foreveross:#{options}"
       projectWizardView.destroy()
       pv.attach()
-
       Q(options)
 
     # create project with options
     .then (options) ->
-
       switch options.template
         when 'simple' then options.repo = "https://github.com/yezhiming/butterfly-starter.git"
         when 'modular' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
