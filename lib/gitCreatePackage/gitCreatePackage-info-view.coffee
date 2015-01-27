@@ -18,7 +18,7 @@ class V extends View
       @div class: "form-group", =>
         @div class:"optional-radio", =>
           @input name: "gitSelect", type: "radio", id: 'publicPackageRadio', checked: "checked", outlet: "publicPackageRadio", click: "radioSelectPublicFun"
-          @label "Anyone can see this repository. You choose who can commit.", class: 'radioLabel'
+          @label "Anyone can see this repository. You choose who can commit.", class: 'radioLabel', for: "publicPackageRadio", style: "cursor: pointer;"
 
         @div outlet: 'publicSelect', =>
           @select class:'form-control', outlet: 'selectPublicGit', =>
@@ -27,7 +27,7 @@ class V extends View
       @div class: "form-group", =>
         @div class:"optional-radio", =>
           @input name: "gitSelect", type: "radio", id: 'privatePackageRadio', outlet: "privatePackageRadio", click: "radioSelectPrivateFun"
-          @label 'Your team can see this repository. You choose who can commit.', class: 'radioLabel'
+          @label 'Your team can see this repository. You choose who can commit.', class: 'radioLabel', for: "privatePackageRadio", style: "cursor: pointer;"
 
         @div outlet: 'privateSelect', =>
           @select class:'form-control', outlet: 'selectPrivateGit', =>
