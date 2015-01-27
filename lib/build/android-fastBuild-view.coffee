@@ -65,10 +65,6 @@ class V extends View
     @build.setText "1"
     @icon.attr 'src', getResourcePath('images', 'icon.png')
 
-    @repository_url.setText 'https://git.oschina.net/chameleon/chameleon-android-v3.git'
-    @scheme.setText 'bundle'
-    @content_src.setText 'main/index.html'
-
     @content_src.setText 'main/index.html'
 
     # @readOnlyEditorView @title
