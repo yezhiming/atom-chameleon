@@ -244,7 +244,7 @@ module.exports =
 
   gogs: ->
     # 获取用户信息
-    getUser: (msg)->
+    getUser: (msg) ->
       callMyself = arguments.callee
       gogs = JSON.parse localStorage.getItem 'gogs'
 

@@ -51,8 +51,25 @@ class GitCreatePackageManager
         gitPath = tmpDir
       _.extend(options, gitPath: gitPath)
 
-    .then (options) -> # generateKeyPair? 每个帐号有自己的keypair
+    .then (options) -> # 验证用户有效性并且获取用户名
       info = options
+      if info.repo is 'github'
+        github().getUser
+          options:
+            username: info.account
+            password: info.password
+      else if info.repo is 'gogs'
+        gogs().getUser
+          options:
+            username: info.account
+            password: info.password
+
+    .then (obj) -> # generateKeyPair? 每个帐号有自己的keypair
+      if obj.result and obj.type is 'github'
+        info.username = obj.message.login # 添加github用户名
+      else if obj.result and obj.type is 'gogs'
+        info.username = obj.message # 添加gogs用户名
+      # generateKeyPair
       home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
       info.home = home
       option =
@@ -90,23 +107,9 @@ class GitCreatePackageManager
           content: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-chameleon.puzzleAccessToken')})"
 
-    .then (data) -> # 获取用户名
-      # TODO data对象来判断keypair校验成功
-      if info.repo is 'github'
-        github().getUser
-          options:
-            username: info.account
-            password: info.password
-      else if info.repo is 'gogs'
-        gogs().getUser
-          options:
-            username: info.account
-            password: info.password
-
-    .then (obj) -> # 创建仓库
+    .then (data) -> # 创建仓库 TODO data对象来判断keypair校验成功
       pv.setTitle "#{info.repo} create package: #{info.packageName}"
-      if obj.result and obj.type is 'github'
-        info.username = obj.message.login # 添加github用户名
+      if data.type is 'github'
         github().createRepos
           options:
             username: info.account
@@ -115,8 +118,7 @@ class GitCreatePackageManager
           description: info.describe
           private: false
           auto_init: false
-      else if obj.result and obj.type is 'gogs'
-        info.username = obj.message # 添加gogs用户名
+      else if data.type is 'gogs'
         gogs().createRepos
           options:
             username: info.account
