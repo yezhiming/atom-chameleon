@@ -42,22 +42,22 @@ class V extends View
             @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
 
   initialize: ->
-    [
-      {view: @content_src, suffix: 'html', relative: true}
-    ]
-    .forEach (each) ->
-      #disable input
-      each.view.setInputEnabled false
-      #select file
-      each.view.on 'click', ->
-        openFile
-          title: "Select .#{each.suffix} File"
-          filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
-        .then (destPath) ->
-          if each.relative?
-            each.view.setText path.relative(atom.project.path, destPath[0])
-          else
-            each.view.setText destPath[0]
+    # [
+    #   {view: @content_src, suffix: 'html', relative: true}
+    # ]
+    # .forEach (each) ->
+    #   #disable input
+    #   each.view.setInputEnabled false
+    #   #select file
+    #   each.view.on 'click', ->
+    #     openFile
+    #       title: "Select .#{each.suffix} File"
+    #       filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
+    #     .then (destPath) ->
+    #       if each.relative?
+    #         each.view.setText path.relative(atom.project.path, destPath[0])
+    #       else
+    #         each.view.setText destPath[0]
 
 
     @title.setText _.last(atom.project.path.split(path.sep)) if atom.project.path
@@ -67,9 +67,10 @@ class V extends View
 
     @content_src.setText 'main/index.html'
 
-    # @readOnlyEditorView @title
-    # @readOnlyEditorView @version
-    # @readOnlyEditorView @build
+    @readOnlyEditorView @title
+    @readOnlyEditorView @version
+    @readOnlyEditorView @build
+    @readOnlyEditorView @content_src
 
   onClickIcon: ->
     openFile
