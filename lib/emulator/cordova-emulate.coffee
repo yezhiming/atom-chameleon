@@ -14,7 +14,7 @@ module.exports = (router, buildPath) ->
 
     if cmd is 'download'
       next()
-    else if cmd is 'stat' or cmd is 'readFile'
+    else if cmd is 'stat' or cmd is 'readFile' or cmd is 'rmdir'
       unless rePath
         res.status(400).send "please add querystring 'path'"
       else
