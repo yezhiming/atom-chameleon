@@ -54,15 +54,19 @@ class V extends View
           wizardView.disableNext()
         else
           wizardView.enableNext()
+    @isOpenDialog = false
 
   onClickIcon: ->
+    if @isOpenDialog
+      return
+    @isOpenDialog = true
     dialog.showOpenDialog {
       title: 'Select Icon Image'
       defaultPath: atom.project.path
       filters: [{name: "png image", extensions: ['png', 'jpg']}]
       properties: ['openFile']
     }, (destPath) =>
-
+      @isOpenDialog = false
       @icon.attr('src', destPath) if destPath
 
   destroy: ->
