@@ -118,15 +118,16 @@ module.exports =
     projectWizardView = new ProjectWizardView().attach()
     pv = new ProgressView("Create Project...")
 
-    projectWizardView.finishPromise()
-    # select dest path
-    .then (options) ->
-      # composite promise combine result with previous result
-      openDirectory(title: 'Select Path')
-      .then (destPath) -> Q(_.extend(options, path: destPath[0]))
+    Q.Promise (resolve, reject, notify) =>
+      projectWizardView.on 'finish', (result) ->
+        # composite promise combine result with previous result
+        openDirectory(title: 'Select Path')
+        .then (destPath) ->
+          resolve _.extend(result, path: destPath[0])
 
     # do UI stuffs
     .then (options)->
+      console.log "foreveross:#{options}"
       projectWizardView.destroy()
       pv.attach()
 
