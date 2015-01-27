@@ -5,8 +5,8 @@ GitHubApi = require 'github'
 {EOL} = require 'os'
 fse = require 'fs-extra'
 fs = require 'fs'
+
 github = null
-gogs = {}
 
 # api.github.com
 github_init = ->
@@ -36,11 +36,11 @@ github_authenticate = (options) ->
 # gogs模拟登入获取cookies
 gogs_login = (options) ->
   if options.username and options.password
-    gogs.username = options.username
-    gogs.password = options.password
+    module.exports.gogsClient.username = options.username
+    module.exports.gogsClient.password = options.password
   else
-    options.username = gogs.username
-    options.password = gogs.password
+    options.username = module.exports.gogsClient.username
+    options.password = module.exports.gogsClient.password
 
   Q.Promise (resolve, reject, notify) ->
     console.log "gogs authenticate: POST #{module.exports.gogsApi}/user/login"
@@ -50,8 +50,17 @@ gogs_login = (options) ->
         uname: options.username
         password: options.password
       , (err, httpResponse, body) ->
-          reject(err) if err
-          # if httpResponse.statusCode is 200
+        if err
+          reject(err)
+        else if httpResponse.statusCode is 502
+          e = new Error 'The server is upgrading, please wait...'
+          e.code = 502
+          reject(e)
+        else if httpResponse.statusCode is 200 and body.contains('Need an account? Sign up now.')
+          e = new Error 'Account and password is wrong, please enter it correctly...'
+          e.code = 401
+          reject(e)
+        else
           localStorage.gogs = JSON.stringify username: options.username
           resolve(httpResponse.headers['set-cookie'])
 
@@ -71,7 +80,13 @@ gogs_csrf = (cookies) ->
             uname = uname.substring uname.indexOf('<a href=\"\/') + '<a href=\"\/'.length, uname.indexOf('\" class=\"text-bold\">')
             console.log "截取html用户名：#{uname}"
 
-            csrf = httpResponse.toJSON().headers['set-cookie'][0].split(';')[0].split('=')[1].replace(/%3D/g, '=')
+            # _csrf=VWBBF6oKsv33n5xGtW6sxUmrh5g6MTQyMjM0Njk5NTAzNzEzNTcwNA==; Path=/
+            csrf = httpResponse.toJSON().headers['set-cookie'][0].split(';')[0].split('=')[1]
+            if csrf.length >= 60 or csrf.contains '%3D'
+              csrf = csrf.replace(/%3D/g, '=')
+            else
+              csrf = "#{csrf}=="
+            console.log "_csrf: #{csrf}"
             resolve
               login: uname
               cookies: cookies
@@ -97,8 +112,13 @@ gogs_authenticate = (msg) ->
           name: 'chameloenIDE(Mistaken delete!)'
           _csrf: msg.csrf
       , (err, httpResponse, body) ->
-          reject(err) if err
-          if httpResponse.statusCode is 302
+          if err
+            reject(err)
+          else if httpResponse.statusCode is 400
+            e = new Error 'system will be fix, please wailt...'
+            e.code = 401
+            reject(e)
+          else if httpResponse.statusCode is 302
             # decodeURIComponent 解码url
             macaron_flash = decodeURIComponent httpResponse.toJSON().headers['set-cookie'][1]
             token = macaron_flash.split('&success')[0].replace 'macaron_flash=info=', ''
@@ -111,9 +131,12 @@ gogs_authenticate = (msg) ->
 
 
 module.exports =
+  gogsClient: {},
 
   # https://bsl.foreveross.com/gogs(8001)
-  gogsApi: 'https://try.gogs.io',
+  # gogsApi: 'http://172.16.1.27:3000',
+  gogsProtocol = "https://",
+  gogsApi: "#{module.exports.gogsProtocol}try.gogs.io",
 
   # 生成默认的公、密钥到userhome/.ssh
   generateKeyPair: (options) ->
@@ -268,7 +291,7 @@ module.exports =
     createSshKey: (msg) ->
       callMyself = arguments.callee
       gogs = JSON.parse localStorage.getItem 'gogs' # 匹配是否同一个用户的token后开始创建仓库
-      if gogs and gogs.token
+      if gogs and msg.cookies
         console.log "gogs creates ssh key: POST #{module.exports.gogsApi}/user/settings/ssh"
         Q.Promise (resolve, reject, notify) ->
           request
@@ -319,7 +342,7 @@ module.exports =
         .then (cookies) ->
           gogs_csrf cookies
         .then (obj) ->
-          msg.cookie = obj.cookie
+          msg.cookies = obj.cookies
           msg.csrf = obj.csrf
           callMyself msg
 
