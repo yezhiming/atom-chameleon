@@ -13,16 +13,6 @@ class ProjectInfoView extends View
           @label style: "font-weight: bolder; color: black;padding-left: 5px;padding-top: 5px;",outlet: "warnPackageTextLabel"
 
 
-      @div class: "checkbox", =>
-        @label =>
-          @input type: "checkbox", id: 'withRatchet'
-          @text('With Ratchet')
-
-      @div class: "checkbox", =>
-        @label =>
-          @input type: "checkbox", id: 'withBootstrap'
-          @text('With Bootstrap')
-
 
   initialize: (wizardView) ->
     @checkNameEditorView @editor
@@ -46,8 +36,6 @@ class ProjectInfoView extends View
   onNext: (wizard) ->
     wizard.mergeOptions {
       name: @editor.originalText
-      bootstrap: @find('#withBootstrap').is(":checked")
-      ratchet: @find('#withRatchet').is(":checked")
     }
     wizard.nextStep()
 
