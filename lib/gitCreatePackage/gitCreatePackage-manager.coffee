@@ -12,7 +12,7 @@ ProgressView = require '../utils/progress-view'
 gitApi_create = require '../utils/gitApi_create'
 
 Q = require 'q'
-{github, gogs, gogsApi, generateKeyPair} = require '../utils/gitApi'
+{github, gogs, gogsApi, gogsProtocol, generateKeyPair} = require '../utils/gitApi'
 
 module.exports =
 class GitCreatePackageManager
@@ -51,7 +51,7 @@ class GitCreatePackageManager
         gitPath = tmpDir
       _.extend(options, gitPath: gitPath)
 
-    .then (options) -> # 验证用户有效性并且获取用户名
+    .then (options) -> # 验证用户有效性、获取用户名
       info = options
       if info.repo is 'github'
         github().getUser
@@ -109,7 +109,7 @@ class GitCreatePackageManager
 
     .then (data) -> # 创建仓库 TODO data对象来判断keypair校验成功
       pv.setTitle "#{info.repo} create package: #{info.packageName}"
-      if data.type is 'github'
+      if info.repo is 'github'
         github().createRepos
           options:
             username: info.account
@@ -118,7 +118,7 @@ class GitCreatePackageManager
           description: info.describe
           private: false
           auto_init: false
-      else if data.type is 'gogs'
+      else if info.repo is 'gogs'
         gogs().createRepos
           options:
             username: info.account
@@ -130,10 +130,10 @@ class GitCreatePackageManager
           License: 'MIT License'
 
     .then (obj) -> # 开始同步仓库资源
-      pv.setTitle "Synchronizer package :#{info.repo}"
+      pv.setTitle "Synchronous package:#{info.repo}"
       if obj.type is 'gogs'
         # git@try.gogs.io:heyanjiemao/test.git
-        repoSshUrl = "git@#{gogsApi.replace('https://', '')}:#{info.username}/#{info.packageName}.git"
+        repoSshUrl = "git@#{gogsApi.replace(gogsProtocol, '')}:#{info.username}/#{info.packageName}.git"
         repohttpsUrl = "#{gogsApi}/#{info.username}/#{info.packageName}.git"
       else if obj.type is 'github'
         # repoSshUrl = "https://github.com/#{info.account}/#{info.packageName}.git"
@@ -208,7 +208,8 @@ class GitCreatePackageManager
           the default public key types such as pub, led to the SSH-add tools don't remove the SSH interaction cache, have been with this account will be resources, lead to errors.
           Reference: https://help.github.com/articles/generating-ssh-keys/"
       else
-        alert "#{error}"
+        error.code = 500 unless error.code
+        alert "{code: #{error.code}, error: #{error}}"
       console.trace error.stack
       done(error)
     .finally ->
