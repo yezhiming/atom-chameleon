@@ -19,10 +19,6 @@ class V extends View
       @div class: 'row', =>
         @div class: 'col-xs-3', =>
           @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
-          
-
-        @div class: 'col-xs-9', =>
-          
           @div class: 'form-group', =>
             @label 'Title:'
             @subview 'title', new EditorView(mini: true, placeholderText: 'Title')
@@ -32,10 +28,13 @@ class V extends View
           @div class: 'form-group', =>
             @label 'Build:'
             @subview 'build', new EditorView(mini: true, placeholderText: 'Build')
+          
 
+        @div class: 'col-xs-9', =>
+      
           @div class: 'form-group', =>
             @label 'Bundle Identifier:'
-            @subview 'bundleIdentifier', new EditorView(mini: true, placeholderText: 'com.foreveross.chameleon')
+            @subview 'bundleIdentifier', new EditorView(mini: true, placeholderText: 'Please input your Bundle Identifier'))
           @div class: 'form-group', =>
             @label 'Scheme:'
             @select class:'form-control', outlet: 'scheme', =>
@@ -43,7 +42,7 @@ class V extends View
               @option "chameleon-sandbox"
           @div class: 'form-group', =>
             @label 'Content Src:'
-            @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
+            @subview 'content_src', new EditorView(mini: true, placeholderText: 'Click here to select your content-src')
         
 
   initialize: ->
@@ -71,6 +70,9 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
     @icon.attr 'src', getResourcePath('images', 'icon.png')
+
+    @bundleIdentifier.setText 'com.foreveross.chameleon'
+    @content_src.setText 'main/index.html'
 
   attached: ->
     console.log 'attached'

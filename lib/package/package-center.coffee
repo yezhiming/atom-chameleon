@@ -72,9 +72,15 @@ module.exports =
               @div class: 'section-container', =>
                 @h1 class: 'section-heading icon icon-star', 'Featured Packages', style: 'margin-bottom:10px;'
                 @div class: 'container package-container', outlet: 'popularList'
+                @div class: 'pull-right block', =>
+                  @button click: 'onPrevPage', class: 'btn btn-default inline-block-tight', 'Privous'
+                  @button click: 'onNextPage', class: 'btn btn-default inline-block-tight', 'Next'
 
 
     initialize: (options = {})->
+
+      @currentPage = 0
+
       @editor.on 'core:confirm', => @onSearchEnter()
       @editor.on 'keyup', => @onSearchEnter()
       @installPathEditor.on 'click', => @choosePath()
@@ -104,7 +110,7 @@ module.exports =
     #从服务器拉取所有安装包信息
     fetchAllPackageFormServer:() ->
         Q.promise (resolve, reject, notify) =>
-          r = request.get "#{PuzzleServer}/api/packages?access_token=#{PuzzleAccessToken}&sequence=rating", (err, res, body) =>
+          r = request.get "#{PuzzleServer}/api/packages?access_token=#{PuzzleAccessToken}&sequence=create_date", (err, res, body) =>
             reject err if err
             data = JSON.parse(body)
             resolve data.packages
@@ -147,6 +153,8 @@ module.exports =
         @hideTip()
         packages = packages.slice 0, 10
 
+      @popularList.html ""
+
       _.each packages, (pack, index)=>
         cell = new PackageListCell(
           info: pack
@@ -183,6 +191,21 @@ module.exports =
           callback(destPath) if callback
       .catch (error)->
        callback(destPath) if callback
+
+    onPrevPage: ->
+      # console.log '当前页', @currentPage
+      @currentPage-- if @currentPage > 0
+      startIndex = @currentPage * 10
+      endIndex = startIndex + 10
+      @result = @serverPackages.slice startIndex, endIndex
+      @showPopularPackage @result
+
+    onNextPage: ->
+      @currentPage++  if @currentPage + 1 < @serverPackages.length / 10
+      startIndex = @currentPage * 10
+      endIndex = startIndex + 10
+      @result = @serverPackages.slice startIndex, endIndex
+      @showPopularPackage @result
 
 
     getTitle: ->

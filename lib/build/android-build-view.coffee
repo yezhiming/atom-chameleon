@@ -35,13 +35,13 @@ class V extends View
 
           @div class: 'form-group', =>
             @label 'Application URL:'
-            @subview 'repository_url', new EditorView(mini: true,placeholderText:'点击选择源码库')
+            @subview 'repository_url', new EditorView(mini: true,placeholderText:'Click to choose your Application URL')
           @div class: 'form-group', =>
-            @label 'Scheme:'
-            @subview 'scheme', new EditorView(mini: true,placeholderText:'请输入bundle或者sandbox')
+            @label 'Build type:'
+            @subview 'scheme', new EditorView(mini: true,placeholderText:'Please input bundle or sandbox')
           @div class: 'form-group', =>
             @label 'Content Src:'
-            @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
+            @subview 'content_src', new EditorView(mini: true, placeholderText: 'Click here to select your content-src')
 
 
           @div class: 'optional-checkbox', =>
@@ -51,16 +51,16 @@ class V extends View
           @div outlet: 'cert', =>
             @div class: 'form-group', =>
               @label 'keystore:'
-              @subview 'keystore', new EditorView(mini: true, placeholderText: 'click here to select keystore file')
+              @subview 'keystore', new EditorView(mini: true, placeholderText: 'Click here to select keystore file')
             @div class: 'form-group', =>
               @label 'alias:'
-              @subview 'alias', new EditorView(mini: true,placeholderText:'请输入别名')
+              @subview 'alias', new EditorView(mini: true,placeholderText:'Please input alias')
             @div class: 'form-group', =>
               @label 'keypass:'
-              @subview 'keypass', new EditorView(mini: true,placeholderText:'请输入密码')
+              @subview 'keypass', new EditorView(mini: true,placeholderText:'Please input keypass')
             @div class: 'form-group', =>
               @label 'aliaspass:'
-              @subview 'aliaspass', new EditorView(mini: true,placeholderText:'请输入别名密码')
+              @subview 'aliaspass', new EditorView(mini: true,placeholderText:'Please input aliaspass')
 
 
 
@@ -93,6 +93,10 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
     @icon.attr 'src', getResourcePath('images', 'icon.png')
+
+    @repository_url.setText 'https://git.oschina.net/chameleon/chameleon-android-v3.git'
+    @scheme.setText 'bundle'
+    @content_src.setText 'main/index.html'
 
   attached: ->
     console.log 'attached'

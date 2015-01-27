@@ -34,17 +34,17 @@ class V extends View
 
           @div class: 'form-group', =>
             @label 'Bundle Identifier:'
-            @subview 'bundleIdentifier', new EditorView(mini: true)
+            @subview 'bundleIdentifier', new EditorView(mini: true, placeholderText: 'Please input your Bundle Identifier')
 
           @div class: 'form-group', =>
             @label 'Application URL:'
-            @subview 'repository_url', new EditorView(mini: true)
+            @subview 'repository_url', new EditorView(mini: true, placeholderText: 'Click to choose your Application URL')
           @div class: 'form-group', =>
             @label 'Scheme:'
-            @subview 'scheme', new EditorView(mini: true)
+            @subview 'scheme', new EditorView(mini: true, placeholderText: 'Please input chameleon-bundled or chameleon-sandbox')
           @div class: 'form-group', =>
             @label 'Content Src:'
-            @subview 'content_src', new EditorView(mini: true, placeholderText: 'click here to content-src')
+            @subview 'content_src', new EditorView(mini: true, placeholderText: 'Click here to select your content-src')
 
           # use my cert
           @div class: 'optional-checkbox', =>
@@ -54,10 +54,10 @@ class V extends View
           @div outlet: 'cert', =>
             @div class: 'form-group', =>
               @label 'Mobileprovision:'
-              @subview 'mobileprovision', new EditorView(mini: true, placeholderText: 'click here to select mobileprovision file')
+              @subview 'mobileprovision', new EditorView(mini: true, placeholderText: 'Click here to select mobileprovision file')
             @div class: 'form-group', =>
               @label 'p12:'
-              @subview 'p12', new EditorView(mini: true, placeholderText: 'click here to select p12 file')
+              @subview 'p12', new EditorView(mini: true, placeholderText: 'Click here to select p12 file')
             @div class: 'form-group', =>
               @label 'p12 password:'
               @subview 'p12_password', new EditorView(mini: true)
@@ -70,7 +70,7 @@ class V extends View
           @div outlet:"pushcer",=>
             @div class: 'form-group', =>
               @label 'Push Services p12 path:'
-              @subview 'pushp12', new EditorView(mini: true, placeholderText: 'click here to Push Services p12 path')
+              @subview 'pushp12', new EditorView(mini: true, placeholderText: 'Click here to Push Services p12 path')
             @div class: 'form-group', =>
               @label 'Push Services p12 password:'
               @subview 'pushp12password', new EditorView(mini: true)
@@ -111,14 +111,12 @@ class V extends View
     @build.setText "1"
     @icon.attr 'src', getResourcePath('images', 'icon.png')
 
-    # restore last options
-    # console.log "window: #{window.localStroage}"
-    # json = window.localStroage.getItem "ios-build-view"
-    # if json
-    #   json = JSON.parse json
-    #   KEYS.each (key) =>
-    #     this[key].setText json[key]
-    #   @icon.prop 'src', json['icon']
+    @bundleIdentifier.setText 'com.foreveross.chameleon'
+    @repository_url.setText 'https://git.oschina.net/chameleon/chameleon-ios.git'
+    @scheme.setText 'chameleon-bundled'
+    @content_src.setText 'main/index.html'
+
+    
 
   attached: ->
     console.log 'attached'
