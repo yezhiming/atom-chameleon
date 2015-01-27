@@ -2,6 +2,7 @@
 _s = require 'underscore.string'
 _ = require 'underscore'
 path = require 'path'
+{checkProjectName} = require '../utils/utils'
 
 LoginView = require './gitCreatePackage-login-view'
 
@@ -17,7 +18,7 @@ class V extends View
       @div class: "form-group", =>
         @div class:"optional-radio", =>
           @input name: "gitSelect", type: "radio", id: 'publicPackageRadio', checked: "checked", outlet: "publicPackageRadio", click: "radioSelectPublicFun"
-          @label "Anyone can see this repository. You choose who can commit.", class: 'radioLabel'
+          @label "Anyone can see this repository. You choose who can commit.", class: 'radioLabel', for: "publicPackageRadio", style: "cursor: pointer;"
 
         @div outlet: 'publicSelect', =>
           @select class:'form-control', outlet: 'selectPublicGit', =>
@@ -26,7 +27,7 @@ class V extends View
       @div class: "form-group", =>
         @div class:"optional-radio", =>
           @input name: "gitSelect", type: "radio", id: 'privatePackageRadio', outlet: "privatePackageRadio", click: "radioSelectPrivateFun"
-          @label 'Your team can see this repository. You choose who can commit.', class: 'radioLabel'
+          @label 'Your team can see this repository. You choose who can commit.', class: 'radioLabel', for: "privatePackageRadio", style: "cursor: pointer;"
 
         @div outlet: 'privateSelect', =>
           @select class:'form-control', outlet: 'selectPrivateGit', =>
@@ -42,6 +43,8 @@ class V extends View
       @div class: "form-group", =>
         @label 'Package Name:'
         @subview 'packageName', new EditorView(mini: true)
+        @div style: "background-color: #f7ea57;", outlet: "warnPackageText", =>
+          @label style: "font-weight: bolder; color: black;padding-left: 5px;padding-top: 5px;",outlet: "warnPackageTextLabel"
 
       @div class: "form-group", =>
         @label 'Describe:'
@@ -49,7 +52,7 @@ class V extends View
 
 
   initialize: (wizardView) ->
-    
+
     @loginView = new LoginView()
     atom.workspaceView.append @loginView
     @loginView.hide()
@@ -61,32 +64,38 @@ class V extends View
 
     selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
     @packageName.setText _.last(selectPath.split(path.sep))
-  
+
     @selectPublicGit.change =>
       @userAccountAttached()
 
     @selectPrivateGit.change =>
       @userAccountAttached()
-    
+
+    @checkNameEditorView @packageName
+    @warnPackageText.hide()
+
+
   attached: ->
     @privateSelect.hide()
     @userAccountAttached()
-    
+
+    @packageName.focus()
+
   userAccountAttached: ->
     unless @privateSelect.isHidden()
       @selectGit = @selectPrivateGit.val()
     else
       @selectGit = @selectPublicGit.val()
-    
+
     loginInfo = localStorage.getItem @selectGit
     loginInfo = JSON.parse(loginInfo)
-    
+
     if loginInfo is null
       @userAccount.hide()
     else
       @userAccount.show()
       @account.html loginInfo.username
-      
+
   logOutFun: ->
     localStorage.removeItem @selectGit
     @userAccountAttached()
@@ -115,6 +124,8 @@ class V extends View
       wizardView.disableNext()
 
   destroy: ->
+    unless @loginView.isHidden()
+      @loginView.hide()
     @remove()
 
   onNext: (wizard) ->
@@ -126,10 +137,8 @@ class V extends View
 
     unless @loginView.isHidden()
       return
-    
-    console.log "loginView"
 
-    url = "#{server}/api/packages/findOne/#{@packageName.getText()}?access_token=#{access_token}"
+    url = "#{server}/api/packages/findOne/#{@packageName.originalText}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
         return reject error if error
@@ -151,10 +160,11 @@ class V extends View
         # console.log packageHave
         options =
           repo: @selectGit
-          packageName: @packageName.getText()
+          packageName: @packageName.originalText
           describe: @describe.getText()
 
         unless packageHave
+          @packageName.focus()
           reject "Sorry,please change you Package Name!"
         else
           # 保存用户认证，但不保存用户密码
@@ -168,8 +178,10 @@ class V extends View
             @loginView.mergeOptions options
             @loginView.show()
             @loginView.editorVerify()
-            @loginView.on 'certain', (result) -> resolve(result)
-            # @loginView.finishPromise()
+            @loginView.account.focus()
+            @loginView.on 'certain', (result) => resolve(result)
+            @loginView.on 'destroy', => @packageName.focus()
+
     .then (options) =>
       @loginView.destroy()
       wizard.mergeOptions options
@@ -177,3 +189,19 @@ class V extends View
     .catch (err) ->
       console.trace err.stack
       alert "#{err}"
+
+  checkNameEditorView: (editorView)->
+    editorView.originalText = ''
+    editorView.hiddenInput.on 'focusout', (e) =>
+      @checkName editorView
+
+  checkName: (editorView)->
+    str = editorView.getText()
+    strcheck = checkProjectName str
+    editorView.originalText = strcheck
+    @warnPackageTextLabel.html("Will be created as #{strcheck}")
+
+    if strcheck is str
+      @warnPackageText.hide()
+    else
+      @warnPackageText.show()

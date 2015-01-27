@@ -35,6 +35,9 @@ class V extends View
 
     _.extend this, EventEmitter.prototype
 
+  # attached: ->
+  #   @account.focus()
+
   mergeOptions:(options) ->
     _.extend @options, options
     console.log @options
@@ -65,10 +68,7 @@ class V extends View
 
   destroy: ->
     @hide()
-
-  # finishPromise: ->
-    # Q.Promise (resolve, reject, notify) =>
-      
+    @emit 'destroy'
 
   passwordEditorView: (editorView)->
     editorView.originalText = ''

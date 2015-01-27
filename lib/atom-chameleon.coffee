@@ -118,23 +118,27 @@ module.exports =
     projectWizardView = new ProjectWizardView().attach()
     pv = new ProgressView("Create Project...")
 
-    projectWizardView.finishPromise()
-    # select dest path
-    .then (options) ->
-      # composite promise combine result with previous result
-      openDirectory(title: 'Select Path')
-      .then (destPath) -> Q(_.extend(options, path: destPath[0]))
+    Q.Promise (resolve, reject, notify) =>
+      isOpenDialog = false
+      projectWizardView.on 'finish', (result) ->
+        if isOpenDialog
+          return
+        isOpenDialog = true
+        # composite promise combine result with previous result
+        openDirectory(title: 'Select Path')
+        .then (destPath) ->
+          resolve _.extend(result, path: destPath[0])
+        .finally ->
+          isOpenDialog = false
 
     # do UI stuffs
     .then (options)->
       projectWizardView.destroy()
       pv.attach()
-
       Q(options)
 
     # create project with options
     .then (options) ->
-
       switch options.template
         when 'simple' then options.repo = "https://github.com/yezhiming/butterfly-starter.git"
         when 'modular' then options.repo = "https://git.oschina.net/cwlay/ModuleManager.git"
@@ -146,6 +150,9 @@ module.exports =
     # open new project
     .then (projectPath)->
       atom.open {pathsToOpen: [projectPath]}
+
+      if atom.packages.getActivePackage('tree-view').mainModule.treeView.isHidden()
+        atom.workspaceView.trigger "tree-view:toggle"
 
     .progress (progress)->
       pv.setTitle(progress.message) if progress.message

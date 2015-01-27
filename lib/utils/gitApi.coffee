@@ -35,12 +35,12 @@ github_authenticate = (options) ->
 
 # gogs模拟登入获取cookies
 gogs_login = (options) ->
-  if gogs.username and gogs.password
-    options.username = gogs.username
-    options.password = gogs.password
-  else
+  if options.username and options.password
     gogs.username = options.username
     gogs.password = options.password
+  else
+    options.username = gogs.username
+    options.password = gogs.password
 
   Q.Promise (resolve, reject, notify) ->
     console.log "gogs authenticate: POST #{module.exports.gogsApi}/user/login"
@@ -243,25 +243,25 @@ module.exports =
 
 
   gogs: ->
-      # 获取用户信息
-      getUser: (msg)->
-        callMyself = arguments.callee
-        gogs = JSON.parse localStorage.getItem 'gogs'
+    # 获取用户信息
+    getUser: (msg) ->
+      callMyself = arguments.callee
+      gogs = JSON.parse localStorage.getItem 'gogs'
 
-        if gogs
-          Q.Promise (resolve, reject, notify) ->
-            resolve
-              result: true
-              message: gogs.login
-              type: 'gogs'
-        else
-          gogs_login(msg.options)
-          .then (cookies) ->
-            gogs_csrf cookies
-          .then (obj) ->
-            gogs_authenticate obj
-          .then (token) ->
-            callMyself(msg)
+      if gogs
+        Q.Promise (resolve, reject, notify) ->
+          resolve
+            result: true
+            message: gogs.login
+            type: 'gogs'
+      else
+        gogs_login(msg.options)
+        .then (cookies) ->
+          gogs_csrf cookies
+        .then (obj) ->
+          gogs_authenticate obj
+        .then (token) ->
+          callMyself(msg)
 
 
     # 上传公钥到服务器

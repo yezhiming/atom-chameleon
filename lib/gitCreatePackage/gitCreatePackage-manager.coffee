@@ -51,8 +51,25 @@ class GitCreatePackageManager
         gitPath = tmpDir
       _.extend(options, gitPath: gitPath)
 
-    .then (options) -> # generateKeyPair? 每个帐号有自己的keypair
+    .then (options) -> # 验证用户有效性并且获取用户名
       info = options
+      if info.repo is 'github'
+        github().getUser
+          options:
+            username: info.account
+            password: info.password
+      else if info.repo is 'gogs'
+        gogs().getUser
+          options:
+            username: info.account
+            password: info.password
+
+    .then (obj) -> # generateKeyPair? 每个帐号有自己的keypair
+      if obj.result and obj.type is 'github'
+        info.username = obj.message.login # 添加github用户名
+      else if obj.result and obj.type is 'gogs'
+        info.username = obj.message # 添加gogs用户名
+      # generateKeyPair
       home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
       info.home = home
       option =
@@ -90,23 +107,9 @@ class GitCreatePackageManager
           content: keyObj.public
           title: "chameleonIDE foreveross inc.(#{atom.config.get('atom-chameleon.puzzleAccessToken')})"
 
-    .then (data) -> # 获取用户名
-      # TODO data对象来判断keypair校验成功
-      if info.repo is 'github'
-        github().getUser
-          options:
-            username: info.account
-            password: info.password
-      else if info.repo is 'gogs'
-        gogs().getUser
-          options:
-            username: info.account
-            password: info.password
-
-    .then (obj) -> # 创建仓库
+    .then (data) -> # 创建仓库 TODO data对象来判断keypair校验成功
       pv.setTitle "#{info.repo} create package: #{info.packageName}"
-      if obj.result and obj.type is 'github'
-        info.username = obj.message.login # 添加github用户名
+      if data.type is 'github'
         github().createRepos
           options:
             username: info.account
@@ -115,8 +118,7 @@ class GitCreatePackageManager
           description: info.describe
           private: false
           auto_init: false
-      else if obj.result and obj.type is 'gogs'
-        info.username = obj.message # 添加gogs用户名
+      else if data.type is 'gogs'
         gogs().createRepos
           options:
             username: info.account
@@ -142,7 +144,6 @@ class GitCreatePackageManager
       options =
         async: true
         timeout: 1000*60*10
-        maxBuffer: 1024*1024*10
       gitPath = atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 设置git环境变量
       options['env'] = path: gitPath if gitPath and gitPath
       # push资源到仓库
@@ -194,16 +195,22 @@ class GitCreatePackageManager
         atom.workspaceView.append resultView
 
     .catch (error) ->
-      if error.message.indexOf('Permission denied (publickey)') != -1 or (error.code = 128 and error.message.indexOf('Permission'))
+      if error.message.indexOf('Permission denied (publickey)') != -1 # 清除git客户端ssh交互缓存
         generateKeyPair
           home: info.home # 重新上传key
           username: info.account
           info.options
         alert "reset chameleon IDE publickey, please try again..."
+      else if error.code = 128 and error.message.indexOf('Permission to ') != -1 and error.message.indexOf(' denied to ') != -1
+        # 这种情况是由于git提供商帐号（eg: github帐号）后台已经手动上传默认id_ras.pub 等默认公钥类型，导致了ssh-add不能清除ssh交互缓存，一直会与此帐号同步资源，导致错误发生。
+        # 参考：https://help.github.com/articles/generating-ssh-keys/
+        alert "This kind of situation is due to the git provider the user (eg: github's user) are manually upload id_ras.pub etc.
+          the default public key types such as pub, led to the SSH-add tools don't remove the SSH interaction cache, have been with this account will be resources, lead to errors.
+          Reference: https://help.github.com/articles/generating-ssh-keys/"
       else
         alert "#{error}"
-        console.trace error.stack
-        done(error)
+      console.trace error.stack
+      done(error)
     .finally ->
       console.log "publish package finally."
       pv.destroy()
