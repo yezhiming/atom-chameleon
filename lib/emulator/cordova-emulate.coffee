@@ -67,7 +67,6 @@ module.exports = (router, buildPath) ->
 
   # as same as rm -rf /folder
   router.get '/fs/rmdir', (req, res, next) ->
-
     fse.remove req.rpath, (err) ->
       if err
         res.status(500).json
