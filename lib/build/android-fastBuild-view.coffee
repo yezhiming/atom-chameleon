@@ -19,9 +19,6 @@ class V extends View
       @div class: 'row', =>
         @div class: 'col-xs-3', =>
           @img class: 'icon', click: 'onClickIcon', outlet: 'icon'
-    
-        @div class: 'col-xs-9', =>
-
           @div class: 'form-group', =>
             @label 'Title:'
             @subview 'title', new EditorView(mini: true, placeholderText: 'Title'), class: 'title'
@@ -31,9 +28,11 @@ class V extends View
           @div class: 'form-group', =>
             @label 'Build:'
             @subview 'build', new EditorView(mini: true, placeholderText: 'Build'), class: 'build'
+    
+        @div class: 'col-xs-9', =>
 
           @div class: 'form-group', =>
-            @label 'Scheme:'
+            @label 'Build type:'
             @select class:'form-control', outlet: 'scheme', =>
               @option "chameleon-bundled"
               @option "chameleon-sandbox"
@@ -65,6 +64,12 @@ class V extends View
     @version.setText "1.0.0"
     @build.setText "1"
     @icon.attr 'src', getResourcePath('images', 'icon.png')
+
+    @repository_url.setText 'https://git.oschina.net/chameleon/chameleon-android-v3.git'
+    @scheme.setText 'bundle'
+    @content_src.setText 'main/index.html'
+
+    @content_src.setText 'main/index.html'
 
     # @readOnlyEditorView @title
     # @readOnlyEditorView @version
