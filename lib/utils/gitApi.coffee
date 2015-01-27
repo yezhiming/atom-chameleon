@@ -132,11 +132,11 @@ gogs_authenticate = (msg) ->
 
 module.exports =
   gogsClient: {},
-
   # https://bsl.foreveross.com/gogs(8001)
   # gogsApi: 'http://172.16.1.27:3000',
-  gogsProtocol = "https://",
+  gogsProtocol: "https://",
   gogsApi: "#{module.exports.gogsProtocol}try.gogs.io",
+
 
   # 生成默认的公、密钥到userhome/.ssh
   generateKeyPair: (options) ->
