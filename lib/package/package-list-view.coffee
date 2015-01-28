@@ -128,8 +128,8 @@ class PackageListView extends View
     .then (result) =>
       throw new Error('login fail') unless result.result is 'true'
       console.log "upload"
-      zip(module.path, path.join os.tmpdir(), module.package.identifier).then (zipPath) =>
-        @uploadAttach zipPath + '.zip'
+      zip(module.path, os.tmpdir() + module.package.identifier + '.zip').then (zipPath) =>
+        @uploadAttach zipPath
     .then (result) =>
       console.log "validate"
       throw new Error('upload fail') unless result.result is 'success'
