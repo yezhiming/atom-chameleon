@@ -41,6 +41,10 @@ class RunOnServerView extends View
             @span click:'addProxy', class: 'glyphicon glyphicon-plus'
           @div class: 'proxy-list'
 
+        @div class: 'form-group', =>
+          @input type: 'checkbox', outlet: 'isolationMode', id: 'isolationMode'
+          @label ' Isolation mode', for: 'isolationMode', style: 'position: relative; left:5px;'
+
         # @div class: "checkbox", =>
         #   @label =>
         #     @input type: "checkbox", id: 'usingPushState'
