@@ -1,17 +1,17 @@
 spawn = require('child_process').spawn
 Q = require 'q'
 fs = require 'fs'
-
 uuid = require 'uuid'
-
 {exec} = require 'child_process'
 
+ # zip
+ # @param  {[type]}   pathDir      所需要压缩文件夹或文件的地址
+ # @param  {[type]}   zipFile      压缩后的文件地址。注意，一定要以 .zip 结尾，否则在文件
+ #                                 名称中包含有“.”的情况下会出错
+ # @param  {Function} cb           返回压缩文件后的文件名称
+ # @return {[type]}            [description]
 module.exports = (pathDir,zipFile,cb)->
-
   Q.Promise (resolve, reject, notify) ->
-
-  # exec
-    
     if process.platform is "win32"
       commands = "#{atom.getConfigDirPath()}/packages/atom-chameleon/utils/zip.exe -r #{zipFile} ./"
     else
@@ -23,26 +23,4 @@ module.exports = (pathDir,zipFile,cb)->
     foreverossZip = exec commands, options, (error,stdout,stderr)=>
       if error isnt null
         reject(error)
-      # zip_path = "#{pathDir}/#{decs}"
       resolve(zipFile)
-
-  # spawn
-    # args = ["-r",decs,source];
-    # foreverossZip = spawn("zip", args,{cwd:"#{pathDir}"})
-    #
-    # foreverossZip.stdout.on('data',(data)->
-    #   console.log "stdout:"+data
-    # )
-    #
-    # foreverossZip.stderr.on('data',(data)->
-    #   # errorcb && errorcb(data)
-    #   console.log data
-    # )
-    #
-    # foreverossZip.on 'close',(status)->
-    #   zip_path = "#{pathDir}/#{decs}"
-    #
-    #   if status is 0
-    #     resolve(zip_path)
-    #   else
-    #     reject(status)
