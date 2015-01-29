@@ -20,8 +20,7 @@ module.exports = (router, buildPath) ->
       else
         next()
     else
-      console.log "cmd: #{cmd}"
-      # 代理其余的函数
+      # 代理其余fs函数
       fs[cmd] req.rpath, -> res.status(200).json(arguments)
 
   # /fs/stat?path=/a/b/c

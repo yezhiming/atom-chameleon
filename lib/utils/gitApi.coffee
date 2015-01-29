@@ -134,8 +134,8 @@ module.exports =
   gogsClient: {},
   # https://bsl.foreveross.com/gogs(8001)
   # gogsApi: 'http://172.16.1.27:3000',
-  gogsProtocol: "https://",
-  gogsApi: "#{module.exports.gogsProtocol}try.gogs.io",
+  gogsProtocol: "http://",
+  gogsApi: "#{module.exports.gogsProtocol}115.28.1.109:8001",
 
 
   # 生成默认的公、密钥到userhome/.ssh

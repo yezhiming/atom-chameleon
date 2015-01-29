@@ -106,19 +106,18 @@ class RunOnServerView extends View
       @selectedIndexFile.text path.relative(atom.project.path, destPath[0]) if destPath
 
   onClickRun: ->
-    # cp resource to os tempdir
-    tmpDir = path.resolve os.tmpdir(), path.basename(atom.project.path)
-    if fs.existsSync tmpDir
-      fs.removeSync tmpDir
-    fs.copySync atom.project.path, tmpDir
+    # isolation model: copy resources to os's tempdir but default by (atom.project.path)
+    if @isolationMode.prop('checked')
+      tmpDir = path.resolve os.tmpdir(), path.basename(atom.project.path)
+      fs.removeSync tmpDir if fs.existsSync tmpDir
+      fs.copySync atom.project.path, tmpDir
 
-    rootPath = path.resolve(tmpDir, @selectedRootPath.text())
-    destPath = path.resolve(tmpDir, @selectedIndexFile.text())
+    rootPath = path.resolve(tmpDir || atom.project.path, @selectedRootPath.text())
+    destPath = path.resolve(tmpDir || atom.project.path, @selectedIndexFile.text())
     httpPort = parseInt @httpPort.getText()
     pushState = @find('#usingPushState').is(":checked")
 
     #TODO: validation
-
     @trigger 'createServer', [rootPath, destPath, httpPort, pushState]
 
     @destroy()
