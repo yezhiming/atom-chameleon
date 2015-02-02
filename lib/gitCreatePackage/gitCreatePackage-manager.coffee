@@ -144,8 +144,7 @@ class GitCreatePackageManager
       options =
         async: true
         timeout: 1000*60*10
-      gitPath = atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 设置git环境变量
-      options['env'] = path: gitPath if gitPath and gitPath
+      options['env'] = path: gitPath if gitPath = atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 设置git环境变量
       # push资源到仓库
       gitApi_create info.gitPath, repoSshUrl, options, info.describe, info.home, info.account
 

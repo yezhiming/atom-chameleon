@@ -11,7 +11,7 @@ module.exports = (path, url, options, describe, home, username) ->
   console.log options
 
   Q.Promise (resolve, reject, notify) =>
-    env["path"] = options.env.path # 非永久设置环境变量
+    env["path"] = options.env.path if options.env # 非永久设置环境变量
     if not which 'git'
       return reject new Error 'Sorry, please set git env on chameleon-atom settings'
 
