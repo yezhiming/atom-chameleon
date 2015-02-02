@@ -247,10 +247,11 @@ module.exports =
           console.log "github creates repos..."
           github.repos.create msg, (err, data) ->
             if err and err.toJSON().code is 422 and (err.toJSON().message.indexOf 'name already exists on this account') != -1
-              resolve
-                result: false
-                message: err.toJSON()
-                type: 'github'
+              reject err
+              # resolve
+              #   result: false
+              #   message: err.toJSON()
+              #   type: 'github'
             else if err
               # eg：用户输错帐号密码重新验证 Etc.
               localStorage.removeItem 'github'
