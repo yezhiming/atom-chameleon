@@ -1,11 +1,10 @@
 require 'shelljs/global'
-{platform} = require 'os'
 # 修改shelljs内部的common.config，只是为了兼容window platform，不然windows会报BDADF, bad descriptor
 {config} = require 'shelljs'
 config.silent = true;
 
 Q = require 'q'
-{EOL} = require 'os'
+{EOL, platform} = require 'os'
 
 module.exports = (path, url, options, describe, home, username) ->
   console.log "path: #{path}, url: #{url}, home: #{home}, username: #{username}"
@@ -14,7 +13,7 @@ module.exports = (path, url, options, describe, home, username) ->
   Q.Promise (resolve, reject, notify) =>
     env["path"] = options.env.path # 非永久设置环境变量
     if not which 'git'
-      return reject new Error 'Sorry, this script requires git'
+      return reject new Error 'Sorry, please set git env on chameleon-atom settings'
 
     unless path?
       return reject new Error "请输入path地址"
