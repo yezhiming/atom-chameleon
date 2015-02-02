@@ -101,7 +101,7 @@ module.exports =
         webview.openDevTools()
     catch
       console.log "webview not open"
-      alert "Please open the Launch Emulator."
+      alert "Please open the Emulator."
 
 
   cmdDebug: ->
