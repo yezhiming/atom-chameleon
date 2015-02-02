@@ -32,7 +32,6 @@ module.exports = (path, url, options, describe, home, username) ->
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options1"
-      console.log options
       console.log "pwd:#{pwd()}"
       console.log "git init"
       exec 'git init', options, (code, output) ->
@@ -48,7 +47,6 @@ module.exports = (path, url, options, describe, home, username) ->
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options2"
-      console.log options
       console.log "pwd:#{pwd()}"
       console.log "git add ."
       exec 'git add .', options, (code, output) ->
@@ -63,7 +61,6 @@ module.exports = (path, url, options, describe, home, username) ->
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options3"
-      console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git commit -m "'+ describe+'"'
       exec 'git commit -m "' + describe + '"', options, (code, output) ->
@@ -78,7 +75,6 @@ module.exports = (path, url, options, describe, home, username) ->
   .then =>
     Q.Promise (resolve, reject, notify) =>
       console.log "options4"
-      console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git remote add origin ' + url
       exec 'git remote add origin ' + url, options, (code, output) ->
@@ -93,7 +89,7 @@ module.exports = (path, url, options, describe, home, username) ->
   # .then =>
   #   Q.Promise (resolve, reject, notify) =>
   #     console.log "options5"
-  #     console.log options
+  #
   #     console.log "pwd:#{pwd()}"
   #     console.log 'git pull origin master'
   #     exec 'git pull origin master', options, (code, output) ->
@@ -107,16 +103,16 @@ module.exports = (path, url, options, describe, home, username) ->
     Q.Promise (resolve, reject, notify) =>
       # ssh-add 清除客户端公钥缓存
       console.log "options5"
-      console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git push -u origin master'
       # 判断平台有效性windowk跨越度很大，fuck window
       if platform() is 'win32'
         exec 'ssh-agent -s', options, (code, output) ->
+          console.log('Program output:', output);
           try
-            arr = output.split "#{EOL}"
-            arr0 = arr[0].split '='
-            arr1 = arr[1].split(';').split '='
+            arr = output.toString().split "\n" # 3
+            arr0 = arr[0].split(';')[0].split('=')
+            arr1 = arr[1].split(';')[0].split('=')
             # 设置临时环境变量
             env[arr0[0]] = arr0[1]
             env[arr1[0]] = arr1[1]
