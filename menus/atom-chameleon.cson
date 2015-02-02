@@ -97,10 +97,6 @@
             'label': 'Build List'
             'command': 'atom-chameleon:build-list'
           }
-          {
-            'label': 'Chameleon Center',
-            'command': 'atom-chameleon:package-center'
-          }
         ]
       }
       {
