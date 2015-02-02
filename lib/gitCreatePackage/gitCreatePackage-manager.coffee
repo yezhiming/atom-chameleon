@@ -72,10 +72,10 @@ class GitCreatePackageManager
       # generateKeyPair
       home = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH
       info.home = home
-      option =
+      options =
         maxBuffer: 1024*1024*5
-      option.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
-      info.option = option
+      options.env = path: atom.config.get('atom-chameleon.gitCloneEnvironmentPath') if atom.config.get('atom-chameleon.gitCloneEnvironmentPath') # 一般mac不需要配置
+      info.option = options
 
       keyObj = JSON.parse localStorage.getItem "#{info.account}_installedSshKey"
       unless keyObj and keyObj.public
@@ -83,7 +83,7 @@ class GitCreatePackageManager
         generateKeyPair
           home: info.home
           username: info.account
-          info.option
+          option: info.option
 
     .then (options) -> # upload ssh key
       # {info.account}_gitHubFlag = true 表示此用户成功上传过publickey

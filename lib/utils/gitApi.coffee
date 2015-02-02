@@ -156,7 +156,7 @@ module.exports =
       # 生成默认的公、密钥到userhome/.ssh
       console.log 'generating rsa KeyPair...'
       # 根据github规则，公钥名称暂时写死id_rsa
-      cp = exec "ssh-keygen -t rsa -C #{options.username}@github.com -f #{options.home}/.ssh/id_rsa_#{options.username} -N ''", options.options, (error, stdout, stderr) ->
+      cp = exec "ssh-keygen -t rsa -C #{options.username}@github.com -f #{options.home}/.ssh/id_rsa_#{options.username} -N ''", options.option, (error, stdout, stderr) ->
         if error
           reject(error)
         else
