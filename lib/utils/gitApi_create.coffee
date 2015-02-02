@@ -1,4 +1,5 @@
 require 'shelljs/global'
+{platform} = require 'os'
 # 修改shelljs内部的common.config，只是为了兼容window platform，不然windows会报BDADF, bad descriptor
 {config} = require 'shelljs'
 config.silent = true;
@@ -11,6 +12,7 @@ module.exports = (path, url, options, describe, home, username) ->
   console.log options
 
   Q.Promise (resolve, reject, notify) =>
+    env["path"] = options.env.path # 非永久设置环境变量
     if not which 'git'
       return reject new Error 'Sorry, this script requires git'
 
@@ -103,17 +105,40 @@ module.exports = (path, url, options, describe, home, username) ->
   #         resolve()
   .then =>
     Q.Promise (resolve, reject, notify) =>
+      # ssh-add 清除客户端公钥缓存
       console.log "options5"
       console.log options
       console.log "pwd:#{pwd()}"
       console.log 'git push -u origin master'
-      # ssh-add 清除客户端公钥缓存
-      exec "eval \"$(ssh-agent -s)\" && ssh-add #{home}/.ssh/id_rsa_#{username} && git push -u origin master#{EOL}#{EOL}#{EOL}#{EOL}", options, (code, output) ->
-        console.log('Exit code:', code);
-        console.log('Program output:', output);
-        if code != 0
-          e = new Error "Error: git push -u origin master failed: #{output}"
-          e.code = code
-          reject e
-        else
-          resolve()
+      # 判断平台有效性windowk跨越度很大，fuck window
+      if platform() is 'win32'
+        exec 'ssh-agent -s', options, (code, output) ->
+          try
+            arr = output.split "#{EOL}"
+            arr0 = arr[0].split '='
+            arr1 = arr[1].split(';').split '='
+            # 设置临时环境变量
+            env[arr0[0]] = arr0[1]
+            env[arr1[0]] = arr1[1]
+          catch error
+            error.code = 500
+            reject error
+          exec "ssh-add #{home}/.ssh/id_rsa_#{username} && git push -u origin master#{EOL}#{EOL}#{EOL}#{EOL}", options, (code, output) ->
+            console.log('Exit code:', code);
+            console.log('Program output:', output);
+            if code != 0
+              e = new Error "Error: git push -u origin master failed: #{output}"
+              e.code = code
+              reject e
+            else
+              resolve()
+      else
+        exec "eval \"$(ssh-agent -s)\" && ssh-add #{home}/.ssh/id_rsa_#{username} && git push -u origin master#{EOL}#{EOL}#{EOL}#{EOL}", options, (code, output) ->
+          console.log('Exit code:', code);
+          console.log('Program output:', output);
+          if code != 0
+            e = new Error "Error: git push -u origin master failed: #{output}"
+            e.code = code
+            reject e
+          else
+            resolve()
