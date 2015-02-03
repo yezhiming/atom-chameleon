@@ -31,9 +31,9 @@ execute = (command) ->
         reject("请在atom中设置git的路径")
         
 
-
-    cp.stdout.on 'data', (data) -> notify out: data.toString()
-    cp.stderr.on 'data', (data) -> notify out: data.toString()
+    # TODO 在 nodejs 版本和 atom 的版本更新后，这里不注释的话，使用的时候会出现错误
+    # cp.stdout.on 'data', (data) -> notify out: data.toString()
+    # cp.stderr.on 'data', (data) -> notify out: data.toString()
 
 #
 # options:
