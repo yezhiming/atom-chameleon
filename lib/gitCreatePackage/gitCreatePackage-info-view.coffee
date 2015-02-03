@@ -160,18 +160,17 @@ class V extends View
 
     .then (packageHave) =>
       Q.Promise (resolve, reject, notify) =>
+        @packageNameLoad.hide()
+        wizard.enableNext()
         # console.log packageHave
         options =
           repo: @selectGit
           packageName: @packageName.originalText
           describe: @describe.getText()
-
         unless packageHave
           @packageName.focus()
           reject "Sorry,please change you Package Name!"
         else
-          @packageNameLoad.hide()
-          wizard.enableNext()
           # 保存用户认证，但不保存用户密码
           unless @userAccount.isHidden()
             loginInfo = localStorage.getItem @selectGit
@@ -192,8 +191,6 @@ class V extends View
       wizard.mergeOptions options
       wizard.nextStep()
     .catch (err) ->
-      @packageNameLoad.hide()
-      wizard.enableNext()
       console.trace err.stack
       alert "#{err}"
 
