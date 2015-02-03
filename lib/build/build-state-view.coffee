@@ -67,10 +67,10 @@ class BuildStatusView extends View
     hostName = puzzleClient.server.substr 0, puzzleClient.server.lastIndexOf('/')
     console.log 'hostName: %s', hostName
 
-    if atom.config.get('atom-chameleon.puzzleServerAddress') is "http://localhost:8080/puzzle"
-      ioHttp = "http://localhost:8080/socketio"
-    else
+    if atom.config.get('atom-chameleon.puzzleServerAddress') is "http://bsl.foreveross.com/puzzle"
       ioHttp = "http://115.28.1.109:8000/socketio"
+    else
+      ioHttp = atom.config.get('atom-chameleon.puzzleServerAddress')
   
     @socket = io ioHttp,
       reconnection: true
