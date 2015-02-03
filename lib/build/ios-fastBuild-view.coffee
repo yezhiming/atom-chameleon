@@ -31,10 +31,10 @@ class V extends View
           
 
         @div class: 'col-xs-9', =>
-      
+        
           @div class: 'form-group', =>
             @label 'Bundle Identifier:'
-            @subview 'bundleIdentifier', new EditorView(mini: true, placeholderText: 'Please input your Bundle Identifier'))
+            @subview 'bundleIdentifier', new EditorView(mini: true, placeholderText: 'Please input your Bundle Identifier')
           @div class: 'form-group', =>
             @label 'Scheme:'
             @select class:'form-control', outlet: 'scheme', =>
