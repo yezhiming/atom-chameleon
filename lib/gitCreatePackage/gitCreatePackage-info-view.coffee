@@ -42,6 +42,7 @@ class V extends View
 
       @div class: "form-group", =>
         @label 'Package Name:'
+        @span outlet:"packageNameLoad", class: "loading loading-spinner-tiny inline-block", style:"position: relative; top: 25px; left: 375px;"
         @subview 'packageName', new EditorView(mini: true)
         @div style: "background-color: #f7ea57;", outlet: "warnPackageText", =>
           @label style: "font-weight: bolder; color: black;padding-left: 5px;padding-top: 5px;",outlet: "warnPackageTextLabel"
@@ -56,6 +57,7 @@ class V extends View
     @loginView = new LoginView()
     atom.workspaceView.append @loginView
     @loginView.hide()
+    @packageNameLoad.hide()
 
     @editorOnDidChange @packageName, wizardView
 
@@ -137,7 +139,8 @@ class V extends View
 
     unless @loginView.isHidden()
       return
-
+    @packageNameLoad.show()
+    wizard.disableNext()
     url = "#{server}/api/packages/findOne/#{@packageName.originalText}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
@@ -167,6 +170,8 @@ class V extends View
           @packageName.focus()
           reject "Sorry,please change you Package Name!"
         else
+          @packageNameLoad.hide()
+          wizard.enableNext()
           # 保存用户认证，但不保存用户密码
           unless @userAccount.isHidden()
             loginInfo = localStorage.getItem @selectGit
@@ -187,6 +192,8 @@ class V extends View
       wizard.mergeOptions options
       wizard.nextStep()
     .catch (err) ->
+      @packageNameLoad.hide()
+      wizard.enableNext()
       console.trace err.stack
       alert "#{err}"
 
