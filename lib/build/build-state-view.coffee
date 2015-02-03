@@ -70,7 +70,7 @@ class BuildStatusView extends View
     if atom.config.get('atom-chameleon.puzzleServerAddress') is "http://bsl.foreveross.com/puzzle"
       ioHttp = "http://115.28.1.109:8000/socketio"
     else
-      ioHttp = atom.config.get('atom-chameleon.puzzleServerAddress')
+      ioHttp = atom.config.get('atom-chameleon.puzzleServerAddress').replace("puzzle","socketio")
   
     @socket = io ioHttp,
       reconnection: true
