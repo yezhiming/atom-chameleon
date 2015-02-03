@@ -36,7 +36,7 @@ class PackageListCell extends View
     @callback = params.callback
 
   onInstallButtonClick: ->
-    @callback this, @data.repository_url if @callback
+    @callback this, @data.home_url if @callback
   #标识正在下载
   setInstalling: (install) ->
     @installButton.attr('class', 'btn btn-info icon icon-cloud-download install-button ' + if install then 'is-installing disabled')
@@ -183,7 +183,7 @@ module.exports =
     installPackage: (path, name, repo, callback)->
       console.log "Start pull package,Path:#{path}, PackageName:#{name}, gitRepo:#{repo}"
       git({
-        path: path
+        path: "#{path}"
         name: name
         repo: repo
         }).then (destPath)->
