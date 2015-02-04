@@ -21,7 +21,7 @@
     "local-port": "0.0.2",
     "loophole": "*",
     "morgan": "*",
-    "q": "*",
+    "q": "1.1.2",
     "request": "*",
     "shelljs": "*",
     "socket.io-client": "*",
