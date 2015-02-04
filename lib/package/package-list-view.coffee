@@ -29,9 +29,10 @@ request_get = (options) ->
   args = arguments
   Q.Promise (resolve, reject, notify) ->
     request.get options, (err, response, body) ->
-      if "#{response.statusCode}".startsWith('2') and not err
+      if "#{response.statusCode}".startsWith('2') and not err and body.length > 0
         resolve(JSON.parse body)
       else
+        err = new Error("Sorry,you must create the module on Chameleon enterprise platform first.") if(body.length==0)
         reject(err)
 
 request_post = (options) ->
@@ -96,7 +97,7 @@ class PackageListView extends View
     .then (map) =>
       @showPackageList map
     .catch (err) =>
-      console.log err.message
+      # console.log err.message
       console.trace err.stack
 
     return this
@@ -122,9 +123,11 @@ class PackageListView extends View
     #   @encrypt module.path, (path.join atom.project.path, 'encrypt', module.package.identifier)
     # .then (result) =>
   upload: (cell, module)->
-    cell.changeState 'upload'
-    @loading.show();
-    @login 'cube', 'cube', 'cube'
+
+    (require "../../utils/checkNetwork")("http", "http://www.baidu.com").then =>
+      cell.changeState 'upload'
+      @loading.show();
+      @login 'cube', 'cube', 'cube'
     .then (result) =>
       throw new Error('login fail') unless result.result is 'true'
       console.log "upload"
@@ -147,7 +150,10 @@ class PackageListView extends View
       cell.changeState 'normal' if result.result is 'success'
     .catch (err) =>
       @loading.hide();
-      console.trace err.stack
+      # console.error err.stack
+      cell.changeState 'normal'
+      alert(if typeof err is "string" then err else err.message)
+
 
   #模块上传流程
   #1.上传模块压缩包到变色龙后台
