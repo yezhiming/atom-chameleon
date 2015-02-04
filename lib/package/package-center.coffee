@@ -111,9 +111,11 @@ module.exports =
     fetchAllPackageFormServer:() ->
         Q.promise (resolve, reject, notify) =>
           r = request.get "#{PuzzleServer}/api/packages?access_token=#{PuzzleAccessToken}&sequence=create_date", (err, res, body) =>
-            reject err if err
-            data = JSON.parse(body)
-            resolve data.packages
+            if err
+              reject err
+            else
+              data = JSON.parse(body)
+              resolve data.packages
 
     #搜索完成时回调
     onSearchDone: (packages, keyword)->
@@ -181,19 +183,24 @@ module.exports =
         installPathEditor.setText destPath[0]
 
     installPackage: (path, name, repo, callback)->
-      console.log "Start pull package,Path:#{path}, PackageName:#{name}, gitRepo:#{repo}"
-      git({
-        path: "#{path}"
-        name: name
-        repo: repo
-        }).then (destPath)->
-          console.log 'package pull finished'
-          callback(destPath) if callback
-      .catch (error)->
-       callback(destPath) if callback
+
+
+      (require "../../utils/checkNetwork")("http", "http://www.baidu.com").then =>
+        console.log "Start pull package,Path:#{path}, PackageName:#{name}, gitRepo:#{repo}"
+        git({
+          path: "#{path}"
+          name: name
+          repo: repo
+          })
+      .then (destPath) =>
+        console.log 'package pull finished'
+        callback(destPath) if callback
+      .catch (error) =>
+        @showTip 'Install error, please check out your network.'
+        callback() if callback
 
     onPrevPage: ->
-      # console.log '当前页', @currentPage
+      return unless @serverPackages
       @currentPage-- if @currentPage > 0
       startIndex = @currentPage * 10
       endIndex = startIndex + 10
@@ -201,6 +208,7 @@ module.exports =
       @showPopularPackage @result
 
     onNextPage: ->
+      return unless @serverPackages
       @currentPage++  if @currentPage + 1 < @serverPackages.length / 10
       startIndex = @currentPage * 10
       endIndex = startIndex + 10
