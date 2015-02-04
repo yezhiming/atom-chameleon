@@ -26,12 +26,17 @@ class BuildManager
   deactivate: ->
 
   cmdBuildList: ->
-    new (require './build-list-view')().attach()
+    # 检测是否存在网络
+    (require "../../utils/checkNetwork")("http", "http://www.baidu.com")
+    .then =>
+      new (require './build-list-view')().attach()
+    .catch (error) ->
+      alert("#{error}")
 
   cmdPublishApplication: ->
 
     PublishAppView = require './publish-wizard-view'
-    buildWizard = new PublishAppView().attach()
+    buildWizard = new PublishAppView()
     buildStateView = new (require './build-state-view')()
 
     # 这样就可以可以不仅在windows还是mac都可以获取到.atom路径
@@ -42,7 +47,11 @@ class BuildManager
       fs.mkdirSync decs
     removeZipPath = "#{decs}/#{zipFile}"
 
-    buildWizard.finishPromise()
+    # 检测是否存在网络
+    (require "../../utils/checkNetwork")("http", "http://www.baidu.com")
+    .then =>
+      buildWizard.attach()
+      buildWizard.finishPromise()
     .then (result) ->
       console.log "开始压缩..."
       buildWizard.destroy()

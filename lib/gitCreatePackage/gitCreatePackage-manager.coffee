@@ -29,8 +29,11 @@ class GitCreatePackageManager
 
     info = null
 
-    gitCreatePackageWizardView.attach()
-    gitCreatePackageWizardView.finishPromise()
+    # 检测是否存在网络
+    (require "../../utils/checkNetwork")("https", "https://github.com/")
+    .then =>
+      gitCreatePackageWizardView.attach()
+      gitCreatePackageWizardView.finishPromise()
     .then (options) ->
       gitCreatePackageWizardView.destroy()
       pv.attach()
@@ -194,7 +197,9 @@ class GitCreatePackageManager
         atom.workspaceView.append resultView
 
     .catch (error) ->
-      if error.message.indexOf('Permission denied (publickey)') != -1 # 清除git客户端ssh交互缓存
+      unless _.isObject(error)
+        alert error
+      else if error.message.indexOf('Permission denied (publickey)') != -1 # 清除git客户端ssh交互缓存
         generateKeyPair
           home: info.home # 重新上传key
           username: info.account

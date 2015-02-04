@@ -53,4 +53,4 @@ class V extends View
       @listView.setItems(result)
     .catch (err) ->
       alert('fetch build tasks fail.' + err)
-      trace err.stack
+      # trace err.stack

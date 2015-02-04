@@ -116,21 +116,25 @@ module.exports =
   cmdCreateProject: ->
 
     ProjectWizardView = require './project/project-wizard-view'
-    projectWizardView = new ProjectWizardView().attach()
+    projectWizardView = new ProjectWizardView()
     pv = new ProgressView("Create Project...")
 
-    Q.Promise (resolve, reject, notify) =>
-      isOpenDialog = false
-      projectWizardView.on 'finish', (result) ->
-        if isOpenDialog
-          return
-        isOpenDialog = true
-        # composite promise combine result with previous result
-        openDirectory(title: 'Select Path')
-        .then (destPath) ->
-          resolve _.extend(result, path: destPath[0])
-        .finally ->
-          isOpenDialog = false
+    # 检测是否存在网络
+    (require "../utils/checkNetwork")("http", "http://www.baidu.com")
+    .then =>
+      Q.Promise (resolve, reject, notify) =>
+        projectWizardView.attach()
+        isOpenDialog = false
+        projectWizardView.on 'finish', (result) ->
+          if isOpenDialog
+            return
+          isOpenDialog = true
+          # composite promise combine result with previous result
+          openDirectory(title: 'Select Path')
+          .then (destPath) ->
+            resolve _.extend(result, path: destPath[0])
+          .finally ->
+            isOpenDialog = false
 
     # do UI stuffs
     .then (options)->

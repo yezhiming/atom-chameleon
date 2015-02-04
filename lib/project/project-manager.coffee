@@ -20,14 +20,17 @@ class PackageManager
   cmdInstall: ->
 
     pv = new ProgressView("Install Butterfly.js...")
-    pv.attach()
-
-    @installFramework()
+    
+    # 检测是否存在网络
+    (require "../../utils/checkNetwork")("http", "http://www.baidu.com")
+    .then =>
+      pv.attach()
+      @installFramework()
     .progress (progress)->
       pv.setTitle(progress.message) if progress.message
       pv.setProgress(progress.progress) if progress.progress
     .catch (err) ->
-      alert "err: #{err}"
+      alert "#{err}"
       console.trace err.stack
     .finally ->
       pv.destroy()
