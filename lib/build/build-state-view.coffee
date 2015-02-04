@@ -1,7 +1,7 @@
 #
 # 显示任务状态，点击构建时弹出，作为一个tab
 #
-{$, View, SelectListView, $$} = require 'atom'
+{$, View, SelectListView, $$, EditorView} = require 'atom'
 qrcode = require '../utils/qrcode'
 request = require 'request'
 io = require 'socket.io-client'
@@ -39,6 +39,14 @@ class BuildStatusView extends View
           @span class: 'glyphicon glyphicon-remove text-error hidden'
 
         @div id: 'qrcode'
+        
+        @div class: 'form-group', outlet:'downloadUrl', =>
+          @label "Download link:"
+          @div class: 'editorViewResultView', =>
+            @subview "apkDownLoadUrl", new EditorView
+              mini: true
+          @button class: "btn btnResultView", click: "copyUrlFun", outlet: "copyUrl", title: "Copy to clipboard", =>
+            @span class: "glyphicon glyphicon-list-alt"
 
         @subview 'console', new ConsoleView()
 
@@ -55,6 +63,9 @@ class BuildStatusView extends View
     @refreshbutton.disable()
     
     @showViewContent.hide()
+    @downloadUrl.hide()
+
+    @readOnlyEditorView @apkDownLoadUrl
 
   attach: ->
     atom.workspaceView.append(this)
@@ -145,8 +156,14 @@ class BuildStatusView extends View
     if platform == 'ios' or platform == "ios-fastbuild"
       # @devicebtn.show()
       qr.addData("#{puzzleClient.serverSecured}/archives/#{@task.id}/install/ios")
+      @downloadUrl.show()
+      @apkDownLoadUrl.setText "#{atom.config.get('atom-chameleon.puzzleServerAddress')}/archives/#{@task.id}.ipa"
     else if platform == 'android' or platform == "android-fastbuild"
       qr.addData("#{puzzleClient.serverSecured}/archives/#{@task.id}.apk")
+
+      @downloadUrl.show()
+      @apkDownLoadUrl.setText "#{atom.config.get('atom-chameleon.puzzleServerAddress')}/archives/#{@task.id}.apk"
+
     else
       throw new Error('qrcode: unkown platform.')
     qr.make()
@@ -196,3 +213,13 @@ class BuildStatusView extends View
     @uploadHtml5.hide()
     @showViewContent.show()
     @console.hide()
+
+
+  copyUrlFun: ->
+    atom.clipboard.write @apkDownLoadUrl.getText()
+
+  readOnlyEditorView: (editorView)->
+    editorView.setInputEnabled false
+    editorView.hiddenInput.on 'keydown', (e) =>
+      if e.which == 8
+        return false
