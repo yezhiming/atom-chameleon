@@ -30,10 +30,10 @@ class GitCreatePackageManager
     info = null
 
     # 检测是否存在网络
-    (require "../../utils/checkNetwork")("https", "https://github.com/")
-    .then =>
-      gitCreatePackageWizardView.attach()
-      gitCreatePackageWizardView.finishPromise()
+    # (require "../../utils/checkNetwork")("https", "https://github.com/")
+    # .then =>
+    gitCreatePackageWizardView.attach()
+    gitCreatePackageWizardView.finishPromise()
     .then (options) ->
       gitCreatePackageWizardView.destroy()
       pv.attach()

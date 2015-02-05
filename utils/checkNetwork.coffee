@@ -1,13 +1,14 @@
 Q = require 'q'
+
  # check network
  # @param  {[type]} netType     需要监测的网络类型。注：只检测http 和 https 类型
  # @param  {[type]} netAddress  需要检测网络的全地址。eg：https://github.com/ 或者：http://www.baidu.com
-module.exports = (netType, netAddress)->
-  Q.Promise (resolve, reject, notify) ->
+module.exports = (netType, netAddress) ->
 
+  Q.Promise (resolve, reject, notify) ->
     if netType is "http"
       http = require "http"
-      http.get netAddress,(res) ->
+      http.get netAddress, (res) ->
         if 200 is res.statusCode
           resolve()
       .on "error", (e) ->

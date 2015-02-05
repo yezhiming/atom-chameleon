@@ -144,6 +144,7 @@ class V extends View
     url = "#{server}/api/packages/findOne/#{@packageName.originalText}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) ->
+        error.message = 'Please check your network.' if error.code is 'ENOTFOUND'
         return reject error if error
         if response.statusCode is 200
           try
