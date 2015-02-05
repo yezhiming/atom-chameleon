@@ -38,12 +38,14 @@ class GitCreatePackageManager
       gitCreatePackageWizardView.destroy()
       pv.attach()
       selectPath = atom.packages.getActivePackage('tree-view').mainModule.treeView.selectedPath
-      if require('fs').statSync(selectPath).isFile()
-        tmpfile = path.resolve os.tmpdir(), uuid.v1()
-      else
-        tmpfile = os.tmpdir()
+    
+      tmpfile = path.resolve os.tmpdir(), uuid.v1()
 
-      tmpDir = path.resolve tmpfile, path.basename(selectPath)
+      if require('fs').statSync(selectPath).isFile()
+        tmpDir = path.resolve tmpfile, path.basename(selectPath)
+      else
+        tmpDir = tmpfile
+
       if fs.existsSync tmpDir
         fs.removeSync tmpDir
       fs.copySync selectPath, tmpDir
