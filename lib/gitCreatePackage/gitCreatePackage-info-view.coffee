@@ -143,9 +143,12 @@ class V extends View
     wizard.disableNext()
     url = "#{server}/api/packages/findOne/#{@packageName.originalText}?access_token=#{access_token}"
     Q.Promise (resolve, reject, notify) =>
-      request url, (error, response, body) ->
-        error.message = 'Please check your network.' if error? && error.code is 'ENOTFOUND'
-        return reject error if error
+      request url, (error, response, body) =>
+        if error
+          @packageNameLoad.hide()
+          wizard.enableNext()
+          error.message = 'Please check your network.'
+          return reject error
         if response.statusCode is 200
           try
             bodyJson =  $.parseJSON(body)
