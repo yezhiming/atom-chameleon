@@ -159,7 +159,10 @@ class V extends View
           else
             resolve false
         else
-          reject $.parseJSON(response.body).message
+          if $.parseJSON(response.body).message
+            reject $.parseJSON(response.body).message
+          else
+            reject response.body
 
     .then (packageHave) =>
       Q.Promise (resolve, reject, notify) =>
