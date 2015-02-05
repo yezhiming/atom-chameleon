@@ -9,34 +9,6 @@
 
 'menu': [
   {
-    'label': 'Packages'
-    'submenu': [
-      'label': 'Chameleon'
-      'submenu': [
-        {
-          'label': 'Create Project',
-          'command': 'atom-chameleon:create-project'
-        }
-        {
-          'label': 'Framework Install/Upgrade'
-          'command': 'atom-chameleon:install'
-        }
-        {
-          'label': 'Start Debug Server'
-          'command': 'atom-chameleon:run-on-server'
-        }
-        {
-          'label': 'Launch Emulator'
-          'command': 'atom-chameleon:emulator'
-        }
-        {
-          'label': 'Package'
-          'command': 'atom-chameleon:list-package'
-        }
-      ]
-    ]
-  }
-  {
     'label': 'Chameleon'
     'submenu': [
       {
