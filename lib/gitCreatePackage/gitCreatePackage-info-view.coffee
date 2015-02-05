@@ -145,9 +145,8 @@ class V extends View
     Q.Promise (resolve, reject, notify) =>
       request url, (error, response, body) =>
         if error
-          @packageNameLoad.hide()
-          wizard.enableNext()
-          error.message = 'Please check your network.'
+          if (error.message.contains 'ECONNREFUSED') or (error.message.contains 'ENOENT')
+            error.message = 'Please check your network.'
           return reject error
         if response.statusCode is 200
           try
@@ -194,8 +193,9 @@ class V extends View
       @loginView.destroy()
       wizard.mergeOptions options
       wizard.nextStep()
-    .catch (err) ->
-      console.trace err.stack
+    .catch (err) =>
+      @packageNameLoad.hide()
+      wizard.enableNext()
       alert "#{err}"
 
   checkNameEditorView: (editorView)->
