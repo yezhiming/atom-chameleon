@@ -113,6 +113,9 @@ module.exports =
     bsv = new (require './build/build-state-view')()
     bsv.attach()
 
+  cmdCreateFile: ->
+    alert "This feature is in development."
+
   cmdCreateProject: ->
 
     ProjectWizardView = require './project/project-wizard-view'
