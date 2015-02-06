@@ -82,6 +82,8 @@ module.exports =
     #New
     atom.workspaceView.command "atom-chameleon:create-project", => @cmdCreateProject()
     atom.workspaceView.command "atom-chameleon:create-file", => @cmdCreateFile()
+    
+    atom.workspaceView.command "atom-chameleon:settings", => @cmdCreateFile()
 
   deactivate: ->
     @projectManager.deactivate?()
