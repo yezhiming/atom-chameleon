@@ -156,7 +156,7 @@ module.exports =
     .then (projectPath)->
       atom.open {pathsToOpen: [projectPath]}
       
-      unless atom.packages.getActivePackage('tree-view').mainModule.treeView.isHidden() is null
+      if atom.packages.getActivePackage('tree-view').mainModule.treeView
         if atom.packages.getActivePackage('tree-view').mainModule.treeView.isHidden()
           atom.workspaceView.trigger "tree-view:toggle"
 
