@@ -60,7 +60,7 @@ class PackageListView extends View
   attach: ->
     request = request.defaults({jar: true})
 
-    root = atom.project.path
+    root = atom.project.rootDirectories[0].path
 
     @loading.hide();
 
@@ -120,7 +120,7 @@ class PackageListView extends View
 
     atom.workspaceView.append this
 
-    #   @encrypt module.path, (path.join atom.project.path, 'encrypt', module.package.identifier)
+    #   @encrypt module.path, (path.join atom.project.rootDirectories[0].path, 'encrypt', module.package.identifier)
     # .then (result) =>
   upload: (cell, module)->
 

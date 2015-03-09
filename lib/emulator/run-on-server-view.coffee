@@ -56,10 +56,10 @@ class RunOnServerView extends View
 
     @selectedRootPath.text '.'
 
-    if atom.project.path
+    if atom.project.rootDirectories[0].path
 
-      fs.exists path.resolve(atom.project.path, 'index.html'), (exists1)=>
-        fs.exists path.resolve(atom.project.path, 'main', 'index.html'), (exists2)=>
+      fs.exists path.resolve(atom.project.rootDirectories[0].path, 'index.html'), (exists1)=>
+        fs.exists path.resolve(atom.project.rootDirectories[0].path, 'main', 'index.html'), (exists2)=>
           @selectedIndexFile.text 'index.html' if exists1
           @selectedIndexFile.text 'main/index.html' if exists2
 
@@ -89,35 +89,35 @@ class RunOnServerView extends View
 
     dialog.showOpenDialog {
       title: 'Select Root Path'
-      defaultPath: atom.project.path
+      defaultPath: atom.project.rootDirectories[0].path
       properties: ['openDirectory']
     }, (destPath) =>
 
       if destPath
-        relativePath = path.relative(atom.project.path, destPath[0]) || '.'
+        relativePath = path.relative(atom.project.rootDirectories[0].path, destPath[0]) || '.'
         @selectedRootPath.text relativePath if destPath
 
   onSelectIndex: ->
 
     dialog.showOpenDialog {
       title: 'Select Index File'
-      defaultPath: atom.project.path
+      defaultPath: atom.project.rootDirectories[0].path
       filters: [{name: "html", extensions: ['html', 'htm']}]
       properties: ['openFile']
     }, (destPath) =>
 
       #note: use val method for input tag
-      @selectedIndexFile.text path.relative(atom.project.path, destPath[0]) if destPath
+      @selectedIndexFile.text path.relative(atom.project.rootDirectories[0].path, destPath[0]) if destPath
 
   onClickRun: ->
-    # isolation model: copy resources to os's tempdir but default by (atom.project.path)
+    # isolation model: copy resources to os's tempdir but default by (atom.project.rootDirectories[0].path)
     if @isolationMode.prop('checked')
-      tmpDir = path.resolve os.tmpdir(), path.basename(atom.project.path)
+      tmpDir = path.resolve os.tmpdir(), path.basename(atom.project.rootDirectories[0].path)
       fs.removeSync tmpDir if fs.existsSync tmpDir
-      fs.copySync atom.project.path, tmpDir
+      fs.copySync atom.project.rootDirectories[0].path, tmpDir
 
-    rootPath = path.resolve(tmpDir || atom.project.path, @selectedRootPath.text())
-    destPath = path.resolve(tmpDir || atom.project.path, @selectedIndexFile.text())
+    rootPath = path.resolve(tmpDir || atom.project.rootDirectories[0].path, @selectedRootPath.text())
+    destPath = path.resolve(tmpDir || atom.project.rootDirectories[0].path, @selectedIndexFile.text())
     httpPort = parseInt @httpPort.getText()
     pushState = @find('#usingPushState').is(":checked")
 

@@ -174,8 +174,8 @@ class BuildStatusView extends View
     # https://172.16.1.95:8443/archives/device/4/ios
     downLoadPath = "#{puzzleClient.server}/archives/device/#{@task.id}/ios"
     # downLoadPath = "http://172.16.1.95:8080/archives/device/5/ios"
-    destPath = "#{atom.project.path}/#{@task.id}/comeontom.app"
-    # destPath = "#{atom.project.path}/5/comeontom.app"
+    destPath = "#{atom.project.rootDirectories[0].path}/#{@task.id}/comeontom.app"
+    # destPath = "#{atom.project.rootDirectories[0].path}/5/comeontom.app"
     console.log "downLoadPath#{downLoadPath}"
     download = new Download({ extract: true, strip: 1, mode: '777' })
     .get(downLoadPath)
