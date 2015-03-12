@@ -57,7 +57,7 @@ class BuildManager
       buildWizard.destroy()
       buildStateView.attach()
 
-      require('../../utils/zip')(atom.project.rootDirectories[0].path,removeZipPath).then (zip_path) ->_.extend(result, asset: zip_path)
+      require('../../utils/zip')(atom.project.path,removeZipPath).then (zip_path) ->_.extend(result, asset: zip_path)
     .then (result) ->
       console.log "结束压缩..."
 

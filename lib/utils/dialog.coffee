@@ -11,7 +11,7 @@ openDialog = (options) ->
 openDirectory = (options) ->
 
   options = _.extend({
-    defaultPath: atom.project.rootDirectories[0].path
+    defaultPath: atom.project.path
     properties: ['openDirectory']
     }, options)
 
@@ -20,7 +20,7 @@ openDirectory = (options) ->
 openFile = (options) ->
 
   options = _.extend({
-    defaultPath: atom.project.rootDirectories[0].path
+    defaultPath: atom.project.path
     properties: ['openFile']
     }, options)
 
