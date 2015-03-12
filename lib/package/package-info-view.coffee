@@ -49,7 +49,7 @@ class V extends View
     @name.getEditor().onDidChange =>
       return unless @name.getText()? # reject null only
       # check for available
-      fs.exists path.resolve(atom.project.rootDirectories[0].path, @name.getText()), (exists)=>
+      fs.exists path.resolve(atom.project.path, @name.getText()), (exists)=>
         if exists
           wizardView.disableNext()
         else
@@ -62,7 +62,7 @@ class V extends View
     @isOpenDialog = true
     dialog.showOpenDialog {
       title: 'Select Icon Image'
-      defaultPath: atom.project.rootDirectories[0].path
+      defaultPath: atom.project.path
       filters: [{name: "png image", extensions: ['png', 'jpg']}]
       properties: ['openFile']
     }, (destPath) =>
