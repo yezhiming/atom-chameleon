@@ -35,7 +35,7 @@ class PackageManager
     .finally ->
       pv.destroy()
 
-  installFramework: (installToPath = atom.project.rootDirectories[0].path)->
+  installFramework: (installToPath = atom.project.path)->
 
     targetFolder = path.resolve(installToPath, 'butterfly')
     targetZipFile = path.resolve(installToPath, 'butterfly.zip')
