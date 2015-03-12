@@ -79,7 +79,7 @@ class V extends View
           filters: [{name: ".#{each.suffix} file", extensions: [each.suffix]}]
         .then (destPath) ->
           if each.relative?
-            each.view.setText path.relative(atom.project.path, destPath[0])
+            each.view.setText path.relative(atom.project.rootDirectories[0].path, destPath[0])
           else
             each.view.setText destPath[0]
 
@@ -89,7 +89,7 @@ class V extends View
       .attach()
       .filterPlatform('android')
 
-    @title.setText _.last(atom.project.path.split(path.sep)) if atom.project.path
+    @title.setText _.last(atom.project.rootDirectories[0].path.split(path.sep)) if atom.project.rootDirectories[0].path
     @version.setText "1.0.0"
     @build.setText "1"
     @icon.attr 'src', getResourcePath('images', 'icon.png')

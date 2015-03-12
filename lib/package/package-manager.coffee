@@ -20,7 +20,7 @@ class PackageManager
     @packageWizardView.on 'finish', (options) =>
       @packageWizardView.destroy()
 
-      package_path = path.resolve atom.project.path, options.name
+      package_path = path.resolve atom.project.rootDirectories[0].path, options.name
       Q.nfcall fs.mkdirs, package_path
       .then -> Q.nfcall(fs.copy, options.icon_path, "#{package_path}/icon.png") if options.icon_path
       .then ->
